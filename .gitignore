@@ -71,7 +71,7 @@ docs/_build/
 .env
 .venv
 env/
-venv/
+venv/*
 ENV/
 env.bak/
 venv.bak/
