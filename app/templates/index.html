@@ -4,6 +4,18 @@
     Bookmarks
 </h2>
 <p>
-    Sync with <a href="https://getpocket.com">Pocket</a>
+    Sync with <a href="/pocket">Pocket</a>
 </p>
+<ul>
+    {% for bookmark in bookmarks %}
+        <li>
+            <a href="/bookmarks/{{ bookmark.doc_id }}">
+                <h3>{{ bookmark["title"] }}</h3>
+            </a>
+            <p>{{ bookmark["desc"] }}</p>
+        </li>
+
+    {% endfor %}
+</ul>
+<a href="/bookmarks/new">New Bookmark</a>
 {% endblock %}

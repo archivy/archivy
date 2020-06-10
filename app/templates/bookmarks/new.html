@@ -5,12 +5,25 @@
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
+            {% for error in form.url.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
             {{ form.url.label }}<br>
             {{ form.url }}
         </p>
-        <p>
+        <p>            
+			{% for error in form.desc.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
             {{ form.desc.label }}<br>
             {{ form.desc }}
+        </p>
+        <p>	
+			{% for error in form.tags.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+            {{ form.tags.label }}
+            {{ form.tags }}
         </p>
         <p>{{ form.submit() }}</p>
     </form>

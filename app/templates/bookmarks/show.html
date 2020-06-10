@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {{ " ".join(bookmark['tags']) }}
+    <br>
+    {{ bookmark['date'] }}
+    <a href="{{ bookmark['url'] }}" rel="noopener">
+        Link
+    </a>
+    <p>
+        {{ content | safe }}
+    </p>
+{% endblock %}
