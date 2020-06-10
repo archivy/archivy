@@ -63,7 +63,7 @@ class Bookmark:
         if self.validate():
             data = {"type": "bookmark", 'url': self.url, 'desc': self.desc, 'content': self.content, 'title': self.title, 'date': self.date.strftime("%x"), 'tags': self.tags}
             self.id = db.insert(data)
-            add_to_index("dataObj", self)
+            add_to_index("dataobj", self)
             
             return self.id
         return False
