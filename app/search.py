@@ -8,10 +8,10 @@ def add_to_index(index, model):
         payload[field] = getattr(model, field)
     ELASTIC_SEARCH.index(index=index, id=model.id, body=payload)
 
-def remove_from_index(index, model):
+def remove_from_index(index, id):
     if not ELASTIC_SEARCH:
         return
-    ELASTIC_SEARCH.delete(index=index, id=model.id)
+    ELASTIC_SEARCH.delete(index=index, id=id)
 
 def query_index(index, query, page, per_page):
     if not ELASTIC_SEARCH:

@@ -24,3 +24,6 @@ class PocketForm(FlaskForm):
         key_regex = "\d{5}-\w{24}"
         if not re.match(key_regex, api_key.data):
             raise ValidationError("Invalid API key.")
+
+class DeleteDataForm(FlaskForm):
+    submit = SubmitField("Delete")

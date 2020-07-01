@@ -11,5 +11,4 @@ ELASTIC_SEARCH = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config[
 
 Scss(app)
 db = tinydb.TinyDB("db.json")
-
 from app import routes, models

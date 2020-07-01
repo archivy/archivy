@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<input type="text" id="searchBar">
+<ul id="searchHits">
+
+</ul>
+<h2>
+    Bookmarks
+</h2>
+<p>
+    Sync with <a href="/pocket">Pocket</a>
+</p>
+<ul>
+    {% for bookmark in bookmarks %}
+        <li>
+            <a href="/bookmarks/{{ bookmark.doc_id }}">
+                <h3>{{ bookmark["title"] }}</h3>
+            </a>
+            <p>{{ bookmark["desc"] }}</p>
+        </li>
+
+    {% endfor %}
+</ul>
+<a href="/bookmarks/new">New Bookmark</a>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/11.0.0/markdown-it.min.js">
+</script>
+<script>
+	var md = window.markdownit();
+	function appendHit(hit, hidden, query) {
+		let hitsDiv = document.getElementById("searchHits");
+		let hitLi = document.createElement("li");
+		let p = document.createElement("p"), h3 = document.createElement("h3"), hitText = '';
+		let paragraphs = md.render(hit['_source']['content']).match(/(<p.*>.*<\/p>)/mg)	
+		console.log(paragraphs);
+		console.log(md.render(hit['_source']['content']));
+		for(let i = 0; i < paragraphs.length && hitText.length < 150; i++)
+		{
+			console.log(i);
+			if (paragraphs[i].toUpperCase().includes(query.toUpperCase()) && paragraphs[i].includes("<p")) {
+				hitText += `${paragraphs[i]}`;
+			}
+
+		}
+		p.innerHTML = hitText, h3.textContent = hit['_source']['title'];
+		hitLi.append(h3);
+		hitLi.append(p);
+		if (hidden)
+		{
+			hitLi.classList = "hidden";
+		}
+		hitsDiv.appendChild(hitLi);
+	}
+
+	document.getElementById("searchBar").addEventListener('input', function(e) {
+		const Http = new XMLHttpRequest();
+		const searchURL = `http://localhost:9200/dataobj/_search?q=${this.value}`;
+		Http.open("GET", searchURL);
+		Http.send();
+		let data;
+		Http.onload = (e) => {
+			data = JSON.parse(Http.responseText);
+			document.getElementById("searchHits").innerHTML = "";
+			for(let x = 0; x < data['hits']['hits'].length; x++) {
+				hit = data['hits']['hits'][x];
+				let hidden = x > 4;
+				appendHit(hit, hidden, this.value);
+			}
+		}
+	});
+</script>
+{% endblock %}
