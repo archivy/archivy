@@ -6,52 +6,55 @@ from bs4 import BeautifulSoup
 import re
 import datetime
 from app.search import *
+from urllib.parse import urljoin
 
-class Bookmark:
+class DataObj:
     __searchable__ = ['title', 'content', 'desc', 'tags']
+
+    def process_bookmark_url(self):
+        try:
+            url_request = requests.get(self.url).text
+            parsed_html = BeautifulSoup(url_request)
+            self.content = self.extract_content(parsed_html)
+            self.title = parsed_html.title.string
+        except Exception as e:
+            print(e)
+            self.wipe()
+
     def wipe(self):
         self.title = None
         self.desc = None
         self.content = None
 
-    def from_json(self, data):
-        self.url = data["url"]
-        self.title = data["title"]
-        self.content = data["content"]
-        self.desc = data["desc"]
-        self.date = data["date"]
-
     def extract_content(self, beautsoup):
         stripped_tags = ['footer', 'nav']
+        url = self.url.rstrip("/")
+
         for x in stripped_tags:
             if getattr(beautsoup, x):
                 getattr(beautsoup, x).extract()
+        resources = beautsoup.find_all(['a', 'img'])
+        for external in resources:
+            if external.name == 'a' and external['href'].startswith('/'):
+                external['href'] = urljoin(url, external['href'])
+            elif external.name == 'img' and external['src'].startswith('/'):
+                external['src'] = urljoin(url, external['src'])
+
         return html2text.html2text(str(beautsoup))
 
-    def __init__(self, json_object, **kwargs):
-        if json_object:
-            self.from_json(self, kwargs["data"])    
+    def __init__(self, **kwargs):
+        self.desc = kwargs["desc"]
+        self.tags = kwargs["tags"].split()
+        self.type = kwargs["type"]
+        if "date" in kwargs:
+            self.date = kwargs['date']
         else:
+            self.date = datetime.datetime.now()
+        if self.type == "bookmark":
             self.url = kwargs["url"]
-            self.desc = kwargs["desc"]
-            self.tags = kwargs["tags"].split()
-
-            if "date" in kwargs:
-                self.date = kwargs['date']
-            else:
-                self.date = datetime.datetime.now()
             if validators.url(self.url):
-                try:
-                    url_request = requests.get(self.url).text
-                    parsed_html = BeautifulSoup(url_request)
-                    self.content = self.extract_content(parsed_html)
-                    self.title = parsed_html.title.string
-                except Exception as e:
-                    print(e)
-                    self.wipe()
-            else:
-                self.wipe()
-
+                self.process_bookmark_url()
+            
     def validate(self):
         validURL = isinstance(self.url, str) and validators.url(self.url)
         validTitle = isinstance(self.title, str)
@@ -61,9 +64,10 @@ class Bookmark:
 
     def insert(self):
         if self.validate():
-            data = {"type": "bookmark", 'url': self.url, 'desc': self.desc, 'content': self.content, 'title': self.title, 'date': self.date.strftime("%x"), 'tags': self.tags}
+            data = {"type": self.type, 'url': self.url, 'desc': self.desc, 'content': self.content, 'title': self.title, 'date': self.date.strftime("%x"), 'tags': self.tags}
             self.id = db.insert(data)
-            add_to_index("dataobj", self)
+            if self.id:
+                add_to_index("dataobj", self)
             
             return self.id
         return False

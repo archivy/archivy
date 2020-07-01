@@ -1,46 +1,53 @@
 from app import app, db
 from flask import render_template, flash, redirect, request
-from app.models import Bookmark
-from app.forms import NewBookmarkForm, PocketForm
+from app.models import DataObj
+from app.forms import *
 import markdown
 import requests
 import json
 from tinydb import Query, operations
 from datetime import datetime
-
+from app.search import *
 @app.route('/')
 @app.route('/index')
 def index():
     bookmark = Query()
     bookmarks = db.search(bookmark.type == "bookmark")
-    return render_template('index.html', title='Home', bookmarks=bookmarks)
+    return render_template('home.html', title='Home', bookmarks=bookmarks)
 
 @app.route('/bookmarks/new', methods=['GET', 'POST'])
 def new_bookmark():
     form = NewBookmarkForm()
     if form.validate_on_submit():
-        bookmark = Bookmark(False, url=form.url.data, desc=form.desc.data, tags=form.tags.data)
+        bookmark = DataObj(url=form.url.data, desc=form.desc.data, tags=form.tags.data, type="bookmark")
         id = bookmark.insert()
         if id:
             flash("Bookmark Saved!")
             return redirect(f"/bookmarks/{id}")
     return render_template('bookmarks/new.html', title='New Bookmark', form=form)
 
+# @app.route("/notes/new", methods=['GET', 'POST'])
+
 @app.route('/bookmarks/<id>')
 def show_bookmark(id):
     bookmark = db.get(doc_id=int(id))
     content = markdown.markdown(bookmark["content"])
-    return render_template("bookmarks/show.html", title=bookmark["title"], bookmark=bookmark, content=content)
+    return render_template("bookmarks/show.html", title=bookmark["title"], bookmark=bookmark, content=content, form=DeleteDataForm())
 
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():
     form = PocketForm()
+    Pocket = Query()
     if form.validate_on_submit():
         request_data = {'consumer_key': form.api_key.data,
                         'redirect_uri': 'http://localhost:5000/parse_pocket?new=1',
                         }
         r = requests.post("https://getpocket.com/v3/oauth/request", json=request_data, headers={'X-Accept': 'application/json', 'Content-Type': 'application/json'})
-        db.insert({'type': 'pocket_key', 'consumer_key': form.api_key.data, 'code': r.json()['code']})
+        new_data = {'type': 'pocket_key', 'consumer_key': form.api_key.data, 'code': r.json()['code']}
+        if len(db.search(Pocket.type == "pocket_key")) == 0:
+            db.insert(new_data)
+        else:
+            db.update(new_data, Pocket.type == "pocket_key")
         flash("Settings Saved")
         return redirect(f"https://getpocket.com/auth/authorize?request_token={r.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
 
@@ -61,18 +68,25 @@ def parse_pocket():
     if 'since' in pocket:
         data['since'] = pocket['since']
     bookmarks = requests.post("https://getpocket.com/v3/get", json=data).json()
-    #return bookmarks['list']
+
     most_recent_time = 0
     for k, v in bookmarks["list"].items():
         date = datetime.utcfromtimestamp(int(v['time_added']))
-        bookmark = Bookmark(None, desc=v['excerpt'], url=v['resolved_url'], date=date, tags="")
+        bookmark = DataObj(desc=v['excerpt'], url=v['resolved_url'], date=date, tags="", type="bookmark")
         bookmark.insert()
 
         most_recent_time = max(most_recent_time, int(v['time_added']))
     db.update(operations.set('since', most_recent_time), Pocket.type == "pocket_key")
     return redirect("/")
 
-@app.route("/search")
-def search():
-    DataObj = Query()
-    return render_template("search.html", json=db.search(DataObj.type == "bookmark"), title="Search")
+@app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
+def delete_data(id):
+    try:
+        db.remove(doc_ids = [int(id)])
+    except:
+        flash("Data could not be found!")
+        return redirect("/")
+
+    remove_from_index("dataobj", int(id))
+    flash("Data deleted!")
+    return redirect("/")
