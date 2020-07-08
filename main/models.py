@@ -1,12 +1,14 @@
 import validators
-from app import db
 import requests
 import html2text
 from bs4 import BeautifulSoup
 import re
 import datetime
-from app.search import *
+from main.search import *
 from urllib.parse import urljoin
+from main import app
+from main.data import create
+import frontmatter
 
 class DataObj:
     __searchable__ = ['title', 'content', 'desc', 'tags']
@@ -64,10 +66,15 @@ class DataObj:
 
     def insert(self):
         if self.validate():
-            data = {"type": self.type, 'url': self.url, 'desc': self.desc, 'content': self.content, 'title': self.title, 'date': self.date.strftime("%x"), 'tags': self.tags}
-            self.id = db.insert(data)
-            if self.id:
-                add_to_index("dataobj", self)
+            self.id = app.config['MAX_ID']
+            data = {"type": self.type, 'url': self.url, 'desc': self.desc, 'title': str(self.title), 'date': self.date.strftime("%x").replace("/", "-"), 'tags': self.tags, 'id': self.id}
+            app.config['MAX_ID'] += 1
+
+            # convert to markdown
+            dataobj = frontmatter.Post(self.content)
+            dataobj.metadata = data
+            create(frontmatter.dumps(dataobj), dataobj['date'] + dataobj['title']) 
+            add_to_index("dataobj", self)
             
             return self.id
         return False

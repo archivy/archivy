@@ -1,18 +1,19 @@
-from app import app, db
+from main import app, db
 from flask import render_template, flash, redirect, request
-from app.models import DataObj
-from app.forms import *
+from main.models import DataObj
+from main.forms import *
 import markdown
 import requests
 import json
+from main import data
 from tinydb import Query, operations
 from datetime import datetime
-from app.search import *
+from main.search import *
 @app.route('/')
 @app.route('/index')
 def index():
-    bookmark = Query()
-    bookmarks = db.search(bookmark.type == "bookmark")
+    bookmarks = data.get_items(type='bookmark')
+    print(len(bookmarks))
     return render_template('home.html', title='Home', bookmarks=bookmarks)
 
 @app.route('/bookmarks/new', methods=['GET', 'POST'])
@@ -26,8 +27,7 @@ def new_bookmark():
             return redirect(f"/bookmarks/{id}")
     return render_template('bookmarks/new.html', title='New Bookmark', form=form)
 
-# @app.route("/notes/new", methods=['GET', 'POST'])
-
+@app.route("/notes/new", methods=['GET', 'POST'])
 @app.route('/bookmarks/<id>')
 def show_bookmark(id):
     bookmark = db.get(doc_id=int(id))
@@ -79,14 +79,14 @@ def parse_pocket():
     db.update(operations.set('since', most_recent_time), Pocket.type == "pocket_key")
     return redirect("/")
 
-@app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
-def delete_data(id):
-    try:
-        db.remove(doc_ids = [int(id)])
-    except:
-        flash("Data could not be found!")
-        return redirect("/")
-
-    remove_from_index("dataobj", int(id))
-    flash("Data deleted!")
-    return redirect("/")
+# @app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
+# def delete_data(id):
+#     try:
+ #        db.remove(doc_ids = [int(id)])
+ #    except:
+  #       flash("Data could not be found!")
+   #      return redirect("/")
+# 
+ #    remove_from_index("dataobj", int(id))
+  #   flash("Data deleted!")
+   #  return redirect("/")

@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, URL, ValidationError
 from tinydb import TinyDB, Query
-from app import db
+from main import db
 import re
 
 class NewBookmarkForm(FlaskForm):
