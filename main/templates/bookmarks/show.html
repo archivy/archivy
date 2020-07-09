@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {{ " ".join(bookmark['tags']) }}
+    {{ " ".join(dataobj['tags']) }}
     <br>
-    {{ bookmark['date'] }}
-    <a href="{{ bookmark['url'] }}" rel="noopener">
+    {{ dataobj['date'] }}
+    <a href="{{ dataobj['url'] }}" rel="noopener">
         Link
     </a>
     <p>
         {{ content | safe }}
     </p>
-	<form action="/dataobj/delete/{{ bookmark['doc_id'] }}" method="delete" novalidate>
+	<form action="/dataobj/delete/{{ dataobj['id'] }}" method="delete" novalidate>
         {{ form.hidden_tag() }}
         <p>{{ form.submit() }}</p>
     </form>

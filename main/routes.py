@@ -12,9 +12,8 @@ from main.search import *
 @app.route('/')
 @app.route('/index')
 def index():
-    bookmarks = data.get_items(type='bookmark')
-    print(len(bookmarks))
-    return render_template('home.html', title='Home', bookmarks=bookmarks)
+    dataobjs = data.get_items(type='bookmark')
+    return render_template('home.html', title='Home', dataobjs=dataobjs)
 
 @app.route('/bookmarks/new', methods=['GET', 'POST'])
 def new_bookmark():
@@ -24,15 +23,20 @@ def new_bookmark():
         id = bookmark.insert()
         if id:
             flash("Bookmark Saved!")
-            return redirect(f"/bookmarks/{id}")
+            return redirect(f"/dataobj/{id}")
     return render_template('bookmarks/new.html', title='New Bookmark', form=form)
 
 @app.route("/notes/new", methods=['GET', 'POST'])
-@app.route('/bookmarks/<id>')
-def show_bookmark(id):
-    bookmark = data.get_item(id) 
-    content = markdown.markdown(bookmark.content)
-    return render_template("bookmarks/show.html", title=bookmark["title"], bookmark=bookmark, content=content, form=DeleteDataForm())
+@app.route('/dataobj/<id>')
+def show_dataobj(id):
+    try:
+        dataobj = data.get_item(id) 
+    except:
+        flash("Data not found")
+        return redirect("/")
+
+    content = markdown.markdown(dataobj.content)
+    return render_template("bookmarks/show.html", title=dataobj["title"], dataobj=dataobj, content=content, form=DeleteDataForm())
 
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():
@@ -79,14 +83,13 @@ def parse_pocket():
     db.update(operations.set('since', most_recent_time), Pocket.type == "pocket_key")
     return redirect("/")
 
-# @app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
-# def delete_data(id):
-#     try:
- #        db.remove(doc_ids = [int(id)])
- #    except:
-  #       flash("Data could not be found!")
-   #      return redirect("/")
-# 
- #    remove_from_index("dataobj", int(id))
-  #   flash("Data deleted!")
-   #  return redirect("/")
+@app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
+def delete_data(id):
+    try:
+        data.delete_item(id)
+    except:
+        flash("Data could not be found!")
+        return redirect("/")
+    remove_from_index("dataobj", int(id))
+    flash("Data deleted!")
+    return redirect("/")

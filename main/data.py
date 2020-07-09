@@ -20,5 +20,9 @@ def create(contents, title):
         f.write(contents)
 
 def get_item(id):
-    print(id)
-    return frontmatter.load(glob.glob(f"{dirname}{id}-*.md")[0])
+    file = glob.glob(f"{dirname}{id}-*.md")[0]
+    return frontmatter.load(file)
+
+def delete_item(id):
+    file = glob.glob(f"{dirname}{id}-*.md")[0]
+    os.remove(file)

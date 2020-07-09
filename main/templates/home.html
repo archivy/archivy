@@ -11,12 +11,12 @@
     Sync with <a href="/pocket">Pocket</a>
 </p>
 <ul>
-    {% for bookmark in bookmarks %}
+    {% for dataobj in dataobjs %}
         <li>
-            <a href="/bookmarks/{{ bookmark.doc_id }}">
-                <h3>{{ bookmark["title"] }}</h3>
+            <a href="/dataobj/{{ dataobj["id"] }}">
+                <h3>{{ dataobj["title"] }}</h3>
             </a>
-            <p>{{ bookmark["desc"] }}</p>
+            <p>{{ dataobj["desc"] }}</p>
         </li>
 
     {% endfor %}
