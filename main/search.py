@@ -1,6 +1,7 @@
 
 from main import ELASTIC_SEARCH
 def add_to_index(index, model):
+    print(ELASTIC_SEARCH)
     if not ELASTIC_SEARCH:
         return
     payload = {}
