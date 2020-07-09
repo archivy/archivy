@@ -73,7 +73,7 @@ class DataObj:
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
-            create(frontmatter.dumps(dataobj), dataobj['date'] + dataobj['title']) 
+            create(frontmatter.dumps(dataobj), str(self.id) + "-" + dataobj['date'] + "-" + dataobj['title']) 
             add_to_index("dataobj", self)
             
             return self.id

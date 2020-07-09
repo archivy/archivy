@@ -30,8 +30,8 @@ def new_bookmark():
 @app.route("/notes/new", methods=['GET', 'POST'])
 @app.route('/bookmarks/<id>')
 def show_bookmark(id):
-    bookmark = db.get(doc_id=int(id))
-    content = markdown.markdown(bookmark["content"])
+    bookmark = data.get_item(id) 
+    content = markdown.markdown(bookmark.content)
     return render_template("bookmarks/show.html", title=bookmark["title"], bookmark=bookmark, content=content, form=DeleteDataForm())
 
 @app.route('/pocket', methods=['POST', 'GET'])
