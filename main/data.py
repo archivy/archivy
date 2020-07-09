@@ -1,14 +1,13 @@
 import os
 from main import app
 import frontmatter
-
+import glob
 dirname = "data/"
 
 def get_items(**kwargs):
     bookmarks = []
-    for filename in os.listdir(dirname):
-        data = frontmatter.load(dirname + filename)
-        print(data['type'])
+    for filename in glob.glob(dirname + "*.md"):
+        data = frontmatter.load(filename)
         if 'type' in kwargs:
             if (data['type'] == kwargs['type']):
                 bookmarks.append(data)
@@ -19,3 +18,7 @@ def get_items(**kwargs):
 def create(contents, title):
     with open(dirname + title + ".md", 'w') as f:
         f.write(contents)
+
+def get_item(id):
+    print(id)
+    return frontmatter.load(glob.glob(f"{dirname}{id}-*.md")[0])
