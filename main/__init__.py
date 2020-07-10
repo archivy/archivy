@@ -7,7 +7,8 @@ from tinydb import TinyDB
 app = Flask(__name__)
 app.config.from_object(Config)
 ELASTIC_SEARCH = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_ENABLED'] else None
-print(app.config['ELASTICSEARCH_ENABLED'])
+
+# create dir that will hold data if it doesn't already exit
 dirname = "data/"
 Path(dirname).mkdir(parents=True, exist_ok=True)
 db = TinyDB("db.json")

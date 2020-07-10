@@ -45,17 +45,24 @@ class DataObj:
         return html2text.html2text(str(beautsoup))
 
     def __init__(self, **kwargs):
-        self.desc = kwargs["desc"]
-        self.tags = kwargs["tags"].split()
-        self.type = kwargs["type"]
-        if "date" in kwargs:
-            self.date = kwargs['date']
+        
+        # data has already been processed
+        if kwargs["type"] == "processed-dataobj":
+            for k, v in kwargs.items():
+                setattr(self, k, v)
         else:
-            self.date = datetime.datetime.now()
-        if self.type == "bookmark":
-            self.url = kwargs["url"]
-            if validators.url(self.url):
-                self.process_bookmark_url()
+            # still needs processing 
+            self.desc = kwargs["desc"]
+            self.tags = kwargs["tags"].split()
+            self.type = kwargs["type"]
+            if "date" in kwargs:
+                self.date = kwargs['date']
+            else:
+                self.date = datetime.datetime.now()
+            if self.type == "bookmark":
+                self.url = kwargs["url"]
+                if validators.url(self.url):
+                    self.process_bookmark_url()
             
     def validate(self):
         validURL = isinstance(self.url, str) and validators.url(self.url)
@@ -78,3 +85,16 @@ class DataObj:
             
             return self.id
         return False
+
+    @classmethod
+    def from_file(cls, filename):
+        data = frontmatter.load(filename)
+        dataobj = {}
+        dataobj["content"] = data.content
+        for x in ['tags', 'desc', 'id', 'title']:
+            dataobj[x] = data[x]
+
+        dataobj["type"] = "processed-dataobj"
+        return cls(**dataobj)
+
+
