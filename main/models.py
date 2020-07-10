@@ -10,6 +10,7 @@ from main import app
 from main.data import create
 import frontmatter
 
+
 class DataObj:
     __searchable__ = ['title', 'content', 'desc', 'tags']
 
@@ -45,13 +46,13 @@ class DataObj:
         return html2text.html2text(str(beautsoup))
 
     def __init__(self, **kwargs):
-        
+
         # data has already been processed
         if kwargs["type"] == "processed-dataobj":
             for k, v in kwargs.items():
                 setattr(self, k, v)
         else:
-            # still needs processing 
+            # still needs processing
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"].split()
             self.type = kwargs["type"]
@@ -63,7 +64,7 @@ class DataObj:
                 self.url = kwargs["url"]
                 if validators.url(self.url):
                     self.process_bookmark_url()
-            
+
     def validate(self):
         validURL = isinstance(self.url, str) and validators.url(self.url)
         validTitle = isinstance(self.title, str)
@@ -74,15 +75,19 @@ class DataObj:
     def insert(self):
         if self.validate():
             self.id = app.config['MAX_ID']
-            data = {"type": self.type, 'url': self.url, 'desc': self.desc, 'title': str(self.title), 'date': self.date.strftime("%x").replace("/", "-"), 'tags': self.tags, 'id': self.id}
+            data = {
+                "type": self.type, 'url': self.url, 'desc': self.desc, 'title': str(
+                    self.title), 'date': self.date.strftime("%x").replace(
+                    "/", "-"), 'tags': self.tags, 'id': self.id}
             app.config['MAX_ID'] += 1
 
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
-            create(frontmatter.dumps(dataobj), str(self.id) + "-" + dataobj['date'] + "-" + dataobj['title']) 
+            create(frontmatter.dumps(dataobj), str(self.id) +
+                   "-" + dataobj['date'] + "-" + dataobj['title'])
             add_to_index("dataobj", self)
-            
+
             return self.id
         return False
 
@@ -96,5 +101,3 @@ class DataObj:
 
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
-
-

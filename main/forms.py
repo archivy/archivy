@@ -5,6 +5,7 @@ from tinydb import TinyDB, Query
 from main import db
 import re
 
+
 class NewBookmarkForm(FlaskForm):
     url = StringField('url', validators=[DataRequired(), URL()])
     desc = StringField('desc')
@@ -13,17 +14,21 @@ class NewBookmarkForm(FlaskForm):
 
     def validate_url(self, url):
         Bookmark = Query()
-        if len(db.search(Bookmark.type == "bookmark" and Bookmark.url == url.data)) > 0:
+        if len(
+            db.search(
+                Bookmark.type == "bookmark" and Bookmark.url == url.data)) > 0:
             raise ValidationError("You have already saved this bookmark.")
-        
+
+
 class PocketForm(FlaskForm):
     api_key = StringField('Pocket API key')
     submit = SubmitField('Save')
 
     def validate_api_key(self, api_key):
-        key_regex = "\d{5}-\w{24}"
+        key_regex = r"\d{5}-\w{24}"
         if not re.match(key_regex, api_key.data):
             raise ValidationError("Invalid API key.")
+
 
 class DeleteDataForm(FlaskForm):
     submit = SubmitField("Delete")
