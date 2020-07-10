@@ -9,53 +9,85 @@ from main import data
 from tinydb import Query, operations
 from datetime import datetime
 from main.search import *
+
+
 @app.route('/')
 @app.route('/index')
 def index():
     dataobjs = data.get_items(type='bookmark')
     return render_template('home.html', title='Home', dataobjs=dataobjs)
 
+
 @app.route('/bookmarks/new', methods=['GET', 'POST'])
 def new_bookmark():
     form = NewBookmarkForm()
     if form.validate_on_submit():
-        bookmark = DataObj(url=form.url.data, desc=form.desc.data, tags=form.tags.data, type="bookmark")
+        bookmark = DataObj(
+            url=form.url.data,
+            desc=form.desc.data,
+            tags=form.tags.data,
+            type="bookmark")
         id = bookmark.insert()
         if id:
             flash("Bookmark Saved!")
             return redirect(f"/dataobj/{id}")
-    return render_template('bookmarks/new.html', title='New Bookmark', form=form)
+    return render_template(
+        'bookmarks/new.html',
+        title='New Bookmark',
+        form=form)
+
 
 @app.route("/notes/new", methods=['GET', 'POST'])
 @app.route('/dataobj/<id>')
 def show_dataobj(id):
     try:
-        dataobj = data.get_item(id) 
-    except:
+        dataobj = data.get_item(id)
+    except BaseException:
         flash("Data not found")
         return redirect("/")
 
     content = markdown.markdown(dataobj.content)
-    return render_template("bookmarks/show.html", title=dataobj["title"], dataobj=dataobj, content=content, form=DeleteDataForm())
+    return render_template(
+        "bookmarks/show.html",
+        title=dataobj["title"],
+        dataobj=dataobj,
+        content=content,
+        form=DeleteDataForm())
+
 
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():
     form = PocketForm()
     Pocket = Query()
     if form.validate_on_submit():
-        request_data = {'consumer_key': form.api_key.data,
-                        'redirect_uri': 'http://localhost:5000/parse_pocket?new=1',
-                        }
-        r = requests.post("https://getpocket.com/v3/oauth/request", json=request_data, headers={'X-Accept': 'application/json', 'Content-Type': 'application/json'})
-        new_data = {'type': 'pocket_key', 'consumer_key': form.api_key.data, 'code': r.json()['code']}
+        if not len(db.search(Pocket.type == "pocket_key")):
+            redirect("/parse_pocket")
+        request_data = {
+            'consumer_key': form.api_key.data,
+            'redirect_uri': 'http://localhost:5000/parse_pocket?new=1',
+        }
+        r = requests.post(
+            "https://getpocket.com/v3/oauth/request",
+            json=request_data,
+            headers={
+                'X-Accept': 'application/json',
+                'Content-Type': 'application/json'})
+        new_data = {
+            'type': 'pocket_key',
+            'consumer_key': form.api_key.data,
+            'code': r.json()['code']}
         if len(db.search(Pocket.type == "pocket_key")) == 0:
             db.insert(new_data)
         else:
             db.update(new_data, Pocket.type == "pocket_key")
         flash("Settings Saved")
-        return redirect(f"https://getpocket.com/auth/authorize?request_token={r.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
+        return redirect(
+            f"https://getpocket.com/auth/authorize?request_token={r.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
 
-    return render_template("pocket/new.html", title="Pocket Settings", form=form)
+    return render_template(
+        "pocket/new.html",
+        title="Pocket Settings",
+        form=form)
 
 
 @app.route("/parse_pocket")
@@ -63,12 +95,26 @@ def parse_pocket():
     Pocket = Query()
     pocket = db.search(Pocket.type == "pocket_key")[0]
     if request.args.get("new") == "1":
-        auth_data = {'consumer_key': pocket['consumer_key'], 'code': pocket['code']}
-        r = requests.post("https://getpocket.com/v3/oauth/authorize", json=auth_data, headers={'X-Accept': 'application/json', 'Content-Type': 'application/json'})
+        auth_data = {
+            'consumer_key': pocket['consumer_key'],
+            'code': pocket['code']}
+        r = requests.post(
+            "https://getpocket.com/v3/oauth/authorize",
+            json=auth_data,
+            headers={
+                'X-Accept': 'application/json',
+                'Content-Type': 'application/json'})
         print(r.text)
-        db.update(operations.set('access_token', r.json()['access_token']), Pocket.type == "pocket_key")
+        db.update(
+            operations.set(
+                'access_token',
+                r.json()['access_token']),
+            Pocket.type == "pocket_key")
         flash(f"{r.json()['username']} Signed in!")
-    data = {'consumer_key': pocket['consumer_key'], 'access_token': r.json()['access_token'], 'sort': "newest"}
+    data = {
+        'consumer_key': pocket['consumer_key'],
+        'access_token': r.json()['access_token'],
+        'sort': "newest"}
     if 'since' in pocket:
         data['since'] = pocket['since']
     bookmarks = requests.post("https://getpocket.com/v3/get", json=data).json()
@@ -76,18 +122,28 @@ def parse_pocket():
     most_recent_time = 0
     for k, v in bookmarks["list"].items():
         date = datetime.utcfromtimestamp(int(v['time_added']))
-        bookmark = DataObj(desc=v['excerpt'], url=v['resolved_url'], date=date, tags="", type="bookmark")
+        bookmark = DataObj(
+            desc=v['excerpt'],
+            url=v['resolved_url'],
+            date=date,
+            tags="",
+            type="bookmark")
         bookmark.insert()
 
         most_recent_time = max(most_recent_time, int(v['time_added']))
-    db.update(operations.set('since', most_recent_time), Pocket.type == "pocket_key")
+    db.update(
+        operations.set(
+            'since',
+            most_recent_time),
+        Pocket.type == "pocket_key")
     return redirect("/")
+
 
 @app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
 def delete_data(id):
     try:
         data.delete_item(id)
-    except:
+    except BaseException:
         flash("Data could not be found!")
         return redirect("/")
     remove_from_index("dataobj", int(id))
