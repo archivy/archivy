@@ -92,8 +92,7 @@ def pocket_settings():
 
 @app.route("/parse_pocket")
 def parse_pocket():
-    Pocket = Query()
-    pocket = db.search(Pocket.type == "pocket_key")[0]
+    pocket = db.search(Query().type == "pocket_key")[0]
     if request.args.get("new") == "1":
         auth_data = {
             'consumer_key': pocket['consumer_key'],
@@ -104,17 +103,18 @@ def parse_pocket():
             headers={
                 'X-Accept': 'application/json',
                 'Content-Type': 'application/json'})
-        print(r.text)
         db.update(
             operations.set(
                 'access_token',
                 r.json()['access_token']),
-            Pocket.type == "pocket_key")
+            Query().type == "pocket_key")
+        access_token = r.json()['access_token']
         flash(f"{r.json()['username']} Signed in!")
     data = {
         'consumer_key': pocket['consumer_key'],
-        'access_token': r.json()['access_token'],
+        'access_token': pocket['access_token'],
         'sort': "newest"}
+
     if 'since' in pocket:
         data['since'] = pocket['since']
     bookmarks = requests.post("https://getpocket.com/v3/get", json=data).json()
@@ -135,7 +135,7 @@ def parse_pocket():
         operations.set(
             'since',
             most_recent_time),
-        Pocket.type == "pocket_key")
+        Query().type == "pocket_key")
     return redirect("/")
 
 
