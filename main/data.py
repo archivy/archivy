@@ -2,20 +2,14 @@ import os
 from main import app
 import frontmatter
 import glob
+import re
+
 dirname = "data/"
 
 # method from django to sanitize filename
-def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
-    import unicodedata
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-    value = unicode(re.sub('[-\s]+', '-', value))
-    # ...
-    return value
+def valid_filename(s):
+    s = str(s).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', s)
 
 def get_items(**kwargs):
     bookmarks = []
@@ -30,7 +24,7 @@ def get_items(**kwargs):
 
 
 def create(contents, title):
-    with open(dirname + slugify(title) + ".md", 'w') as f:
+    with open(dirname + valid_filename(title) + ".md", 'w') as f:
         f.write(contents)
 
 
