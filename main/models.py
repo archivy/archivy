@@ -60,7 +60,7 @@ class DataObj:
                 self.date = kwargs['date']
             else:
                 self.date = datetime.datetime.now()
-            if self.type == "bookmark":
+            if self.type == "bookmark" or self.type == "pocket_bookmark":
                 self.url = kwargs["url"]
                 if validators.url(self.url):
                     self.process_bookmark_url()

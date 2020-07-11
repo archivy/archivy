@@ -10,11 +10,10 @@ from tinydb import Query, operations
 from datetime import datetime
 from main.search import *
 
-
 @app.route('/')
 @app.route('/index')
 def index():
-    dataobjs = data.get_items(type='bookmark')
+    dataobjs = data.get_items(type=['bookmark', 'pocket_bookmark'])
     return render_template('home.html', title='Home', dataobjs=dataobjs)
 
 
@@ -110,32 +109,34 @@ def parse_pocket():
             Query().type == "pocket_key")
         access_token = r.json()['access_token']
         flash(f"{r.json()['username']} Signed in!")
-    data = {
+    pocket_data = {
         'consumer_key': pocket['consumer_key'],
         'access_token': pocket['access_token'],
         'sort': "newest"}
 
-    if 'since' in pocket:
-        data['since'] = pocket['since']
-    bookmarks = requests.post("https://getpocket.com/v3/get", json=data).json()
+    since = datetime(1970, 1, 1)
+    for post in data.get_items(type=['pocket_bookmark']):
+        date = datetime.strptime(post['date'].replace("-", "/"), "%x") 
+        since = max(date, since)
 
-    most_recent_time = 0
+    since = datetime.timestamp(since)
+    if since: pocket_data['since'] = since
+    bookmarks = requests.post("https://getpocket.com/v3/get", json=pocket_data).json()
+   
+    # api spec: https://getpocket.com/developer/docs/v3/retrieve
     for k, v in bookmarks["list"].items():
-        date = datetime.utcfromtimestamp(int(v['time_added']))
-        bookmark = DataObj(
-            desc=v['excerpt'],
-            url=v['resolved_url'],
-            date=date,
-            tags="",
-            type="bookmark")
-        bookmark.insert()
+        # check item has not been deleted
+        print(v)
+        if int(v['status']) != 2:
+            desc = v['excerpt'] if int(v['is_article']) else None
+            bookmark = DataObj(
+                desc=desc,
+                url=v['resolved_url'],
+                date=datetime.now(),
+                tags="",
+                type="pocket_bookmark")
 
-        most_recent_time = max(most_recent_time, int(v['time_added']))
-    db.update(
-        operations.set(
-            'since',
-            most_recent_time),
-        Query().type == "pocket_key")
+            bookmark.insert()
     return redirect("/")
 
 

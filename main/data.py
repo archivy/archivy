@@ -16,8 +16,10 @@ def get_items(**kwargs):
     for filename in glob.glob(dirname + "*.md"):
         data = frontmatter.load(filename)
         if 'type' in kwargs:
-            if (data['type'] == kwargs['type']):
-                bookmarks.append(data)
+            for datatype in kwargs['type']:
+                if (data['type'] == datatype):
+                    bookmarks.append(data)
+                    break
         else:
             bookmarks.append(data)
     return bookmarks

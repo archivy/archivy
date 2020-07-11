@@ -7,16 +7,25 @@ from watchdog.events import FileSystemEventHandler
 
 
 class ModifHandler(FileSystemEventHandler):
-    last_event = ''
+
+    def __init__(self):
+        self.last_modify_event = ''
+        self.last_delete_event = ''
 
     def on_modified(self, event):
-        if event.src_path != self.last_event and event.src_path.endswith(
+        if event.src_path != self.last_modify_event and event.src_path.endswith(
                 ".md"):
             print(f"Changes to {event.src_path}")
             dataobj = models.DataObj.from_file(event.src_path)
             search.add_to_index('dataobj', dataobj)
-            last_event = event.src_path
+            self.last_modify_event = event.src_path
 
+    def on_deleted(self, event):
+        if event.src_path != self.last_delete_event and event.src_path.endswith(".md"):
+            id = event.src_path.split("/")[-1].split("-")[0]
+            search.remove_from_index('dataobj', id)
+            print(f"{event.src_path} has been removed")
+            self.last_delete_event = event.src_path
 
 if __name__ == "__main__":
     event_handler = ModifHandler()
