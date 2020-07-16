@@ -13,17 +13,26 @@
 <p>
     Sync with <a href="/pocket">Pocket</a>
 </p>
-<ul>
-    {% for dataobj in dataobjs %}
-        <li>
-            <a href="/dataobj/{{ dataobj["id"] }}">
-                <h3>{{ dataobj["title"] }}</h3>
-            </a>
-            <p>{{ dataobj["desc"] }}</p>
-        </li>
+{% macro draw_dir(dir, depth) -%}
+	<div style="margin-left: {{depth * 30}}px">
+		<h2>{{ dir.name }}</h2>
+		<ul>
+			{% for dataobj in dir.child_files %}
+				<li>
+					<a href="/dataobj/{{ dataobj["id"] }}">
+						<h3>{{ dataobj["title"] }}</h3>
+					</a>
+					<p>{{ dataobj["desc"] }}</p>
+				</li>
+			{% endfor %}
+		</ul>
+		{% for child_dir in dir.child_dirs.values() %}
+			{{ draw_dir(child_dir, depth + 1) }}
+		{% endfor %}
+	</div>
+{%- endmacro %}
 
-    {% endfor %}
-</ul>
+{{ draw_dir(dataobjs, 0) }}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/11.0.0/markdown-it.min.js">
 </script>
