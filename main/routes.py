@@ -23,7 +23,7 @@ def new_bookmark():
     if form.validate_on_submit():
         bookmark = DataObj(
             url=form.url.data,
-            desc=form.desc.data,
+            desc=form.desc.data or " ",
             tags=form.tags.data,
             collection="bookmarks")
         id = bookmark.insert()
@@ -131,7 +131,7 @@ def parse_pocket():
         'sort': "newest"}
 
     since = datetime(1970, 1, 1)
-    for post in data.get_items(collection=['pocket_bookmark']):
+    for post in data.get_items(collections=['pocket_bookmark'], structured=False):
         date = datetime.strptime(post['date'].replace("-", "/"), "%x") 
         since = max(date, since)
 
@@ -141,8 +141,6 @@ def parse_pocket():
    
     # api spec: https://getpocket.com/developer/docs/v3/retrieve
     for k, v in bookmarks["list"].items():
-        # check item has not been deleted
-        print(v)
         if int(v['status']) != 2:
             desc = v['excerpt'] if int(v['is_article']) else None
             bookmark = DataObj(
@@ -152,7 +150,7 @@ def parse_pocket():
                 tags="",
                 collection="pocket_bookmarks")
 
-            bookmark.insert()
+            print(bookmark.insert())
     return redirect("/")
 
 

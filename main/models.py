@@ -69,8 +69,8 @@ class DataObj:
         validURL = isinstance(self.url, str) and validators.url(self.url)
         validTitle = isinstance(self.title, str)
         validContent = isinstance(self.content, str)
-        validDesc = isinstance(self.desc, str)
-        return validURL and validTitle and validContent and validDesc
+        print("url", validURL, "title", validTitle)
+        return validURL and validTitle and validContent
 
     def insert(self):
         if self.validate():
