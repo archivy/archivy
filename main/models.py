@@ -48,19 +48,19 @@ class DataObj:
     def __init__(self, **kwargs):
 
         # data has already been processed
-        if kwargs["type"] == "processed-dataobj":
+        if kwargs["collection"] == "processed-dataobj":
             for k, v in kwargs.items():
                 setattr(self, k, v)
         else:
             # still needs processing
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"].split()
-            self.type = kwargs["type"]
+            self.collection = kwargs["collection"]
             if "date" in kwargs:
                 self.date = kwargs['date']
             else:
                 self.date = datetime.datetime.now()
-            if self.type == "bookmark" or self.type == "pocket_bookmark":
+            if self.collection == "bookmarks" or self.collection == "pocket_bookmarks":
                 self.url = kwargs["url"]
                 if validators.url(self.url):
                     self.process_bookmark_url()
@@ -76,7 +76,7 @@ class DataObj:
         if self.validate():
             self.id = app.config['MAX_ID']
             data = {
-                "type": self.type, 'url': self.url, 'desc': self.desc, 'title': str(
+                "collection": self.collection, 'url': self.url, 'desc': self.desc, 'title': str(
                     self.title), 'date': self.date.strftime("%x").replace(
                     "/", "-"), 'tags': self.tags, 'id': self.id}
             app.config['MAX_ID'] += 1
@@ -85,7 +85,7 @@ class DataObj:
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
             create(frontmatter.dumps(dataobj), str(self.id) +
-                   "-" + dataobj['date'] + "-" + dataobj['title'])
+                   "-" + dataobj['date'] + "-" + dataobj['title'], path=self.collection)
             add_to_index("dataobj", self)
 
             return self.id
@@ -99,5 +99,5 @@ class DataObj:
         for x in ['tags', 'desc', 'id', 'title']:
             dataobj[x] = data[x]
 
-        dataobj["type"] = "processed-dataobj"
+        dataobj["collection"] = "processed-dataobj"
         return cls(**dataobj)

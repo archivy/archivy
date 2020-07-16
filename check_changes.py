@@ -30,7 +30,7 @@ class ModifHandler(FileSystemEventHandler):
 if __name__ == "__main__":
     event_handler = ModifHandler()
     observer = Observer()
-    observer.schedule(event_handler, path='data/', recursive=False)
+    observer.schedule(event_handler, path='data/', recursive=True)
     observer.start()
 
     try:

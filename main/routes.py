@@ -13,7 +13,7 @@ from main.search import *
 @app.route('/')
 @app.route('/index')
 def index():
-    dataobjs = data.get_items(type=['bookmark', 'pocket_bookmark'])
+    dataobjs = data.get_items()
     return render_template('home.html', title='Home', dataobjs=dataobjs)
 
 
@@ -25,7 +25,7 @@ def new_bookmark():
             url=form.url.data,
             desc=form.desc.data,
             tags=form.tags.data,
-            type="bookmark")
+            collection="bookmarks")
         id = bookmark.insert()
         if id:
             flash("Bookmark Saved!")
@@ -37,6 +37,22 @@ def new_bookmark():
 
 
 @app.route("/notes/new", methods=['GET', 'POST'])
+def new_note():
+    form = NewNoteForm()
+    if form.validate_on_submit():
+        note = DataObj(
+            title=form.title.data,
+            desc=form.desc.data,
+            tags=form.tags.data,
+            collection="note")
+        id = note.insert()
+        if id:
+            flash("Note Saved!")
+            redirect(f"file:///{note.path}")
+    return render_template(
+        'bookmarks/new.html',
+        title='New Bookmark',
+        form=form)
 @app.route('/dataobj/<id>')
 def show_dataobj(id):
     try:
@@ -115,7 +131,7 @@ def parse_pocket():
         'sort': "newest"}
 
     since = datetime(1970, 1, 1)
-    for post in data.get_items(type=['pocket_bookmark']):
+    for post in data.get_items(collection=['pocket_bookmark']):
         date = datetime.strptime(post['date'].replace("-", "/"), "%x") 
         since = max(date, since)
 
@@ -134,7 +150,7 @@ def parse_pocket():
                 url=v['resolved_url'],
                 date=datetime.now(),
                 tags="",
-                type="pocket_bookmark")
+                collection="pocket_bookmarks")
 
             bookmark.insert()
     return redirect("/")
