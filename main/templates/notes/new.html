@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>New Bookmark</h1>
+    <h1>New Note</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {% for error in form.url.errors %}
+            {% for error in form.title.errors %}
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
-            {{ form.url.label }}<br>
-            {{ form.url }}
+            {{ form.title.label }}<br>
+            {{ form.title }}
         </p>
-        <p>
-            {% for error in form.path.errors %}
-                <span style="color: red;">{{ error }}</span>
-            {% endfor %}
-            {{ form.path.label }}<br>
-            {{ form.path }}
-        </p>
+		<p>
+			{% for error in form.path.errors %}
+				<span style="color: red;">{{ error }}</span>
+			{% endfor %}
+			{{ form.path.label }}
+			{{ form.path }}
+		</p>
         <p>            
 			{% for error in form.desc.errors %}
                 <span style="color: red;">{{ error }}</span>

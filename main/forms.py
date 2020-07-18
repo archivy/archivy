@@ -1,24 +1,23 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, URL, ValidationError
-from tinydb import TinyDB, Query
-from main import db
 import re
+from main.data import get_dirs
 
 
 class NewBookmarkForm(FlaskForm):
     url = StringField('url', validators=[DataRequired(), URL()])
+    path = SelectField("Topic", choices=[(path, path) for path in get_dirs()])
     desc = StringField('desc')
     tags = StringField('tags')
     submit = SubmitField('Save')
 
-    def validate_url(self, url):
-        Bookmark = Query()
-        if len(
-            db.search(
-                Bookmark.type == "bookmark" and Bookmark.url == url.data)) > 0:
-            raise ValidationError("You have already saved this bookmark.")
-
+class NewNoteForm(FlaskForm):
+    title = StringField('title', validators=[DataRequired()])
+    path = SelectField("Topic", choices=[(path, path) for path in get_dirs()])
+    desc = StringField('desc')
+    tags = StringField('tags')
+    submit = SubmitField('Save')
 
 class PocketForm(FlaskForm):
     api_key = StringField('Pocket API key')

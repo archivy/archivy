@@ -48,19 +48,20 @@ class DataObj:
     def __init__(self, **kwargs):
 
         # data has already been processed
-        if kwargs["collection"] == "processed-dataobj":
+        if kwargs["type"] == "processed-dataobj":
             for k, v in kwargs.items():
                 setattr(self, k, v)
         else:
             # still needs processing
+            self.path = kwargs["path"] if "path" in kwargs or kwargs["path"] == "not classified" else ""
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"].split()
-            self.collection = kwargs["collection"]
+            self.type = kwargs["type"]
             if "date" in kwargs:
                 self.date = kwargs['date']
             else:
                 self.date = datetime.datetime.now()
-            if self.collection == "bookmarks" or self.collection == "pocket_bookmarks":
+            if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 self.url = kwargs["url"]
                 if validators.url(self.url):
                     self.process_bookmark_url()
@@ -68,7 +69,7 @@ class DataObj:
     def validate(self):
         validURL = isinstance(self.url, str) and validators.url(self.url)
         validTitle = isinstance(self.title, str)
-        validContent = isinstance(self.content, str)
+        validContent = isinstance(self.content, str) or (self.type != "bookmark" and self.type != "pocket_bookmarks")
         print("url", validURL, "title", validTitle)
         return validURL and validTitle and validContent
 
@@ -76,7 +77,7 @@ class DataObj:
         if self.validate():
             self.id = app.config['MAX_ID']
             data = {
-                "collection": self.collection, 'url': self.url, 'desc': self.desc, 'title': str(
+                "type": self.type, 'url': self.url, 'desc': self.desc, 'title': str(
                     self.title), 'date': self.date.strftime("%x").replace(
                     "/", "-"), 'tags': self.tags, 'id': self.id}
             app.config['MAX_ID'] += 1
@@ -85,9 +86,8 @@ class DataObj:
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
             create(frontmatter.dumps(dataobj), str(self.id) +
-                   "-" + dataobj['date'] + "-" + dataobj['title'], path=self.collection)
+                   "-" + dataobj['date'] + "-" + dataobj['title'], path=self.path)
             add_to_index("dataobj", self)
-
             return self.id
         return False
 
@@ -99,5 +99,5 @@ class DataObj:
         for x in ['tags', 'desc', 'id', 'title']:
             dataobj[x] = data[x]
 
-        dataobj["collection"] = "processed-dataobj"
+        dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)

@@ -61,3 +61,9 @@ def get_item(id):
 def delete_item(id):
     file = glob.glob(f"{dirname}**/{id}-*.md", recursive=True)[0]
     os.remove(file)
+
+def get_dirs():
+    dirnames = glob.glob(dirname + "**/*", recursive=True)
+    dirnames = ["/".join(name.split("/")[1:]) for name in dirnames if not name.endswith(".md")]
+    dirnames.append("not classified")
+    return dirnames
