@@ -23,9 +23,10 @@ def new_bookmark():
     if form.validate_on_submit():
         bookmark = DataObj(
             url=form.url.data,
-            desc=form.desc.data or " ",
+            desc=form.desc.data,
             tags=form.tags.data,
-            collection="bookmarks")
+            path=form.path.data,
+            type="bookmarks")
         id = bookmark.insert()
         if id:
             flash("Bookmark Saved!")
@@ -44,14 +45,15 @@ def new_note():
             title=form.title.data,
             desc=form.desc.data,
             tags=form.tags.data,
-            collection="note")
+            path=form.path.data,
+            type="note")
         id = note.insert()
         if id:
             flash("Note Saved!")
-            redirect(f"file:///{note.path}")
+            redirect("/")
     return render_template(
-        'bookmarks/new.html',
-        title='New Bookmark',
+        '/notes/new.html',
+        title='New Note',
         form=form)
 @app.route('/dataobj/<id>')
 def show_dataobj(id):
@@ -131,7 +133,7 @@ def parse_pocket():
         'sort': "newest"}
 
     since = datetime(1970, 1, 1)
-    for post in data.get_items(collections=['pocket_bookmark'], structured=False):
+    for post in data.get_items(types=['pocket_bookmark'], structured=False):
         date = datetime.strptime(post['date'].replace("-", "/"), "%x") 
         since = max(date, since)
 
@@ -148,7 +150,7 @@ def parse_pocket():
                 url=v['resolved_url'],
                 date=datetime.now(),
                 tags="",
-                collection="pocket_bookmarks")
+                type="pocket_bookmarks")
 
             print(bookmark.insert())
     return redirect("/")
