@@ -4,6 +4,7 @@ import frontmatter
 import glob
 import re
 from pathlib import Path
+from shutil import rmtree
 
 dirname = "data/"
 
@@ -71,4 +72,9 @@ def create_dir(name):
     sanitized_name = "/".join([valid_filename(pathname) for pathname in name.split("/")])
     Path(dirname + sanitized_name).mkdir(parents=True, exist_ok=True) 
 
-
+def delete_dir(name):
+    try:
+        rmtree(dirname + name)
+        return True
+    except FileNotFoundError:
+        return False

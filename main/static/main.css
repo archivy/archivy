@@ -4,3 +4,11 @@
 
   .hidden {
     display: none; }
+
+    .fadeout {
+      transition: opacity 1s;
+      opacity: 0; }
+
+      .fadein {
+        transition: opacity 1s;
+        opacity: 1; }
