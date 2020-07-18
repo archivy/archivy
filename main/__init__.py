@@ -14,8 +14,7 @@ dirname = "data/"
 Path(dirname).mkdir(parents=True, exist_ok=True)
 db = TinyDB("db.json")
 app.config['MAX_ID'] = 0
-
-
+app.jinja_options['extensions'].append('jinja2.ext.do')
 Scss(app)
 
 from main import routes, models
