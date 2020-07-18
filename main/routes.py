@@ -74,10 +74,19 @@ def show_dataobj(id):
 @app.route("/folders/new", methods=["POST"])
 def create_folder():
     dir = request.json.get("name")
-    print(dir)
     data.create_dir(dir)
     return "Successfully Created", 200
 
+@app.route("/folders/delete", methods=["DELETE"])
+def delete_folder():
+    dir = request.json.get("name")
+    if dir == "":
+        return "Cannot delete root dir", 401
+    elif data.delete_dir(dir):
+        return "Successfully deleted", 200
+    else:
+        return "Not found", 404
+    
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():
     form = PocketForm()

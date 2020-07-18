@@ -17,8 +17,11 @@
 	{% if depth %}
 		{% do path.append(dir.name) %}
 	{% endif %}
-	<div style="margin-left: {{depth * 30}}px">
+	<div style="margin-left: {{depth * 30}}px" id="cont-{{i.value}}">
 		<h2>{{ dir.name }}</h2>
+		{% if i.value != 1 %}
+			<button id="delete-btn-{{i.value}}" class="delete-btn">X</button>
+		{% endif %}
 		<p>Create a new folder</p>
 		<span id="form-path-{{i.value}}">{{ "/".join(path) }}</span>
 		<input type="text" id="form-input-{{i.value}}" class="folder-inputs">
@@ -88,7 +91,20 @@
 			}
 		}
 	});
-
+	
+	function createFolder(id)
+	{
+		let input = document.getElementById(`form-input-${id}`);
+		let totalPath = document.getElementById(`form-path-${id}`).textContent + "/" + input.value;
+		fetch(`${urlRoot}/folders/new`, {
+			method: "POST",
+			body: JSON.stringify({
+				"name": totalPath
+			}),
+			headers: {"content-type": "application/json"}
+		})
+		input.value = "";
+	}
 	// new folders with ajax
 	const urlRoot = {{ request.script_root|tojson|safe }};
 	window.onload = function() {
@@ -96,15 +112,23 @@
 		newFolderBtns.forEach(function(btn) {
 			btn.addEventListener("click", function(e) {
 				let btnId = btn.id.split("-")[2];
-				let totalPath = document.getElementById(`form-path-${btnId}`).textContent + "/" + document.getElementById(`form-input-${btnId}`).value;
-				console.log(totalPath)
-				fetch(`${urlRoot}/folders/new`, {
-					method: "POST",
+				createFolder(btnId);
+				
+			})
+		})
+		let deleteBtns = document.querySelectorAll(".delete-btn");
+		deleteBtns.forEach(function(btn) {
+			btn.addEventListener("click", function(e) {
+				let id = btn.id.split("-")[2];
+				let path = document.getElementById(`form-path-${id}`).textContent;
+				fetch(`${urlRoot}/folders/delete`, {
+					method: "DELETE",
 					body: JSON.stringify({
-						"name": totalPath
+						"name": path
 					}),
 					headers: {"content-type": "application/json"}
 				})
+				document.getElementById(`cont-${id}`).classList.add("fadeout");
 			})
 		})
 	}
