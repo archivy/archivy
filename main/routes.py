@@ -71,6 +71,12 @@ def show_dataobj(id):
         content=content,
         form=DeleteDataForm())
 
+@app.route("/folders/new", methods=["POST"])
+def create_folder():
+    dir = request.json.get("name")
+    print(dir)
+    data.create_dir(dir)
+    return "Successfully Created", 200
 
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():

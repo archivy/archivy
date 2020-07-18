@@ -27,28 +27,27 @@ def get_items(collections=[], path="", structured=True):
     else:
         # unstructured
         datacont = []
-    for filename in glob.glob(dirname + path + "**/*.md", recursive=True):
-        data = frontmatter.load(filename)
-        if collections == [] or any([collection == data['collection'] for collection in collections]):
+    if structured:
+        for filename in glob.glob(dirname + path + "**/*", recursive=True):
             paths = filename.split("/")
-            if structured:
-                if len(paths) == 1:
-                    datacont.child_files.append(data)
-                else:
-                    current_dir = datacont
-                    for dir_name in paths[1:-1]:
-                        if not dir_name in current_dir.child_dirs:
-                           current_dir.child_dirs[dir_name] = Directory(dir_name)
-                        current_dir = current_dir.child_dirs[dir_name]
+            data = frontmatter.load(filename) if filename.endswith(".md") else None
+            current_dir = datacont
+            for segment in paths[1:]:
+                if segment.endswith(".md"):
                     current_dir.child_files.append(data)
-            else: datacont.append(data)
+                else:
+                    if not segment in current_dir.child_dirs:
+                        current_dir.child_dirs[segment] = Directory(segment)
+                    current_dir = current_dir.child_dirs[segment]
+    else:
+        for filename in glob.glob(dirname + path + "**/*.md", recursive=True):
+            data = frontmatter.load(filename)
+            if collections == [] or any([collection == data['collection'] for collection in collections]):
+                datacont.append(data)
+
     return datacont
 
 def create(contents, title, path=''):
-    current_dir = dirname
-    for path in path.split("/"):
-        Path(current_dir + path).mkdir(parents=True, exist_ok=True)
-        current_dir += path + "/"
     with open(dirname + path + "/" + valid_filename(title) + ".md", 'w') as f:
         f.write(contents)
 
@@ -67,3 +66,9 @@ def get_dirs():
     dirnames = ["/".join(name.split("/")[1:]) for name in dirnames if not name.endswith(".md")]
     dirnames.append("not classified")
     return dirnames
+
+def create_dir(name):
+    sanitized_name = "/".join([valid_filename(pathname) for pathname in name.split("/")])
+    Path(dirname + sanitized_name).mkdir(parents=True, exist_ok=True) 
+
+
