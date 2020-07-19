@@ -15,3 +15,33 @@
 	opacity: 1;
 }
 
+.new-folder {
+	display: flex;
+	align-items: center;
+	& > * {
+		margin: 0px 10px;
+	}
+	input {
+		margin: 0px;
+	}
+	button {
+		padding: 5px;
+		margin: 0px 10px;
+	}
+}
+.delete-btn {
+	padding: 0;
+	border: none;
+	background: none;
+    img {
+		height: 40px;
+	}
+}
+.folder-cont {
+	border-left: 5px solid #ff4301;
+	padding: 0px 10px;
+	margin: 50px 0px;
+	h2, p {
+		margin: 5px;
+	}
+}

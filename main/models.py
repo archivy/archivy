@@ -53,10 +53,11 @@ class DataObj:
                 setattr(self, k, v)
         else:
             # still needs processing
-            self.path = kwargs["path"] if "path" in kwargs or kwargs["path"] == "not classified" else ""
+            self.path = kwargs["path"] if "path" in kwargs and kwargs["path"] != "not classified" else ""
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"].split()
             self.type = kwargs["type"]
+            self.content = ""
             if "date" in kwargs:
                 self.date = kwargs['date']
             else:
@@ -65,21 +66,24 @@ class DataObj:
                 self.url = kwargs["url"]
                 if validators.url(self.url):
                     self.process_bookmark_url()
+            else:
+                self.title = kwargs["title"]
 
     def validate(self):
-        validURL = isinstance(self.url, str) and validators.url(self.url)
+        validURL = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (isinstance(self.url, str) and validators.url(self.url))
         validTitle = isinstance(self.title, str)
-        validContent = isinstance(self.content, str) or (self.type != "bookmark" and self.type != "pocket_bookmarks")
-        print("url", validURL, "title", validTitle)
+        validContent = (self.type != "bookmark" and self.type != "pocket_bookmarks") or isinstance(self.content, str)
         return validURL and validTitle and validContent
 
     def insert(self):
         if self.validate():
             self.id = app.config['MAX_ID']
             data = {
-                "type": self.type, 'url': self.url, 'desc': self.desc, 'title': str(
+                "type": self.type, 'desc': self.desc, 'title': str(
                     self.title), 'date': self.date.strftime("%x").replace(
                     "/", "-"), 'tags': self.tags, 'id': self.id}
+            if self.type == "bookmarks" or self.type == "pocket_bookmarks":
+                data["url"] = self.url
             app.config['MAX_ID'] += 1
 
             # convert to markdown
