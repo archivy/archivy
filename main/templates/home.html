@@ -17,15 +17,21 @@
 	{% if depth %}
 		{% do path.append(dir.name) %}
 	{% endif %}
-	<div style="margin-left: {{depth * 30}}px" id="cont-{{i.value}}">
-		<h2>{{ dir.name }}</h2>
+	<div style="margin-left: {{depth * 30}}px" id="cont-{{i.value}}" class="folder-cont">
+		<h2>
+			{{ dir.name }} 
+		</h2>
 		{% if i.value != 1 %}
-			<button id="delete-btn-{{i.value}}" class="delete-btn">X</button>
+			<button id="delete-btn-{{i.value}}" class="delete-btn">
+				<img src="/static/delete.png" alt="delete icon">
+			</button>
 		{% endif %}
 		<p>Create a new folder</p>
-		<span id="form-path-{{i.value}}">{{ "/".join(path) }}</span>
-		<input type="text" id="form-input-{{i.value}}" class="folder-inputs">
-		<button class="folder-btns" id="form-btn-{{i.value}}">Submit</button>
+		<div class="new-folder">
+			<span id="form-path-{{i.value}}">{{ "/".join(path) }}/</span>
+			<input type="text" id="form-input-{{i.value}}" class="folder-inputs">
+			<button class="folder-btns" id="form-btn-{{i.value}}">Submit</button>
+		</div>
 		<ul>
 			{% for dataobj in dir.child_files %}
 				<li>
@@ -55,18 +61,20 @@
 	function appendHit(hit, hidden, query) {
 		let hitsDiv = document.getElementById("searchHits");
 		let hitLi = document.createElement("li");
-		let p = document.createElement("p"), h3 = document.createElement("h3"), hitText = '';
+		let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
 		let paragraphs = md.render(hit['_source']['content']).match(/(<p.*>.*<\/p>)/mg)	
-		for(let i = 0; i < paragraphs.length && hitText.length < 150; i++)
+		if (paragraphs)
 		{
-			console.log(i);
-			if (paragraphs[i].toUpperCase().includes(query.toUpperCase()) && paragraphs[i].includes("<p")) {
-				hitText += `${paragraphs[i]}`;
+			for(let i = 0; i < paragraphs.length && hitText.length < 150; i++)
+			{
+				console.log(i);
+				if (paragraphs[i].toUpperCase().includes(query.toUpperCase()) && paragraphs[i].includes("<p")) {
+					hitText += `${paragraphs[i]}`;
+				}
 			}
-
 		}
-		p.innerHTML = hitText, h3.textContent = hit['_source']['title'];
-		hitLi.append(h3);
+		p.innerHTML = hitText, a.textContent = hit['_source']['title'], a.href = `/dataobj/${hit['_source']['id']}`;
+		hitLi.append(a);
 		hitLi.append(p);
 		if (hidden)
 		{
@@ -75,17 +83,24 @@
 		hitsDiv.appendChild(hitLi);
 	}
 
-	document.getElementById("searchBar").addEventListener('input', function(e) {
+	document.getElementById("searchBar").addEventListener('input', async function(e) {
 		const Http = new XMLHttpRequest();
-		const searchURL = `http://localhost:9200/dataobj/_search?q=${this.value}`;
-		Http.open("GET", searchURL);
-		Http.send();
-		let data;
-		Http.onload = (e) => {
-			data = JSON.parse(Http.responseText);
+		let searchQuery = await fetch(`http://localhost:9200/dataobj/_search`, {
+			"method": "GET",
+			"query": {
+					"multi_match": {
+						"query": this.value,
+						"fields": ['*']
+					}
+				},
+			"content-type": "application/json"
+		});
+	    if (searchQuery.ok) {	
+			let data = await searchQuery.json();
 			document.getElementById("searchHits").innerHTML = "";
 			for(let x = 0; x < data['hits']['hits'].length; x++) {
 				hit = data['hits']['hits'][x];
+				console.log(hit)
 				let hidden = x > 4;
 				appendHit(hit, hidden, this.value);
 			}
