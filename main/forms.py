@@ -2,19 +2,18 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, URL, ValidationError
 import re
-from main.data import get_dirs
 
 
 class NewBookmarkForm(FlaskForm):
     url = StringField('url', validators=[DataRequired(), URL()])
-    path = SelectField("Topic", choices=[(path, path) for path in get_dirs()])
+    path = SelectField("Topic")
     desc = StringField('desc')
     tags = StringField('tags')
     submit = SubmitField('Save')
 
 class NewNoteForm(FlaskForm):
     title = StringField('title', validators=[DataRequired()])
-    path = SelectField("Topic", choices=[(path, path) for path in get_dirs()])
+    path = SelectField("Topic")
     desc = StringField('desc')
     tags = StringField('tags')
     submit = SubmitField('Save')

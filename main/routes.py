@@ -40,6 +40,7 @@ def new_bookmark():
 @app.route("/notes/new", methods=['GET', 'POST'])
 def new_note():
     form = NewNoteForm()
+    form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         note = DataObj(
             title=form.title.data,
