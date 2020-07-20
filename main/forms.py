@@ -1,7 +1,7 @@
+import re
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, URL, ValidationError
-import re
 
 
 class NewBookmarkForm(FlaskForm):
@@ -11,12 +11,14 @@ class NewBookmarkForm(FlaskForm):
     tags = StringField('tags')
     submit = SubmitField('Save')
 
+
 class NewNoteForm(FlaskForm):
     title = StringField('title', validators=[DataRequired()])
     path = SelectField("Topic")
     desc = StringField('desc')
     tags = StringField('tags')
     submit = SubmitField('Save')
+
 
 class PocketForm(FlaskForm):
     api_key = StringField('Pocket API key')
