@@ -42,5 +42,7 @@
       margin: 5px; }
       .folder-cont ul {
         display: none; }
-        .folder-cont form {
-          display: none; }
+        .folder-cont ul li {
+          height: 30px; }
+    .folder-cont form {
+      display: none; }

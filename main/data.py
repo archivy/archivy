@@ -1,13 +1,11 @@
 import os
-from main import app
-import frontmatter
-import glob
 import re
 from pathlib import Path
 from shutil import rmtree
+import glob
+import frontmatter
 
-dirname = "data/"
-
+DIRNAME = "data/"
 class Directory:
 
     def __init__(self, name):
@@ -16,9 +14,12 @@ class Directory:
         self.child_dirs = {}
 
 # method from django to sanitize filename
-def valid_filename(s):
-    s = str(s).strip().replace(' ', '_')
-    return re.sub(r'(?u)[^-\w.]', '', s)
+
+
+def valid_filename(name):
+    name = str(name).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', name)
+
 
 def get_items(collections=[], path="", structured=True):
     datacont = None
@@ -29,54 +30,62 @@ def get_items(collections=[], path="", structured=True):
         # unstructured
         datacont = []
     if structured:
-        for filename in glob.glob(dirname + path + "**/*", recursive=True):
+        for filename in glob.glob(DIRNAME + path + "**/*", recursive=True):
             paths = filename.split("/")
-            data = frontmatter.load(filename) if filename.endswith(".md") else None
+            data = frontmatter.load(
+                filename) if filename.endswith(".md") else None
             current_dir = datacont
             for segment in paths[1:]:
                 if segment.endswith(".md"):
                     current_dir.child_files.append(data)
                 else:
-                    if not segment in current_dir.child_dirs:
+                    if segment not in current_dir.child_dirs:
                         current_dir.child_dirs[segment] = Directory(segment)
                     current_dir = current_dir.child_dirs[segment]
     else:
-        for filename in glob.glob(dirname + path + "**/*.md", recursive=True):
+        for filename in glob.glob(DIRNAME + path + "**/*.md", recursive=True):
             data = frontmatter.load(filename)
-            if collections == [] or any([collection == data['collection'] for collection in collections]):
+            if collections == [] or any(
+                    [collection == data['collection'] for collection in collections]):
                 datacont.append(data)
 
     return datacont
 
+
 def create(contents, title, path=''):
-    with open(dirname + path + "/" + valid_filename(title) + ".md", 'w') as f:
-        f.write(contents)
+    with open(DIRNAME + path + "/" + valid_filename(title) + ".md", 'w') as file:
+        file.write(contents)
 
 
 def get_item(id):
-    file = glob.glob(f"{dirname}**/{id}-*.md", recursive=True)[0]
+    file = glob.glob(f"{DIRNAME}**/{id}-*.md", recursive=True)[0]
     data = frontmatter.load(file)
     data['fullpath'] = os.getcwd() + "/" + file
     return data
 
 
 def delete_item(id):
-    file = glob.glob(f"{dirname}**/{id}-*.md", recursive=True)[0]
+    file = glob.glob(f"{DIRNAME}**/{id}-*.md", recursive=True)[0]
     os.remove(file)
 
+
 def get_dirs():
-    dirnames = glob.glob(dirname + "**/*", recursive=True)
-    dirnames = ["/".join(name.split("/")[1:]) for name in dirnames if not name.endswith(".md")]
+    dirnames = glob.glob(DIRNAME + "**/*", recursive=True)
+    dirnames = ["/".join(name.split("/")[1:])
+                for name in dirnames if not name.endswith(".md")]
     dirnames.append("not classified")
     return dirnames
 
+
 def create_dir(name):
-    sanitized_name = "/".join([valid_filename(pathname) for pathname in name.split("/")])
-    Path(dirname + sanitized_name).mkdir(parents=True, exist_ok=True) 
+    sanitized_name = "/".join([valid_filename(pathname)
+                               for pathname in name.split("/")])
+    Path(DIRNAME + sanitized_name).mkdir(parents=True, exist_ok=True)
+
 
 def delete_dir(name):
     try:
-        rmtree(dirname + name)
+        rmtree(DIRNAME + name)
         return True
     except FileNotFoundError:
         return False

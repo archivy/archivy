@@ -1,14 +1,14 @@
-from main import app, db
+from datetime import datetime
+from tinydb import Query, operations
 from flask import render_template, flash, redirect, request
-from main.models import DataObj
-from main.forms import *
 import markdown
 import requests
-import json
+from main import app, db
+from main.models import DataObj
+from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
 from main import data
-from tinydb import Query, operations
-from datetime import datetime
-from main.search import *
+from main.search import remove_from_index
+
 
 @app.route('/')
 @app.route('/index')
@@ -20,6 +20,7 @@ def index():
 @app.route('/bookmarks/new', methods=['GET', 'POST'])
 def new_bookmark():
     form = NewBookmarkForm()
+    form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         bookmark = DataObj(
             url=form.url.data,
@@ -56,6 +57,8 @@ def new_note():
         '/notes/new.html',
         title='New Note',
         form=form)
+
+
 @app.route('/dataobj/<id>')
 def show_dataobj(id):
     try:
@@ -72,34 +75,36 @@ def show_dataobj(id):
         content=content,
         form=DeleteDataForm())
 
+
 @app.route("/folders/new", methods=["POST"])
 def create_folder():
-    dir = request.json.get("name")
-    data.create_dir(dir)
+    directory = request.json.get("name")
+    data.create_dir(directory)
     return "Successfully Created", 200
+
 
 @app.route("/folders/delete", methods=["DELETE"])
 def delete_folder():
-    dir = request.json.get("name")
-    if dir == "":
+    directory = request.json.get("name")
+    if directory == "":
         return "Cannot delete root dir", 401
-    elif data.delete_dir(dir):
+    if data.delete_dir(dir):
         return "Successfully deleted", 200
-    else:
-        return "Not found", 404
-    
+    return "Not found", 404
+
+
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():
     form = PocketForm()
-    Pocket = Query()
+    pocket = Query()
     if form.validate_on_submit():
-        if not len(db.search(Pocket.type == "pocket_key")):
+        if db.search(pocket.type == "pocket_key"):
             redirect("/parse_pocket")
         request_data = {
             'consumer_key': form.api_key.data,
             'redirect_uri': 'http://localhost:5000/parse_pocket?new=1',
         }
-        r = requests.post(
+        resp = requests.post(
             "https://getpocket.com/v3/oauth/request",
             json=request_data,
             headers={
@@ -108,11 +113,11 @@ def pocket_settings():
         new_data = {
             'type': 'pocket_key',
             'consumer_key': form.api_key.data,
-            'code': r.json()['code']}
-        if len(db.search(Pocket.type == "pocket_key")) == 0:
+            'code': resp.json()['code']}
+        if db.search(pocket.type == "pocket_key"):
             db.insert(new_data)
         else:
-            db.update(new_data, Pocket.type == "pocket_key")
+            db.update(new_data, pocket.type == "pocket_key")
         flash("Settings Saved")
         return redirect(
             f"https://getpocket.com/auth/authorize?request_token={r.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
@@ -130,7 +135,7 @@ def parse_pocket():
         auth_data = {
             'consumer_key': pocket['consumer_key'],
             'code': pocket['code']}
-        r = requests.post(
+        resp = requests.post(
             "https://getpocket.com/v3/oauth/authorize",
             json=auth_data,
             headers={
@@ -139,10 +144,9 @@ def parse_pocket():
         db.update(
             operations.set(
                 'access_token',
-                r.json()['access_token']),
+                resp.json()['access_token']),
             Query().type == "pocket_key")
-        access_token = r.json()['access_token']
-        flash(f"{r.json()['username']} Signed in!")
+        flash(f"{resp.json()['username']} Signed in!")
     pocket_data = {
         'consumer_key': pocket['consumer_key'],
         'access_token': pocket['access_token'],
@@ -150,20 +154,23 @@ def parse_pocket():
 
     since = datetime(1970, 1, 1)
     for post in data.get_items(types=['pocket_bookmark'], structured=False):
-        date = datetime.strptime(post['date'].replace("-", "/"), "%x") 
+        date = datetime.strptime(post['date'].replace("-", "/"), "%x")
         since = max(date, since)
 
     since = datetime.timestamp(since)
-    if since: pocket_data['since'] = since
-    bookmarks = requests.post("https://getpocket.com/v3/get", json=pocket_data).json()
-   
+    if since:
+        pocket_data['since'] = since
+    bookmarks = requests.post(
+        "https://getpocket.com/v3/get",
+        json=pocket_data).json()
+
     # api spec: https://getpocket.com/developer/docs/v3/retrieve
-    for k, v in bookmarks["list"].items():
-        if int(v['status']) != 2:
-            desc = v['excerpt'] if int(v['is_article']) else None
+    for pocket_bookmark in bookmarks["list"].values():
+        if int(pocket_boomark['status']) != 2:
+            desc = pocket_bookmark['excerpt'] if int(pocket_bookmark['is_article']) else None
             bookmark = DataObj(
                 desc=desc,
-                url=v['resolved_url'],
+                url=pocket_bookmark['resolved_url'],
                 date=datetime.now(),
                 tags="",
                 type="pocket_bookmarks")

@@ -1,5 +1,4 @@
-from main import ELASTIC_SEARCH, app
-
+from main import ELASTIC_SEARCH
 
 def add_to_index(index, model):
     if not ELASTIC_SEARCH:

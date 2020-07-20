@@ -1,14 +1,13 @@
+from urllib.parse import urljoin
 import validators
 import requests
 import html2text
 from bs4 import BeautifulSoup
-import re
 import datetime
-from main.search import *
-from urllib.parse import urljoin
+import frontmatter
+from main.search import add_to_index
 from main import app
 from main.data import create
-import frontmatter
 
 
 class DataObj:
@@ -20,8 +19,8 @@ class DataObj:
             parsed_html = BeautifulSoup(url_request)
             self.content = self.extract_content(parsed_html)
             self.title = parsed_html.title.string
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print(error)
             self.wipe()
 
     def wipe(self):
@@ -33,9 +32,9 @@ class DataObj:
         stripped_tags = ['footer', 'nav']
         url = self.url.rstrip("/")
 
-        for x in stripped_tags:
-            if getattr(beautsoup, x):
-                getattr(beautsoup, x).extract()
+        for tag in stripped_tags:
+            if getattr(beautsoup, tag):
+                getattr(beautsoup, tag).extract()
         resources = beautsoup.find_all(['a', 'img'])
         for external in resources:
             if external.name == 'a' and external['href'].startswith('/'):
@@ -49,8 +48,8 @@ class DataObj:
 
         # data has already been processed
         if kwargs["type"] == "processed-dataobj":
-            for k, v in kwargs.items():
-                setattr(self, k, v)
+            for key, value in kwargs.items():
+                setattr(self, key, value)
         else:
             # still needs processing
             self.path = kwargs["path"] if "path" in kwargs and kwargs["path"] != "not classified" else ""
@@ -70,10 +69,17 @@ class DataObj:
                 self.title = kwargs["title"]
 
     def validate(self):
-        validURL = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (isinstance(self.url, str) and validators.url(self.url))
-        validTitle = isinstance(self.title, str)
-        validContent = (self.type != "bookmark" and self.type != "pocket_bookmarks") or isinstance(self.content, str)
-        return validURL and validTitle and validContent
+        valid_url = (
+            self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
+                isinstance(
+                    self.url,
+                    str) and validators.url(
+                    self.url))
+        valid_title = isinstance(self.title, str)
+        valid_content = (
+            self.type != "bookmark" and self.type != "pocket_bookmarks") or isinstance(
+            self.content, str)
+        return valid_url and valid_title and valid_content
 
     def insert(self):
         if self.validate():
@@ -89,8 +95,8 @@ class DataObj:
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
-            create(frontmatter.dumps(dataobj), str(self.id) +
-                   "-" + dataobj['date'] + "-" + dataobj['title'], path=self.path)
+            create(frontmatter.dumps(dataobj), str(self.id) + "-" +
+                   dataobj['date'] + "-" + dataobj['title'], path=self.path)
             add_to_index("dataobj", self)
             return self.id
         return False
@@ -100,8 +106,8 @@ class DataObj:
         data = frontmatter.load(filename)
         dataobj = {}
         dataobj["content"] = data.content
-        for x in ['tags', 'desc', 'id', 'title', 'path']:
-            dataobj[x] = data[x]
+        for pair in ['tags', 'desc', 'id', 'title', 'path']:
+            dataobj[pair] = data[pair]
 
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
