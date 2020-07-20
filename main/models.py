@@ -81,7 +81,7 @@ class DataObj:
             data = {
                 "type": self.type, 'desc': self.desc, 'title': str(
                     self.title), 'date': self.date.strftime("%x").replace(
-                    "/", "-"), 'tags': self.tags, 'id': self.id}
+                        "/", "-"), 'tags': self.tags, 'id': self.id, 'path': self.path}
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
             app.config['MAX_ID'] += 1
@@ -100,7 +100,7 @@ class DataObj:
         data = frontmatter.load(filename)
         dataobj = {}
         dataobj["content"] = data.content
-        for x in ['tags', 'desc', 'id', 'title']:
+        for x in ['tags', 'desc', 'id', 'title', 'path']:
             dataobj[x] = data[x]
 
         dataobj["type"] = "processed-dataobj"

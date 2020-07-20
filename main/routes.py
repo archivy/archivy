@@ -66,7 +66,7 @@ def show_dataobj(id):
 
     content = markdown.markdown(dataobj.content)
     return render_template(
-        "bookmarks/show.html",
+        "dataobjs/show.html",
         title=dataobj["title"],
         dataobj=dataobj,
         content=content,
