@@ -52,7 +52,7 @@ def new_note():
         id = note.insert()
         if id:
             flash("Note Saved!")
-            redirect("/")
+            return redirect(f"/dataobj/{id}")
     return render_template(
         '/notes/new.html',
         title='New Note',
