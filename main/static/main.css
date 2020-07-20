@@ -5,24 +5,21 @@
   .hidden {
     display: none; }
 
-    .fadeout {
+    .fadein {
       transition: opacity 1s;
-      opacity: 0; }
+      opacity: 1;
+      display: flex !important; }
 
-      .fadein {
-        transition: opacity 1s;
-        opacity: 1; }
-
-        .new-folder {
-          display: flex;
-          align-items: center; }
-          .new-folder > * {
-            margin: 0px 10px; }
-            .new-folder input {
-              margin: 0px; }
-              .new-folder button {
-                padding: 5px;
-                margin: 0px 10px; }
+      .new-folder {
+        align-items: center;
+        border: none; }
+        .new-folder > * {
+          margin: 0px 10px; }
+          .new-folder input {
+            margin: 0px; }
+            .new-folder input[type="submit"] {
+              padding: 5px;
+              margin: 0px 10px; }
 
 .delete-btn {
   padding: 0;
@@ -31,9 +28,19 @@
   .delete-btn img {
     height: 40px; }
 
-.folder-cont {
-  border-left: 5px solid #ff4301;
-  padding: 0px 10px;
-  margin: 50px 0px; }
-  .folder-cont h2, .folder-cont p {
-    margin: 5px; }
+.expand-btn {
+  background: none;
+  padding: 0;
+  border: none;
+  color: #920de9; }
+
+  .folder-cont {
+    border-left: 5px solid #ff4301;
+    padding: 0px 10px;
+    margin: 50px 0px; }
+    .folder-cont h2, .folder-cont p {
+      margin: 5px; }
+      .folder-cont ul {
+        display: none; }
+        .folder-cont form {
+          display: none; }

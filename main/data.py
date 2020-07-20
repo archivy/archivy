@@ -55,7 +55,9 @@ def create(contents, title, path=''):
 
 def get_item(id):
     file = glob.glob(f"{dirname}**/{id}-*.md", recursive=True)[0]
-    return frontmatter.load(file)
+    data = frontmatter.load(file)
+    data['fullpath'] = os.getcwd() + "/" + file
+    return data
 
 
 def delete_item(id):

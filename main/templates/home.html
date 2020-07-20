@@ -17,22 +17,13 @@
 	{% if depth %}
 		{% do path.append(dir.name) %}
 	{% endif %}
-	<div style="margin-left: {{depth * 30}}px" id="cont-{{i.value}}" class="folder-cont">
+	<div style="margin-left: 30px" id="cont-{{i.value}}" class="folder-cont">
 		<h2>
 			{{ dir.name }} 
 		</h2>
-		{% if i.value != 1 %}
-			<button id="delete-btn-{{i.value}}" class="delete-btn">
-				<img src="/static/delete.png" alt="delete icon">
-			</button>
-		{% endif %}
-		<p>Create a new folder</p>
-		<div class="new-folder">
-			<span id="form-path-{{i.value}}">{{ "/".join(path) }}/</span>
-			<input type="text" id="form-input-{{i.value}}" class="folder-inputs">
-			<button class="folder-btns" id="form-btn-{{i.value}}">Submit</button>
-		</div>
-		<ul>
+		<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{"/".join(path)}}'); this.classList.add('hidden')">Expand</button>
+
+		<ul id="items-{{i.value}}">
 			{% for dataobj in dir.child_files %}
 				<li>
 					<a href="/dataobj/{{ dataobj["id"] }}">
@@ -106,7 +97,36 @@
 			}
 		}
 	});
-	
+	function createInteractive(prevElem, id, path) 
+	{
+		// insert delete
+		// make sure root dir is not deleted in ui
+		if (id != 1) {
+			prevElem.insertAdjacentHTML("afterend",
+				`
+					<button id="delete-btn-${id}" class="delete-btn" onclick="deleteFolder('${path}', ${id})">
+						<img src="/static/delete.png" alt="delete icon">
+					</button>
+				`
+			)
+		}
+		// insert new folder section
+		prevElem.insertAdjacentHTML("afterend",
+			`
+				<p>Create a new folder</p>
+				<form id="form-${id}" class="new-folder fadein">
+					<span id="form-path-${id}">${path}</span>
+					<input type="text" id="form-input-${id}" class="folder-inputs">
+					<input type="submit">
+				</form>
+			`
+		)
+		document.getElementById("form-" + id).addEventListener("submit", function(e) {
+			e.preventDefault();
+			createFolder(id);
+		})
+		document.getElementById("items-" + id).style.display = "block";
+	}
 	function createFolder(id)
 	{
 		let input = document.getElementById(`form-input-${id}`);
@@ -118,7 +138,30 @@
 			}),
 			headers: {"content-type": "application/json"}
 		})
+		let currentFolderDiv = document.getElementById("cont-" + id);
+		currentFolderDiv.insertAdjacentHTML("beforeend", 
+			`
+				<div style="margin-left: 30px" id="cont-${id + 1}" class="folder-cont">
+					<h2>
+						${input.value}		
+					</h2>
+					<button class="expand-btn" onclick="createInteractive(this, ${id + 1}, '${totalPath}'); this.classList.add('hidden')">Expand</button>
+			`
+		)
 		input.value = "";
+		document.getElementById("cont-" + (id + 1)).scrollIntoView();
+	}
+
+	function deleteFolder(path, id)
+	{	
+		fetch(`${urlRoot}/folders/delete`, {
+			method: "DELETE",
+			body: JSON.stringify({
+				"name": path
+			}),
+			headers: {"content-type": "application/json"}
+		})
+		document.getElementById(`cont-${id}`).classList.add("hidden");
 	}
 	// new folders with ajax
 	const urlRoot = {{ request.script_root|tojson|safe }};
@@ -128,22 +171,13 @@
 			btn.addEventListener("click", function(e) {
 				let btnId = btn.id.split("-")[2];
 				createFolder(btnId);
-				
 			})
 		})
 		let deleteBtns = document.querySelectorAll(".delete-btn");
 		deleteBtns.forEach(function(btn) {
 			btn.addEventListener("click", function(e) {
 				let id = btn.id.split("-")[2];
-				let path = document.getElementById(`form-path-${id}`).textContent;
-				fetch(`${urlRoot}/folders/delete`, {
-					method: "DELETE",
-					body: JSON.stringify({
-						"name": path
-					}),
-					headers: {"content-type": "application/json"}
-				})
-				document.getElementById(`cont-${id}`).classList.add("fadeout");
+				deleteFolder(id);
 			})
 		})
 	}
