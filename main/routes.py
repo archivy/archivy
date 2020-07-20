@@ -1,13 +1,13 @@
 from datetime import datetime
 from tinydb import Query, operations
-from flask import render_template, flash, redirect, request
+from flask import render_template, flash, redirect, request, jsonify
 import markdown
 import requests
 from main import app, db
 from main.models import DataObj
 from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
 from main import data
-from main.search import remove_from_index
+from main.search import remove_from_index, query_index 
 
 
 @app.route('/')
@@ -92,6 +92,12 @@ def delete_folder():
         return "Successfully deleted", 200
     return "Not found", 404
 
+@app.route("/search", methods=["GET"])
+def search_elastic():
+    query = request.args.get("query")
+    search_results = query_index("dataobj", query)
+    print(search_results)
+    return jsonify(search_results)
 
 @app.route('/pocket', methods=['POST', 'GET'])
 def pocket_settings():
