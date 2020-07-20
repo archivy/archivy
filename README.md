@@ -54,3 +54,4 @@ http.cors.allow-origin: "http://localhost:5000"
 - Testing
 - Add submodules for digital identity so archivy sinks to your hn upvoted posts, reddit saved, etc...
 - Option to compile data to a static site that can be deployed.
+- Configure elasticsearch for better relevance
