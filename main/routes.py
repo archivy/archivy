@@ -9,7 +9,6 @@ from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
 from main import data
 from main.search import remove_from_index, query_index 
 
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -96,7 +95,6 @@ def delete_folder():
 def search_elastic():
     query = request.args.get("query")
     search_results = query_index("dataobj", query)
-    print(search_results)
     return jsonify(search_results)
 
 @app.route('/pocket', methods=['POST', 'GET'])
