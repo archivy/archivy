@@ -37,9 +37,9 @@ class DataObj:
                 getattr(beautsoup, tag).extract()
         resources = beautsoup.find_all(['a', 'img'])
         for external in resources:
-            if external.name == 'a' and external['href'].startswith('/'):
+            if external.name == 'a' and 'href' in external and external['href'].startswith('/'):
                 external['href'] = urljoin(url, external['href'])
-            elif external.name == 'img' and external['src'].startswith('/'):
+            elif external.name == 'img' and 'src' in external and external['src'].startswith('/'):
                 external['src'] = urljoin(url, external['src'])
 
         return html2text.html2text(str(beautsoup))
