@@ -87,7 +87,7 @@ def delete_folder():
     directory = request.json.get("name")
     if directory == "":
         return "Cannot delete root dir", 401
-    if data.delete_dir(dir):
+    if data.delete_dir(directory):
         return "Successfully deleted", 200
     return "Not found", 404
 
