@@ -1,8 +1,11 @@
+import subprocess
 from datetime import datetime
-from tinydb import Query, operations
-from flask import render_template, flash, redirect, request, jsonify
+
 import markdown
 import requests
+from tinydb import Query, operations
+from flask import render_template, flash, redirect, request, jsonify
+
 from main import app, db
 from main.models import DataObj
 from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
