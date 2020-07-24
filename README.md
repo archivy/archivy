@@ -15,6 +15,8 @@ Upcoming:
 
 - Integrations with HN, Reddit, and many more.
 - Setup testing.
+- Add submodules for digital identity so archivy syncs to your hn upvoted posts, reddit saved, etc...
+- Option to compile data to a static site that can be deployed.
 
 ## Setup
 
@@ -47,11 +49,3 @@ Append these two lines to your [elasticsearch.yml config file](https://www.elast
 http.cors.enabled: true
 http.cors.allow-origin: "http://localhost:5000"
 ```
-
-
-## Todo
-
-- Testing
-- Add submodules for digital identity so archivy sinks to your hn upvoted posts, reddit saved, etc...
-- Option to compile data to a static site that can be deployed.
-- Configure elasticsearch for better relevance
