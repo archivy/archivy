@@ -6,8 +6,9 @@ import glob
 import frontmatter
 
 DIRNAME = "data/"
-class Directory:
 
+# struct to create tree like file-structure
+class Directory:
     def __init__(self, name):
         self.name = name
         self.child_files = []
@@ -34,11 +35,15 @@ def get_items(collections=[], path="", structured=True):
             paths = filename.split("/")
             data = frontmatter.load(
                 filename) if filename.endswith(".md") else None
+
             current_dir = datacont
+
+            # iterate through paths
             for segment in paths[1:]:
                 if segment.endswith(".md"):
                     current_dir.child_files.append(data)
                 else:
+                    # directory has not been saved in tree yet
                     if segment not in current_dir.child_dirs:
                         current_dir.child_dirs[segment] = Directory(segment)
                     current_dir = current_dir.child_dirs[segment]

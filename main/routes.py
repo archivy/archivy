@@ -18,7 +18,7 @@ def index():
     dataobjs = data.get_items()
     return render_template('home.html', title='Home', dataobjs=dataobjs)
 
-
+# TODO: refactor two following methods  
 @app.route('/bookmarks/new', methods=['GET', 'POST'])
 def new_bookmark():
     form = NewBookmarkForm()
@@ -163,11 +163,13 @@ def parse_pocket():
                 resp.json()['access_token']),
             Query().type == "pocket_key")
         flash(f"{resp.json()['username']} Signed in!")
+
     pocket_data = {
         'consumer_key': pocket['consumer_key'],
         'access_token': pocket['access_token'],
         'sort': "newest"}
 
+    # get date of latest call to pocket api
     since = datetime(1970, 1, 1)
     for post in data.get_items(types=['pocket_bookmark'], structured=False):
         date = datetime.strptime(post['date'].replace("-", "/"), "%x")

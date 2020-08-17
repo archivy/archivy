@@ -1,6 +1,4 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
-
 
 class Config(object):
     ELASTICSEARCH_ENABLED = int(os.environ.get('ELASTICSEARCH_ENABLED') or 0)
