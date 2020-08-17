@@ -14,7 +14,6 @@ Features:
 Upcoming:
 
 - Integrations with HN, Reddit, and many more.
-- Setup testing.
 - Add submodules for digital identity so archivy syncs to your hn upvoted posts, reddit saved, etc...
 - Option to compile data to a static site that can be deployed.
 
@@ -23,6 +22,7 @@ Upcoming:
 - Make sure your system has Python installed.
 - Clone the repository.
 - `cd` into the project directory.
+- create a virtual env by running `python3 -m venv venv/`.
 - run `pip install -r requirements.txt` or `pip3`.
 - create a `.flaskenv` file and add `FLASK_APP=archivy.py` to it
 - execute the `start.sh` script

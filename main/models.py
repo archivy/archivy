@@ -82,14 +82,14 @@ class DataObj:
 
     def insert(self):
         if self.validate():
-            self.id = app.config['MAX_ID']
+            self.id = app.config['max_id']
             data = {
                 "type": self.type, 'desc': self.desc, 'title': str(
                     self.title), 'date': self.date.strftime("%x").replace(
                         "/", "-"), 'tags': self.tags, 'id': self.id, 'path': self.path}
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
-            app.config['MAX_ID'] += 1
+            app.config['max_id'] += 1
 
             # convert to markdown
             dataobj = frontmatter.Post(self.content)

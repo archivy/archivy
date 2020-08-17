@@ -1,5 +1,6 @@
 export $(cat .flaskenv | xargs)
-if [ "$ELASTICSEARCH_ENABLED" -eq "1" ]
+source venv/bin/activate
+if [[ -z "${DEPLOY_ENV}" && "$ELASTICSEARCH_ENABLED" -eq 1 ]]
 then
 	(systemctl is-active --quiet elasticsearch && echo "elasticsearch is running") || (echo "Enter password to enable elasticsearch" && sudo service elasticsearch restart)
 	(pkill -f check_changes.py)
