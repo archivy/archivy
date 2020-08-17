@@ -11,7 +11,7 @@ Features:
 - Extensible search with Elasticsearch and its Query DSL
 
 
-![demo (low res)](https://github.com/Uzay-G/prismalytics/blob/master/archivy.gif)
+![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
 Upcoming:
 
 - Integrations with HN, Reddit, and many more.
