@@ -19,7 +19,7 @@ if app.config['ELASTICSEARCH_ENABLED']:
         elastic_conf = json.load(search_data)
         # create index if not already existing
         try:
-            ELASTIC_SEARCH.indices.create(index=app.config[["INDEX_NAME"], body=elastic_conf))
+            ELASTIC_SEARCH.indices.create(index=app.config["INDEX_NAME"], body=elastic_conf))
         except:
             print("Elasticsearch index already created")
 
