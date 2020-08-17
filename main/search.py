@@ -19,5 +19,6 @@ def query_index(index, query):
         return []
     search = ELASTIC_SEARCH.search(
         index=index,
-        body={'query': {'multi_match': {'query': query, 'fields': ['*']}}})
+        body={'query': {'multi_match': {'query': query, 'fields': ['*'], "analyzer": "rebuilt_standard"}}},
+        )
     return search['hits']['hits']
