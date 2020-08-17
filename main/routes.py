@@ -69,7 +69,7 @@ def show_dataobj(id):
         flash("Data not found")
         return redirect("/")
 
-    content = markdown.markdown(dataobj.content)
+    content = markdown.markdown(dataobj.content, extensions=["fenced_code"])
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -77,6 +77,15 @@ def show_dataobj(id):
         content=content,
         form=DeleteDataForm())
 
+@app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
+def delete_data(id):
+    try:
+        data.delete_item(id)
+    except BaseException:
+        flash("Data could not be found!")
+        return redirect("/")
+    flash("Data deleted!")
+    return redirect("/")
 
 @app.route("/folders/new", methods=["POST"])
 def create_folder():
@@ -186,13 +195,3 @@ def parse_pocket():
     return redirect("/")
 
 
-@app.route("/dataobj/delete/<id>", methods=['DELETE', 'GET'])
-def delete_data(id):
-    try:
-        data.delete_item(id)
-    except BaseException:
-        flash("Data could not be found!")
-        return redirect("/")
-    remove_from_index("dataobj", int(id))
-    flash("Data deleted!")
-    return redirect("/")

@@ -6,8 +6,7 @@ def add_to_index(index, model):
     payload = {}
     for field in model.__searchable__:
         payload[field] = getattr(model, field)
-    print(payload)
-    print(ELASTIC_SEARCH.index(index=index, id=model.id, body=payload))
+    ELASTIC_SEARCH.index(index=index, id=model.id, body=payload)
 
 
 def remove_from_index(index, id):

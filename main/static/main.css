@@ -12,6 +12,7 @@
 
       .new-folder {
         align-items: center;
+        flex-wrap: wrap;
         border: none; }
         .new-folder > * {
           margin: 0px 10px; }
@@ -42,7 +43,10 @@
       margin: 5px; }
       .folder-cont ul {
         display: none; }
-        .folder-cont ul li {
-          height: 30px; }
-    .folder-cont form {
-      display: none; }
+        .folder-cont form {
+          display: none; }
+
+@media only screen and (max-width: 500px) {
+  .content {
+    width: 90%;   }
+}

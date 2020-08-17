@@ -17,7 +17,7 @@
 	{% if depth %}
 		{% do path.append(dir.name) %}
 	{% endif %}
-	<div style="margin-left: 30px" id="cont-{{i.value}}" class="folder-cont">
+	<div style="margin-left: 15px" id="cont-{{i.value}}" class="folder-cont">
 		<h2>
 			{{ dir.name }} 
 		</h2>
@@ -27,9 +27,8 @@
 			{% for dataobj in dir.child_files %}
 				<li>
 					<a href="/dataobj/{{ dataobj["id"] }}">
-						<h3>{{ dataobj["title"] }}</h3>
+						{{ dataobj["title"] }}
 					</a>
-					<p>{{ dataobj["desc"] }}</p>
 				</li>
 			{% endfor %}
 		</ul>
@@ -54,17 +53,20 @@
 		let hitsDiv = document.getElementById("searchHits");
 		let hitLi = document.createElement("li");
 		let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-		let paragraphs = md.render(hit['_source']['content']).match(/(<p.*>.*<\/p>)/mg)	
-		if (paragraphs)
+		// match certain semantic elements
+		// refactor to instead ignore <img>
+		let paragraphs = md.render(hit['_source']['content']).replace(/(\r\n\t|\n|\r\t)/gm,"").match(/(<(p|li|blockquote|strong|b).*>.*<\/(p|li|blockquote|strong|b)>)/mg);
+		console.log(md.render(hit["_source"]["content"]).replace(/(\r\n\t|\n|\r\t)/gm,""));
+		console.log(paragraphs);
+		console.log("<p>=Convert to desktop app with flask backend\n</p>".match(/<p.*>.*<\/p>/mg))
+		for(let i = 0; i < paragraphs.length; i++)
 		{
-			for(let i = 0; i < paragraphs.length && hitText.length < 150; i++)
-			{
-				if (paragraphs[i].toUpperCase().includes(query.toUpperCase()) && paragraphs[i].includes("<p")) {
-					hitText += `${paragraphs[i]}`;
-				}
+			if (paragraphs[i].toUpperCase().includes(query.toUpperCase())) {
+				hitText += `${paragraphs[i]}`;
 			}
 		}
-		p.innerHTML = hitText, a.textContent = hit['_source']['title'], a.href = `/dataobj/${hit['_source']['id']}`;
+		hitText = hitText.replace(query, "<span style='background-color: #f6efa6'>" + query + "</span>");
+		p.innerHTML = hitText, a.textContent = hit['_source']['title'], a.href = `/dataobj/${hit['_id']}`;
 		hitLi.append(a);
 		hitLi.append(p);
 		if (hidden)
@@ -82,6 +84,7 @@
 			});
 			if (searchQuery.ok) {	
 				let data = await searchQuery.json(), i = 0;
+				console.log(data);
 				document.getElementById("searchHits").innerHTML = "";
 				data.forEach(function(hit)
 				{
@@ -126,7 +129,7 @@
 	{
 		let input = document.getElementById(`form-input-${id}`);
 		let totalPath = document.getElementById(`form-path-${id}`).textContent + "/" + input.value;
-		fetch(`${urlRoot}/folders/new`, {
+		fetch(`${SCRIPT_ROOT}/folders/new`, {
 			method: "POST",
 			body: JSON.stringify({
 				"name": totalPath
@@ -149,7 +152,7 @@
 
 	function deleteFolder(path, id)
 	{	
-		fetch(`${urlRoot}/folders/delete`, {
+		fetch(`${SCRIPT_ROOT}/folders/delete`, {
 			method: "DELETE",
 			body: JSON.stringify({
 				"name": path
@@ -159,7 +162,6 @@
 		document.getElementById(`cont-${id}`).classList.add("hidden");
 	}
 	// new folders with ajax
-	const urlRoot = {{ request.script_root|tojson|safe }};
 	window.onload = function() {
 		let newFolderBtns = document.querySelectorAll(".folder-btns")
 		newFolderBtns.forEach(function(btn) {
