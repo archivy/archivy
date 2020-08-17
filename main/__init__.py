@@ -12,14 +12,14 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-INDEX_NAME = "dataobj"
+
 if app.config["ELASTICSEARCH_ENABLED"]:
     ELASTIC_SEARCH = Elasticsearch([app.config["ELASTICSEARCH_URL"]])
     with open("elasticsearch.json", "r") as search_data:
         elastic_conf = json.load(search_data)
         # create index if not already existing
         try:
-            ELASTIC_SEARCH.indices.create(index=app.config["INDEX_NAME"], body=elastic_conf)
+            print(ELASTIC_SEARCH.indices.create(index=app.config["INDEX_NAME"], body=elastic_conf))
         except:
             print("Elasticsearch index already created")
 
