@@ -77,3 +77,4 @@ env.bak/
 venv.bak/
 db.json
 data/
+.vim/
