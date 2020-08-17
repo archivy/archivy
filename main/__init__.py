@@ -26,7 +26,7 @@ if app.config['ELASTICSEARCH_ENABLED']:
 DIRNAME = "data/"
 Path(DIRNAME).mkdir(parents=True, exist_ok=True)
 db = TinyDB("db.json")
-app.config['MAX_ID'] = 0
+app.config['max_id'] = 0
 app.jinja_options['extensions'].append('jinja2.ext.do')
 Scss(app)
 
@@ -35,6 +35,6 @@ from main import data
 from main import routes, models
 
 for dataobj in data.get_items(structured=False):
-    app.config['MAX_ID'] = max(app.config['MAX_ID'], dataobj['id'])
-app.config['MAX_ID'] += 1
+    app.config['max_id'] = max(app.config['max_id'], dataobj['id'])
+app.config['max_id'] += 1
 

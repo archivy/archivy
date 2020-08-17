@@ -56,9 +56,6 @@
 		// match certain semantic elements
 		// refactor to instead ignore <img>
 		let paragraphs = md.render(hit['_source']['content']).replace(/(\r\n\t|\n|\r\t)/gm,"").match(/(<(p|li|blockquote|strong|b).*>.*<\/(p|li|blockquote|strong|b)>)/mg);
-		console.log(md.render(hit["_source"]["content"]).replace(/(\r\n\t|\n|\r\t)/gm,""));
-		console.log(paragraphs);
-		console.log("<p>=Convert to desktop app with flask backend\n</p>".match(/<p.*>.*<\/p>/mg))
 		for(let i = 0; i < paragraphs.length; i++)
 		{
 			if (paragraphs[i].toUpperCase().includes(query.toUpperCase())) {
