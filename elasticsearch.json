@@ -7,7 +7,7 @@
           "tokenizer": "standard",
           "filter": [
             "lowercase",       
-            "porter_stem",
+            "kstem",
 			"trim",
 			"unique"
           ]
