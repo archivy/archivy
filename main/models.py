@@ -20,7 +20,6 @@ class DataObj:
             self.content = self.extract_content(parsed_html)
             self.title = parsed_html.title.string
         except Exception as error:
-            print(error)
             self.wipe()
 
     def wipe(self):
@@ -97,7 +96,7 @@ class DataObj:
             dataobj.metadata = data
             create(frontmatter.dumps(dataobj), str(self.id) + "-" +
                    dataobj['date'] + "-" + dataobj['title'], path=self.path)
-            add_to_index("dataobj", self)
+            print(add_to_index("dataobj", self))
             return self.id
         return False
 
