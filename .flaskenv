@@ -1,3 +1,4 @@
+
 FLASK_APP=archivy.py
 ELASTICSEARCH_ENABLED=0
 ELASTICSEARCH_URL=http://localhost:9200
