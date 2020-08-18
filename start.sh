@@ -1,4 +1,10 @@
-export $(cat .flaskenv | xargs)
+#!/bin/env bash
+if test -f .flaskenv; then
+  export $(cat .flaskenv | xargs)
+else
+  echo 'Requires .flaskenv file'
+  exit;
+fi
 source venv/bin/activate
 if [[ -z "${DEPLOY_ENV}" && "$ELASTICSEARCH_ENABLED" -eq 1 ]]
 then
