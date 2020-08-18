@@ -12,4 +12,4 @@ then
 	(pkill -f check_changes.py)
 	(python3 check_changes.py &)
 fi
-FLASK_DEBUG=1 flask run
+FLASK_DEBUG=1 flask run --host=0.0.0.0
