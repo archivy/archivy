@@ -1,8 +1,9 @@
 import os
 import re
+import glob
 from pathlib import Path
 from shutil import rmtree
-import glob
+
 import frontmatter
 
 DIRNAME = "data/"
@@ -15,8 +16,6 @@ class Directory:
         self.child_dirs = {}
 
 # method from django to sanitize filename
-
-
 def valid_filename(name):
     name = str(name).strip().replace(" ", "_")
     return re.sub(r"(?u)[^-\w.]", "", name)
@@ -62,8 +61,8 @@ def create(contents, title, path=""):
         file.write(contents)
 
 
-def get_item(id):
-    file = glob.glob(f"{DIRNAME}**/{id}-*.md", recursive=True)[0]
+def get_item(dataobj_id):
+    file = glob.glob(f"{DIRNAME}**/{dataobj_id}-*.md", recursive=True)[0]
     data = frontmatter.load(file)
     data["fullpath"] = os.getcwd() + "/" + file
     return data

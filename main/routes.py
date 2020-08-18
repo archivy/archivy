@@ -1,4 +1,3 @@
-import subprocess
 from datetime import datetime
 
 import markdown
@@ -6,11 +5,10 @@ import requests
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
 
-from main import app, db
 from main.models import DataObj
 from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
-from main import data
-from main.search import remove_from_index, query_index 
+from main.search import query_index
+from main import data, db, app
 
 @app.route("/")
 @app.route("/index")
@@ -18,7 +16,7 @@ def index():
     dataobjs = data.get_items()
     return render_template("home.html", title="Home", dataobjs=dataobjs)
 
-# TODO: refactor two following methods  
+# TODO: refactor two following methods
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
     form = NewBookmarkForm()
@@ -30,10 +28,10 @@ def new_bookmark():
             tags=form.tags.data,
             path=form.path.data,
             type="bookmarks")
-        id = bookmark.insert()
-        if id:
+        bookmark_id = bookmark.insert()
+        if bookmark_id:
             flash("Bookmark Saved!")
-            return redirect(f"/dataobj/{id}")
+            return redirect(f"/dataobj/{bookmark_id}")
     return render_template(
         "bookmarks/new.html",
         title="New Bookmark",
@@ -51,20 +49,20 @@ def new_note():
             tags=form.tags.data,
             path=form.path.data,
             type="note")
-        id = note.insert()
-        if id:
+        note_id = note.insert()
+        if note_id:
             flash("Note Saved!")
-            return redirect(f"/dataobj/{id}")
+            return redirect(f"/dataobj/{note_id}")
     return render_template(
         "/notes/new.html",
         title="New Note",
         form=form)
 
 
-@app.route("/dataobj/<id>")
-def show_dataobj(id):
+@app.route("/dataobj/<dataobj_id>")
+def show_dataobj(dataobj_id):
     try:
-        dataobj = data.get_item(id)
+        dataobj = data.get_item(dataobj_id)
     except BaseException:
         flash("Data not found")
         return redirect("/")
@@ -77,10 +75,10 @@ def show_dataobj(id):
         content=content,
         form=DeleteDataForm())
 
-@app.route("/dataobj/delete/<id>", methods=["DELETE", "GET"])
-def delete_data(id):
+@app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
+def delete_data(dataobj_id):
     try:
-        data.delete_item(id)
+        data.delete_item(dataobj_id)
     except BaseException:
         flash("Data could not be found!")
         return redirect("/")
@@ -136,7 +134,7 @@ def pocket_settings():
             db.update(new_data, pocket.type == "pocket_key")
         flash("Settings Saved")
         return redirect(
-            f"https://getpocket.com/auth/authorize?request_token={r.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
+            f"https://getpocket.com/auth/authorize?request_token={resp.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
 
     return render_template(
         "pocket/new.html",
@@ -184,7 +182,7 @@ def parse_pocket():
 
     # api spec: https://getpocket.com/developer/docs/v3/retrieve
     for pocket_bookmark in bookmarks["list"].values():
-        if int(pocket_boomark["status"]) != 2:
+        if int(pocket_bookmark["status"]) != 2:
             desc = pocket_bookmark["excerpt"] if int(pocket_bookmark["is_article"]) else None
             bookmark = DataObj(
                 desc=desc,
@@ -195,5 +193,3 @@ def parse_pocket():
 
             print(bookmark.insert())
     return redirect("/")
-
-

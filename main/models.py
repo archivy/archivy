@@ -1,12 +1,14 @@
+import datetime
 from urllib.parse import urljoin
+
 import validators
 import requests
 import html2text
-from bs4 import BeautifulSoup
-import datetime
 import frontmatter
-from main.search import add_to_index
+from bs4 import BeautifulSoup
+
 from main import app
+from main.search import add_to_index
 from main.data import create
 
 
@@ -19,7 +21,7 @@ class DataObj:
             parsed_html = BeautifulSoup(url_request)
             self.content = self.extract_content(parsed_html)
             self.title = parsed_html.title.string
-        except Exception as error:
+        except:
             self.wipe()
 
     def wipe(self):
@@ -56,6 +58,8 @@ class DataObj:
             self.tags = kwargs["tags"].split()
             self.type = kwargs["type"]
             self.content = ""
+            self.id = -1
+
             if "date" in kwargs:
                 self.date = kwargs["date"]
             else:
@@ -68,16 +72,10 @@ class DataObj:
                 self.title = kwargs["title"]
 
     def validate(self):
-        valid_url = (
-            self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
-                isinstance(
-                    self.url,
-                    str) and validators.url(
-                    self.url))
+        valid_url = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
+                isinstance(self.url, str) and validators.url(self.url))
         valid_title = isinstance(self.title, str)
-        valid_content = (
-            self.type != "bookmark" and self.type != "pocket_bookmarks") or isinstance(
-            self.content, str)
+        valid_content = (self.type != "bookmark" and self.type != "pocket_bookmarks") or isinstance(self.content, str)
         return valid_url and valid_title and valid_content
 
     def insert(self):
