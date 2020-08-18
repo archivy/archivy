@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 if test -f .flaskenv; then
   export $(cat .flaskenv | xargs)
 else
