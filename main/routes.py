@@ -169,7 +169,7 @@ def parse_pocket():
 
     # get date of latest call to pocket api
     since = datetime(1970, 1, 1)
-    for post in data.get_items(types=["pocket_bookmark"], structured=False):
+    for post in data.get_items(collections=["pocket_bookmark"], structured=False):
         date = datetime.strptime(post["date"].replace("-", "/"), "%x")
         since = max(date, since)
 
