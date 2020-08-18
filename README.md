@@ -25,7 +25,6 @@ Upcoming:
 - `cd` into the project directory.
 - create a virtual env by running `python3 -m venv venv/`.
 - run `pip install -r requirements.txt` or `pip3`.
-- create a `.flaskenv` file and add `FLASK_APP=archivy.py` to it
 - execute the `start.sh` script
 - see below for setting up search functionality
 
