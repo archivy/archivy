@@ -10,9 +10,11 @@ from tinydb import TinyDB
 
 from config import Config
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
+ELASTIC_SEARCH = None
 if app.config["ELASTICSEARCH_ENABLED"]:
     ELASTIC_SEARCH = Elasticsearch([app.config["ELASTICSEARCH_URL"]])
     with open("elasticsearch.json", "r") as search_data:
@@ -44,4 +46,3 @@ app.config["max_id"] = 0
 for dataobj in data.get_items(structured=False):
     app.config["max_id"] = max(app.config["max_id"], dataobj["id"])
 app.config["max_id"] += 1
-
