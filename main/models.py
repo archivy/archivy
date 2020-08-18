@@ -11,7 +11,7 @@ from main.data import create
 
 
 class DataObj:
-    __searchable__ = ['title', 'content', 'desc', 'tags']
+    __searchable__ = ["title", "content", "desc", "tags"]
 
     def process_bookmark_url(self):
         try:
@@ -28,18 +28,18 @@ class DataObj:
         self.content = None
 
     def extract_content(self, beautsoup):
-        stripped_tags = ['footer', 'nav']
+        stripped_tags = ["footer", "nav"]
         url = self.url.rstrip("/")
 
         for tag in stripped_tags:
             if getattr(beautsoup, tag):
                 getattr(beautsoup, tag).extract()
-        resources = beautsoup.find_all(['a', 'img'])
+        resources = beautsoup.find_all(["a", "img"])
         for external in resources:
-            if external.name == 'a' and 'href' in external and external['href'].startswith('/'):
-                external['href'] = urljoin(url, external['href'])
-            elif external.name == 'img' and 'src' in external and external['src'].startswith('/'):
-                external['src'] = urljoin(url, external['src'])
+            if external.name == "a" and "href" in external and external["href"].startswith("/"):
+                external["href"] = urljoin(url, external["href"])
+            elif external.name == "img" and "src" in external and external["src"].startswith("/"):
+                external["src"] = urljoin(url, external["src"])
 
         return html2text.html2text(str(beautsoup))
 
@@ -57,7 +57,7 @@ class DataObj:
             self.type = kwargs["type"]
             self.content = ""
             if "date" in kwargs:
-                self.date = kwargs['date']
+                self.date = kwargs["date"]
             else:
                 self.date = datetime.datetime.now()
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
@@ -82,20 +82,20 @@ class DataObj:
 
     def insert(self):
         if self.validate():
-            self.id = app.config['max_id']
+            self.id = app.config["max_id"]
             data = {
-                "type": self.type, 'desc': self.desc, 'title': str(
-                    self.title), 'date': self.date.strftime("%x").replace(
-                        "/", "-"), 'tags': self.tags, 'id': self.id, 'path': self.path}
+                "type": self.type, "desc": self.desc, "title": str(
+                    self.title), "date": self.date.strftime("%x").replace(
+                        "/", "-"), "tags": self.tags, "id": self.id, "path": self.path}
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
-            app.config['max_id'] += 1
+            app.config["max_id"] += 1
 
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
             create(frontmatter.dumps(dataobj), str(self.id) + "-" +
-                   dataobj['date'] + "-" + dataobj['title'], path=self.path)
+                   dataobj["date"] + "-" + dataobj["title"], path=self.path)
             print(add_to_index("dataobj", self))
             return self.id
         return False
@@ -105,7 +105,7 @@ class DataObj:
         data = frontmatter.load(filename)
         dataobj = {}
         dataobj["content"] = data.content
-        for pair in ['tags', 'desc', 'id', 'title', 'path']:
+        for pair in ["tags", "desc", "id", "title", "path"]:
             dataobj[pair] = data[pair]
 
         dataobj["type"] = "processed-dataobj"

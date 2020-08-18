@@ -18,8 +18,8 @@ class Directory:
 
 
 def valid_filename(name):
-    name = str(name).strip().replace(' ', '_')
-    return re.sub(r'(?u)[^-\w.]', '', name)
+    name = str(name).strip().replace(" ", "_")
+    return re.sub(r"(?u)[^-\w.]", "", name)
 
 
 def get_items(collections=[], path="", structured=True):
@@ -51,21 +51,21 @@ def get_items(collections=[], path="", structured=True):
         for filename in glob.glob(DIRNAME + path + "**/*.md", recursive=True):
             data = frontmatter.load(filename)
             if collections == [] or any(
-                    [collection == data['collection'] for collection in collections]):
+                    [collection == data["collection"] for collection in collections]):
                 datacont.append(data)
 
     return datacont
 
 
-def create(contents, title, path=''):
-    with open(DIRNAME + path + "/" + valid_filename(title) + ".md", 'w') as file:
+def create(contents, title, path=""):
+    with open(DIRNAME + path + "/" + valid_filename(title) + ".md", "w") as file:
         file.write(contents)
 
 
 def get_item(id):
     file = glob.glob(f"{DIRNAME}**/{id}-*.md", recursive=True)[0]
     data = frontmatter.load(file)
-    data['fullpath'] = os.getcwd() + "/" + file
+    data["fullpath"] = os.getcwd() + "/" + file
     return data
 
 
