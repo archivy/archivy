@@ -17,6 +17,8 @@ Upcoming:
 - Integrations with HN, Reddit, and many more.
 - Add submodules for digital identity so archivy syncs to your hn upvoted posts, reddit saved, etc...
 - Option to compile data to a static site that can be deployed.
+- Dark theme
+- UI for grouping by tag and use NLP to automatically generate connections between posts
 
 ## Setup
 
