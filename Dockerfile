@@ -18,11 +18,10 @@
 #    4. Creates a virtual environment, and installs all required    #
 #       modules/packages as per the requirements.txt file.          #
 #    5. Cleans up by deleting some unnecessary files.               #
-#    6. Sets the working directory to the root of the repository.   #
-#    7. Creates a mount point so that external volumes can be       #
+#    6. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
-#    8. Exposes port 5000 on the container.                         #
-#    9. Runs the startup script as the entrypoint command.          #
+#    7. Exposes port 5000 on the container.                         #
+#    8. Runs the startup script as the entrypoint command.          #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
 #        you wish to access the server. Also, if you want your data #
@@ -58,8 +57,11 @@ RUN apt update && apt install --no-install-recommends -y wget \
     && wget -qc https://github.com/Uzay-G/archivy/tarball/master \
     # Extracting the source code
     && tar -xzf master \
-    && mv Uzay-G-* archivy \
-    && cd archivy \
+    && cd Uzay-G* \
+    && cp -Rp . ../. \
+    && cd ../ \
+    #&& mv Uzay-G-*/* Uzay-G-*/.flaskenv ./. \
+    && rm -rf Uzay-G-* \
     # Creating a virtual environment
     && python3 -m venv venv/ \
     # Installing required packages
@@ -72,11 +74,8 @@ RUN apt update && apt install --no-install-recommends -y wget \
     && rm -rf /var/lib/apt \
     && rm -rf /var/lib/dpkg
 
-# Setting the working directory to root of repository
-WORKDIR ./archivy/
-
 # Creating mount point for persistent data
-VOLUME /usr/src/app/archivy/data
+VOLUME /usr/src/app/data
 
 # Exposing port 5000
 EXPOSE 5000
