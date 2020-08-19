@@ -77,14 +77,21 @@ EXPOSE 5000
 # System call signal that will be sent to the container to exit
 STOPSIGNAL SIGTERM
 
-# Starting the server
-ENTRYPOINT ["./start.sh"]
+# Entrypoint - Run 'entrypoint.sh' script. Any command given to 'docker container run' will be added as an argument
+# to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'start' as an argument in order to set up
+# the Archivy server.
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+
+# The 'start' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
+# Any command given to the 'docker container run' will override the CMD below which
+# will result in the Archivy not being set up. 
+CMD ["start"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Uzay G" \
       org.opencontainers.image.authors="https://github.com/Uzay-G" \
       org.opencontainers.image.title="Archivy" \
-      org.opencontainers.image.licenses="" \
+      org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.url="https://github.com/Uzay-G/archivy/tree/master/" \
       org.label-schema.vcs-url="https://github.com/Uzay-G/archivy/tree/master/" \
       org.opencontainers.image.documentation="https://github.com/Uzay-G/archivy/blob/master/README.md" \
