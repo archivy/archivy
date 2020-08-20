@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+
+  archivy:
+    image: harshavardhanj/archivy
+    ports:
+      target: 5000
+      published: 5000
+      protocol: tcp
+    volumes:
+      - archivyData:/usr/src/app/data
+    environment:
+      - FLASK_DEBUG=0
+      - ELASTICSEARCH_ENABLED=1
+      - ELASTICSEARCH_URL=http://search:9200/
+    networks:
+      - archivy
+    depends_on:
+      - elasticsearch
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attemps: 3
+  
+  elasticsearch:
+    image: elasticsearch:7.9.0
+    ports:
+      target: 9200
+      published: 9200
+      protocol: tcp
+    volumes:
+      - searchData:/usr/share/elasticsearch/data
+    environment:
+      - "discovery.type=single-node"
+    networks:
+      archivy:
+        aliases:
+          - search
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attemps: 3
+
+networks:
+  archivy:
+
+volumes:
+  archivyData:
+  searchData:
