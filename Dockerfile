@@ -72,7 +72,9 @@ RUN apt update && apt install --no-install-recommends -y wget \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/* \
     && rm -rf /var/lib/apt \
-    && rm -rf /var/lib/dpkg
+    && rm -rf /var/lib/dpkg \
+    && rm -f /usr/src/app/archivy.gif \
+    && rm -f /usr/src/app/*.md
 
 # Creating mount point for persistent data
 VOLUME /usr/src/app/data

@@ -1,5 +1,3 @@
-# Docker Compose file for Archivy
-# Use this if you wish to build the image on your own
 version: "3.8"
 services:
   archivy:

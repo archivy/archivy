@@ -1,0 +1,6 @@
+.git
+docker-compose-*
+*.gif
+*.md
+start.sh
+LICENSE
