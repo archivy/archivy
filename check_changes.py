@@ -23,7 +23,7 @@ class ModifHandler(FileSystemEventHandler):
             print(f"{event.src_path} has been removed")
             self.last_delete_event = event.src_path
 
-if __name__ == "__main__":
+def run_watcher():
     event_handler = ModifHandler()
     observer = Observer()
     observer.schedule(event_handler, path="data/", recursive=True)

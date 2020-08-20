@@ -4,7 +4,6 @@ from tinydb import TinyDB, Query, operations
 from elasticsearch import Elasticsearch
 
 ELASTIC_URL = os.environ.get("ELASTICSEARCH_URL")
-ELASTICSEARCH = Elasticsearch([ELASTIC_URL]) if ELASTIC_URL else None
 DB = TinyDB("db.json")
 
 def get_max_id():
@@ -16,3 +15,7 @@ def get_max_id():
 
 def set_max_id(val):
     DB.update(operations.set("val", val), Query().name == "max_id")
+
+
+def elastic_client():
+    return Elasticsearch([ELASTIC_URL]) if os.environ.get("ELASTICSEARCH_ENABLED") else None
