@@ -1,4 +1,6 @@
-from main.extensions import ELASTICSEARCH
+from main.extensions import elastic_client
+
+ELASTICSEARCH = elastic_client()
 
 def add_to_index(index, model):
     if not ELASTICSEARCH:
@@ -7,7 +9,6 @@ def add_to_index(index, model):
     for field in model.__searchable__:
         payload[field] = getattr(model, field)
     ELASTICSEARCH.index(index=index, id=model.id, body=payload)
-
 
 def remove_from_index(index, dataobj_id):
     if not ELASTICSEARCH:
@@ -22,4 +23,5 @@ def query_index(index, query):
         body={
             "query": {"multi_match": {"query": query, "fields": ["*"], "analyzer": "rebuilt_standard"}}},
         )
+
     return search["hits"]["hits"]
