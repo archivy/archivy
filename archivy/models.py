@@ -7,9 +7,9 @@ import html2text
 import frontmatter
 from bs4 import BeautifulSoup
 
-from main import extensions
-from main.search import add_to_index
-from main.data import create
+from archivy import extensions
+from archivy.search import add_to_index
+from archivy.data import create
 
 
 class DataObj:

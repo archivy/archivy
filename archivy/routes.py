@@ -5,11 +5,11 @@ import requests
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
 
-from main.models import DataObj
-from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
-from main.search import query_index
-from main import data, app
-from main.extensions import DB
+from archivy.models import DataObj
+from archivy.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
+from archivy.search import query_index
+from archivy import data, app
+from archivy.extensions import DB
 
 @app.route("/")
 @app.route("/index")

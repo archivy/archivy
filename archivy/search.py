@@ -1,4 +1,4 @@
-from main.extensions import elastic_client
+from archivy.extensions import elastic_client
 
 ELASTICSEARCH = elastic_client()
 

@@ -6,7 +6,9 @@ from shutil import rmtree
 
 import frontmatter
 
-DIRNAME = "data/"
+from config import Config
+
+DIRNAME = Config.APP_PATH + "/data/"
 
 # struct to create tree like file-structure
 class Directory:
@@ -31,14 +33,13 @@ def get_items(collections=[], path="", structured=True):
         datacont = []
     if structured:
         for filename in glob.glob(DIRNAME + path + "**/*", recursive=True):
-            paths = filename.split("/")
-            data = frontmatter.load(
-                filename) if filename.endswith(".md") else None
+            paths = filename.split("/data/")[1].split("/")
+            data = frontmatter.load(filename) if filename.endswith(".md") else None
 
             current_dir = datacont
 
             # iterate through paths
-            for segment in paths[1:]:
+            for segment in paths:
                 if segment.endswith(".md"):
                     current_dir.child_files.append(data)
                 else:
@@ -75,8 +76,7 @@ def delete_item(id):
 
 def get_dirs():
     dirnames = glob.glob(DIRNAME + "**/*", recursive=True)
-    dirnames = ["/".join(name.split("/")[1:])
-                for name in dirnames if not name.endswith(".md")]
+    dirnames = [name.split("/data/")[1] for name in dirnames if not name.endswith(".md")]
     dirnames.append("not classified")
     return dirnames
 

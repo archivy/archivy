@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-from main import search, models
+from archivy import search, models
 import frontmatter
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-
+from config import Config
 
 class ModifHandler(FileSystemEventHandler):
 
@@ -26,7 +26,7 @@ class ModifHandler(FileSystemEventHandler):
 def run_watcher():
     event_handler = ModifHandler()
     observer = Observer()
-    observer.schedule(event_handler, path="data/", recursive=True)
+    observer.schedule(event_handler, path=Config.APP_PATH + "/data/", recursive=True)
     observer.start()
 
     try:
