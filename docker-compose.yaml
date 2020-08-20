@@ -1,9 +1,0 @@
-# Docker Compose file for Archivy
-version: "3.8"
-services:
-  archivy:
-    image: harshavardhanj/archivy
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./data:/usr/src/app/data
