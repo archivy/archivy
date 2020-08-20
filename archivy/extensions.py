@@ -1,10 +1,9 @@
-import os
-
 from tinydb import TinyDB, Query, operations
 from elasticsearch import Elasticsearch
+from config import Config
 
-ELASTIC_URL = os.environ.get("ELASTICSEARCH_URL")
-DB = TinyDB("db.json")
+
+DB = TinyDB(Config.APP_PATH + "/db.json")
 
 def get_max_id():
     max_id = DB.search(Query().name == "max_id")
@@ -18,4 +17,4 @@ def set_max_id(val):
 
 
 def elastic_client():
-    return Elasticsearch([ELASTIC_URL]) if os.environ.get("ELASTICSEARCH_ENABLED") else None
+    return Elasticsearch([Config.ELASTICSEARCH_URL]) if Config.ELASTICSEARCH_ENABLED else None
