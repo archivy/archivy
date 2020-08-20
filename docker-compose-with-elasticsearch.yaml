@@ -2,11 +2,11 @@ version: "3.8"
 services:
 
   archivy:
-    image: harshavardhanj/archivy
+    image: harshavardhanj/archivy:latest
     ports:
-      target: 5000
-      published: 5000
-      protocol: tcp
+      - target: 5000
+        published: 5000
+        protocol: tcp
     volumes:
       - archivyData:/usr/src/app/data
     environment:
@@ -22,14 +22,14 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attemps: 3
+        max_attempts: 3
   
   elasticsearch:
     image: elasticsearch:7.9.0
     ports:
-      target: 9200
-      published: 9200
-      protocol: tcp
+      - target: 9200
+        published: 9200
+        protocol: tcp
     volumes:
       - searchData:/usr/share/elasticsearch/data
     environment:
@@ -43,7 +43,7 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attemps: 3
+        max_attempts: 3
 
 networks:
   archivy:
