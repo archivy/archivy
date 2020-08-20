@@ -222,13 +222,12 @@ $ docker-compose up -d archivy
 This works as long as the compose file is named `docker-compose.yaml`. If it has a different name, you will need to specify the path to the file as an argument to the `-f` flag as shown below:
 
 ```sh
-$ docker-compose up -d -f ./compose.yaml archivy
+$ docker-compose -f ./compose.yaml archivy up -d
 ```
 
 This repository contains two compose files(for now). A version of the simpler one is given below:
 
 ```yaml
-# Docker Compose file for Archivy
 version: "3.8"
 services:
   archivy:
@@ -276,7 +275,7 @@ There are currently two compose files in the repository:
 If you would like to test Archivy, just download the `docker-compose.yaml` and run
 
 ```sh
-$ docker-compose up -d -f ./docker-compose.yaml
+$ docker-compose -f ./docker-compose.yaml up -d
 ```
 
 If you would like to build the image for yourself *and then* run it using Docker Compose, use the `docker-compose-local-build.yaml`. The contents of the file are shown below:
@@ -340,11 +339,11 @@ version: "3.8"
 services:
 
   archivy:
-    image: harshavardhanj/archivy
+    image: harshavardhanj/archivy:latest
     ports:
-      target: 5000
-      published: 5000
-      protocol: tcp
+      - target: 5000
+        published: 5000
+        protocol: tcp
     volumes:
       - archivyData:/usr/src/app/data
     environment:
@@ -360,14 +359,14 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attemps: 3
+        max_attempts: 3
   
   elasticsearch:
     image: elasticsearch:7.9.0
     ports:
-      target: 9200
-      published: 9200
-      protocol: tcp
+      - target: 9200
+        published: 9200
+        protocol: tcp
     volumes:
       - searchData:/usr/share/elasticsearch/data
     environment:
@@ -381,7 +380,7 @@ services:
       restart_policy:
         condition: on-failure
         delay: 10s
-        max_attemps: 3
+        max_attempts: 3
 
 networks:
   archivy:
@@ -400,7 +399,7 @@ version: "3.8"
 services:
 
   archivy:
-    image: harshavardhanj/archivy
+    image: harshavardhanj/archivy:latest
     ports:
     	- "5000:5000"
     volumes:
