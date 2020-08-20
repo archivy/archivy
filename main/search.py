@@ -1,23 +1,23 @@
-from main import ELASTIC_SEARCH
+from main.extensions import ELASTICSEARCH
 
 def add_to_index(index, model):
-    if not ELASTIC_SEARCH:
+    if not ELASTICSEARCH:
         return
     payload = {}
     for field in model.__searchable__:
         payload[field] = getattr(model, field)
-    ELASTIC_SEARCH.index(index=index, id=model.id, body=payload)
+    ELASTICSEARCH.index(index=index, id=model.id, body=payload)
 
 
 def remove_from_index(index, dataobj_id):
-    if not ELASTIC_SEARCH:
+    if not ELASTICSEARCH:
         return
-    ELASTIC_SEARCH.delete(index=index, id=dataobj_id)
+    ELASTICSEARCH.delete(index=index, id=dataobj_id)
 
 def query_index(index, query):
-    if not ELASTIC_SEARCH:
+    if not ELASTICSEARCH:
         return []
-    search = ELASTIC_SEARCH.search(
+    search = ELASTICSEARCH.search(
         index=index,
         body={
             "query": {"multi_match": {"query": query, "fields": ["*"], "analyzer": "rebuilt_standard"}}},

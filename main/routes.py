@@ -8,7 +8,8 @@ from flask import render_template, flash, redirect, request, jsonify
 from main.models import DataObj
 from main.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
 from main.search import query_index
-from main import data, db, app
+from main import data, app
+from main.extensions import DB
 
 @app.route("/")
 @app.route("/index")
@@ -112,7 +113,7 @@ def pocket_settings():
     form = PocketForm()
     pocket = Query()
     if form.validate_on_submit():
-        if db.search(pocket.type == "pocket_key"):
+        if DB.search(pocket.type == "pocket_key"):
             redirect("/parse_pocket")
         request_data = {
             "consumer_key": form.api_key.data,
@@ -128,10 +129,10 @@ def pocket_settings():
             "type": "pocket_key",
             "consumer_key": form.api_key.data,
             "code": resp.json()["code"]}
-        if db.search(pocket.type == "pocket_key"):
-            db.insert(new_data)
+        if DB.search(pocket.type == "pocket_key"):
+            DB.insert(new_data)
         else:
-            db.update(new_data, pocket.type == "pocket_key")
+            DB.update(new_data, pocket.type == "pocket_key")
         flash("Settings Saved")
         return redirect(
             f"https://getpocket.com/auth/authorize?request_token={resp.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
@@ -144,7 +145,7 @@ def pocket_settings():
 
 @app.route("/parse_pocket")
 def parse_pocket():
-    pocket = db.search(Query().type == "pocket_key")[0]
+    pocket = DB.search(Query().type == "pocket_key")[0]
     if request.args.get("new") == "1":
         auth_data = {
             "consumer_key": pocket["consumer_key"],
@@ -155,7 +156,7 @@ def parse_pocket():
             headers={
                 "X-Accept": "application/json",
                 "Content-Type": "application/json"})
-        db.update(
+        DB.update(
             operations.set(
                 "access_token",
                 resp.json()["access_token"]),

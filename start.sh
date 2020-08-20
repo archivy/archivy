@@ -3,8 +3,6 @@
 
 # Do not continue to run the script if
 # any command exit with a non zero exit code
-set -e
-
 if test -f .flaskenv; then
   export $(cat .flaskenv | xargs)
 else

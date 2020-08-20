@@ -7,7 +7,7 @@ import html2text
 import frontmatter
 from bs4 import BeautifulSoup
 
-from main import app
+from main import extensions
 from main.search import add_to_index
 from main.data import create
 
@@ -80,14 +80,15 @@ class DataObj:
 
     def insert(self):
         if self.validate():
-            self.id = app.config["max_id"]
+            self.id = extensions.get_max_id()
             data = {
                 "type": self.type, "desc": self.desc, "title": str(
                     self.title), "date": self.date.strftime("%x").replace(
                         "/", "-"), "tags": self.tags, "id": self.id, "path": self.path}
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
-            app.config["max_id"] += 1
+
+            extensions.set_max_id(self.id + 1)
 
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
