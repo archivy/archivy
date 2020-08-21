@@ -85,7 +85,7 @@ This will clone the GitHub repository and use the cloned repository as context. 
 This file does *not* download the source code like the previous `Dockerfile` does. So, you will need to fetch/clone the whole repository in order to build an image using the `local-build.Dockerfile`. To build the image:
 
 ```shell
-# Clone the repository
+# Clone the repository(docker branch)
 $ git clone https://github.com/Uzay-G/archivy.git
 
 # Change directory
@@ -199,48 +199,56 @@ For those with DockerHub accounts, you can try a version of Archivy on Play With
 This version of archivy is based on the following Docker Compose file:
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
   archivy:
     image: harshavardhanj/archivy
     ports:
       - "5000:5000"
     volumes:
-      - ./data:/usr/src/app/data
+      - archivyData:/usr/src/app/data
+    environment:
+      - FLASK_DEBUG=0
+      - ELASTICSEARCH_ENABLED=0
+      
+volumes:
+  archivyData:
 ```
 
-
+As is visible from the above compose file, this is a version of Archivy running without Elasticsearch enabled. Therefore, the search function will not work.
 
 ### Using Docker Compose
 
-Docker Compose is an easier way to bring up containers when compared to running lengthy `docker run` commands. The `docker-compose.yaml` file contains all the necessary information that you would normally provide to the `docker run` command, declared in a YAML format. Once this file is written, it as simple as running the following command in the same directory as the `docker-compose.yaml` file:
+Docker Compose is an easier way to bring up containers when compared to running lengthy `docker run` commands. The `docker-compose.yaml` file contains all the necessary information that you would normally provide to the `docker run` command, declared in a YAML format. Once this file is written, it as simple as running the following command in the same directory as the `docker-compose.yml` file:
 
 ```sh
 $ docker-compose up -d archivy
 ```
 
-This works as long as the compose file is named `docker-compose.yaml`. If it has a different name, you will need to specify the path to the file as an argument to the `-f` flag as shown below:
+This works as long as the compose file is named `docker-compose.yml`. If it has a different name, you will need to specify the path to the file as an argument to the `-f` flag as shown below:
 
 ```sh
-$ docker-compose -f ./compose.yaml archivy up -d
+$ docker-compose -f ./compose.yml archivy up -d
 ```
 
 This repository contains two compose files(for now). A version of the simpler one is given below:
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
   archivy:
     image: harshavardhanj/archivy
     ports:
       - "5000:5000"
     volumes:
-      - ./data:/usr/src/app/data
+      - archivyData:/usr/src/app/data
     environment:
     	- FLASK_DEBUG=1
     	- ELASTICSEARCH_ENABLED=0
     	- ELASTICSEARCH_URL=""
-
+    	
+volumes:
+  archivyData:
 ```
 
 This file 
@@ -249,7 +257,7 @@ This file
 
 - binds port `5000` on the host to port `5000` on the container.
 
-- creates a directory `data` in the current working directory on the host and bind-mounts it to the `/usr/src/app/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/usr/src/app/data` directory on the container(which is where all persistent data will be stored).
 - Sets the following environment variables so that they can be used by Archivy during run time
   - `FLASK_DEBUG=1`
   - `ELASTICSEARCH_ENABLED=0`
@@ -267,22 +275,21 @@ When multiple container get involved, it becomes a lot easier to deal with compo
 
 ### Which compose file to use?
 
-There are currently two compose files in the repository:
+There are currently three compose files in the repository:
 
-- `docker-compose.yaml`
-- `docker-compose-local-build.yaml`
+- `docker-compose.yml`
+- `docker-compose-local-build.yml`
+- `docker-compose-with-elasticsearch.yml`
 
-If you would like to test Archivy, just download the `docker-compose.yaml` and run
+If you would like to test Archivy, just download the `docker-compose.yml` and run
 
 ```sh
-$ docker-compose -f ./docker-compose.yaml up -d
+$ docker-compose -f ./docker-compose.yml up -d
 ```
 
-If you would like to build the image for yourself *and then* run it using Docker Compose, use the `docker-compose-local-build.yaml`. The contents of the file are shown below:
+If you would like to build the image for yourself *and then* run it using Docker Compose, use the `docker-compose-local-build.yml`. The contents of the file are shown below:
 
 ```yaml
-# Docker Compose file for Archivy
-# Use this if you wish to build the image on your own
 version: "3.8"
 services:
   archivy:
@@ -292,24 +299,27 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./data:/usr/src/app/data
+      - archivyData:/usr/src/app/data
     environment:
     	- FLASK_DEBUG=1
     	- ELASTICSEARCH_ENABLED=0
     	- ELASTICSEARCH_URL=""
+    	
+volumes:
+  archivyData:
 ```
 
 This file
 
 - builds an image with the current context(with all files present in the current working directory) and the `local-build.Dockerfile` Dockerfile.
 - binds port `5000` on the host to port `5000` on the container.
-- creates a directory `data` in the current working directory on the host and bind-mounts it to the `/usr/src/app/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/usr/src/app/data` directory on the container(which is where all persistent data will be stored).
 
-This is the same as the `docker-compose.yaml` file but it differs in the way it obtains the `archivy` container image. This compose file will look for a Dockerfile from which to build the container image, which will then be run. Just like with the `local-build.Dockerfile`, this compose file needs to be present in the root of the repository for it to run.
+This is the same as the `docker-compose.yml` file but it differs in the way it obtains the `archivy` container image. This compose file will look for a Dockerfile from which to build the container image, which will then be run. Just like with the `local-build.Dockerfile`, this compose file needs to be present in the root of the repository for it to run.
 
 > **NOTE**:
 >
-> If you don't want to clone the whole repository to use the above compose file, just replace `local-build.Dockerfile` with `Dockerfile`. As long as you have the `Dockerfile` file present, you can build and run the container. So, download `Dockerfile`, `docker-compose-local-build.yaml`, and replace the value of the `dockerfile` key in the compose file as shown below:
+> If you don't want to clone the whole repository to use the above compose file, just replace `local-build.Dockerfile` with `Dockerfile`. As long as you have the `Dockerfile` file present, you can build and run the container. So, download `Dockerfile`, `docker-compose-local-build.yml`, and replace the value of the `dockerfile` key in the compose file as shown below:
 >
 > ```yaml
 > services:
@@ -321,6 +331,8 @@ This is the same as the `docker-compose.yaml` file but it differs in the way it 
 > ```
 >
 > Make sure that you have `Dockerfile` in the same directory as the compose file.
+
+If you wish to test Archivy’s full capabilities with Elasticsearch, use the `docker-compose-with-elasticsearch.yml` . The usage of this file is explained in the next section.
 
 
 
@@ -335,7 +347,7 @@ The compose file given below will do the following:
 - The containers will restart if the process running in the container fails and exits.
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
 
   archivy:
@@ -395,7 +407,7 @@ For a detailed description of the declarations used in the compose file, refer t
 Given below is a simplified version of the same compose file which should be fine for testing purposes:
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
 
   archivy:
@@ -403,7 +415,7 @@ services:
     ports:
     	- "5000:5000"
     volumes:
-      - archivyData:/usr/src/app/data
+      - ./archivyData:/usr/src/app/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
@@ -414,7 +426,7 @@ services:
   elasticsearch:
     image: elasticsearch:7.9.0
     ports:
-			- "9200:9200"
+      - "9200:9200"
     volumes:
       - ./searchData:/usr/share/elasticsearch/data
     environment:
