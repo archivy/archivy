@@ -7,7 +7,10 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./data:/usr/src/app/data
+      - archivyData:/usr/src/app/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=0
+
+volumes:
+  archivyData:
