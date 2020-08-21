@@ -11,6 +11,8 @@ from archivy.config import Config
 DIRNAME = Config.APP_PATH + "/data/"
 
 # struct to create tree like file-structure
+
+
 class Directory:
     def __init__(self, name):
         self.name = name
@@ -18,6 +20,8 @@ class Directory:
         self.child_dirs = {}
 
 # method from django to sanitize filename
+
+
 def valid_filename(name):
     name = str(name).strip().replace(" ", "_")
     return re.sub(r"(?u)[^-\w.]", "", name)
