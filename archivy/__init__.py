@@ -42,7 +42,7 @@ Scss(app)
 from archivy import data
 
 # get max id
-cur_id = extensions.get_max_id()
+cur_id = 1
 for dataobj in data.get_items(structured=False):
     cur_id = max(cur_id, dataobj["id"])
 
