@@ -194,7 +194,7 @@ If the values are not set by the user, they are assigned default values during r
 
 For those with DockerHub accounts, you can try a version of Archivy on Play With Docker by clicking on the badge below. This will require you to login to your DockerHub account.
 
-[![Try in ‘Play With Docker’](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/Uzay-G/archivy/master/docker-compose.yaml)
+[![Try in ‘Play With Docker’](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/archivy/docker/docker-compose.yaml)
 
 This version of archivy is based on the following Docker Compose file:
 
