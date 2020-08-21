@@ -58,7 +58,10 @@ class DataObj:
                 setattr(self, key, value)
         else:
             # still needs processing
-            self.path = kwargs["path"] if "path" in kwargs and kwargs["path"] != "not classified" else ""
+            if "path" in kwargs and kwargs["path"] != "not classified":
+                self.path = kwargs["path"]
+            else:
+                self.path = ""
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"].split()
             self.type = kwargs["type"]
