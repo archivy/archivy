@@ -64,7 +64,9 @@ def get_items(collections=[], path="", structured=True):
 
 
 def create(contents, title, path=""):
-    with open(DIRNAME + path + "/" + valid_filename(title) + ".md", "w") as file:
+    path_to_md_file = os.path.join(
+        DIRNAME, path, "{}.md".format(valid_filename(title)))
+    with open(path_to_md_file, "w") as file:
         file.write(contents)
 
 
