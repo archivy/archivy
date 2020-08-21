@@ -1,4 +1,4 @@
--e git+git@github.com:Uzay-G/archivy.git@6557038715848209bf5ae06cf3bf6becb8b459aa#egg=archivy
+archivy==0.0.1
 astroid==2.4.2
 beautifulsoup4==4.9.1
 certifi==2020.4.5.1
