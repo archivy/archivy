@@ -46,6 +46,6 @@ cur_id = 1
 for dataobj in data.get_items(structured=False):
     cur_id = max(cur_id, dataobj["id"])
 
-extensions.set_max_id(cur_id)
+extensions.set_max_id(cur_id + 1)
 
 from archivy import routes, models

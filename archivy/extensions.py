@@ -4,7 +4,6 @@ from archivy.config import Config
 
 
 DB = TinyDB(Config.APP_PATH + "/db.json")
-
 def get_max_id():
     max_id = DB.search(Query().name == "max_id")
     if not max_id:
