@@ -39,9 +39,13 @@ class DataObj:
                 getattr(beautsoup, tag).extract()
         resources = beautsoup.find_all(["a", "img"])
         for external in resources:
-            if external.name == "a" and "href" in external and external["href"].startswith("/"):
+            if external.name == "a" and \
+                    "href" in external and \
+                    external["href"].startswith("/"):
                 external["href"] = urljoin(url, external["href"])
-            elif external.name == "img" and "src" in external and external["src"].startswith("/"):
+            elif external.name == "img" and \
+                    "src" in external and \
+                    external["src"].startswith("/"):
                 external["src"] = urljoin(url, external["src"])
 
         return html2text.html2text(str(beautsoup))
@@ -73,19 +77,30 @@ class DataObj:
                 self.title = kwargs["title"]
 
     def validate(self):
-        valid_url = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
-                isinstance(self.url, str) and validators.url(self.url))
+        valid_url = (
+            self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
+            isinstance(
+                self.url,
+                str) and validators.url(
+                self.url))
         valid_title = isinstance(self.title, str)
-        valid_content = (self.type != "bookmark" and self.type != "pocket_bookmarks") or isinstance(self.content, str)
+        valid_content = (self.type != "bookmark" and
+                         self.type != "pocket_bookmarks") or \
+            isinstance(self.content, str)
         return valid_url and valid_title and valid_content
 
     def insert(self):
         if self.validate():
             self.id = extensions.get_max_id()
             data = {
-                "type": self.type, "desc": self.desc, "title": str(
-                    self.title), "date": self.date.strftime("%x").replace(
-                        "/", "-"), "tags": self.tags, "id": self.id, "path": self.path}
+                "type": self.type,
+                "desc": self.desc,
+                "title": str(self.title),
+                "date": self.date.strftime("%x").replace("/", "-"),
+                "tags": self.tags,
+                "id": self.id,
+                "path": self.path
+            }
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
 
