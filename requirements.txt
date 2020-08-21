@@ -1,3 +1,4 @@
+appdirs
 astroid==2.4.2
 beautifulsoup4==4.9.1
 certifi==2020.4.5.1
