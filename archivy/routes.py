@@ -10,6 +10,7 @@ from archivy.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketFo
 from archivy.search import query_index
 from archivy import data, app
 from archivy.extensions import DB
+from archivy.config import Config
 
 @app.route("/")
 @app.route("/index")
@@ -105,7 +106,7 @@ def delete_folder():
 @app.route("/search", methods=["GET"])
 def search_elastic():
     query = request.args.get("query")
-    search_results = query_index("dataobj", query)
+    search_results = query_index(Config.INDEX_NAME, query)
     return jsonify(search_results)
 
 @app.route("/pocket", methods=["POST", "GET"])

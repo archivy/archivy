@@ -14,13 +14,13 @@ class ModifHandler(FileSystemEventHandler):
                 ".md"):
             print(f"Changes to {event.src_path}")
             dataobj = models.DataObj.from_file(event.src_path)
-            search.add_to_index("dataobj", dataobj)
+            search.add_to_index(Config.INDEX_NAME, dataobj)
             self.last_modify_event = event.src_path
 
     def on_deleted(self, event):
         if event.src_path.endswith(".md"):
             id = event.src_path.split("/")[-1].split("-")[0]
-            search.remove_from_index("dataobj", id)
+            search.remove_from_index(Config.INDEX_NAME, id)
             print(f"{event.src_path} has been removed")
             self.last_delete_event = event.src_path
 
