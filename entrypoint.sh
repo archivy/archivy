@@ -7,7 +7,9 @@
 #: Description  : This file handles the startup of the 'Archivy' server
 #                 and other functions necessary for its startup such as
 #                 setting default environment variables and overriding
-#                 the defaults with user-provided values.
+#                 the defaults with user-provided values. Also, if
+#                 Elasticsearch support is enabled, the script waits for
+#                 it to start up before running the Archivy server.
 #                 
 #: Options      : Takes at least one argument, which is provided by the
 #                 Dockerfile. Any commands/arguments passed to the container
@@ -88,7 +90,11 @@ flaskvar_export() {
     done < .flaskenv
   else
     printf '%s\n' "Could not find .flaskenv file. Setting default values." 1>&2
-    export FLASK_DEBUG=0 ELASTICSEARCH_ENABLED=0 ELASTICSEARCH_URL=""
+    # Loop through all environment variables with their default values
+    for envVar in "FLASK_DEBUG=0" "ELASTICSEARCH_ENABLED=0" "ELASTICSEARCH_URL='http://elasticsearch:9200/'" ; do
+      printf '%s\n' "Setting "${envVar}"" 1>&2
+      export "${envVar}"
+    done
   fi
 }
 
@@ -104,14 +110,72 @@ setup() {
   # If ELASTICSEARCH_ENABLED variable is set to 1
   if [[ "${ELASTICSEARCH_ENABLED}" -eq 1 ]] ; then
     # Export with fallback default value for URL
-    env_export ELASTICSEARCH_URL "${ELASTICSEARCH_URL:-"http://localhost:9200"}"
+    env_export ELASTICSEARCH_URL "${ELASTICSEARCH_URL:-"http://elasticsearch:9200/"}"
   else
-    # Export as empty string
-    export ELASTICSEARCH_URL=""
+    # Export as default value
+    export ELASTICSEARCH_URL="http://elasticsearch:9200/"
   fi
 
   # Exporting all variables defined in the '.flaskenv' file
   flaskvar_export
+}
+
+
+# Function that checks if elasticsearch is up and running.
+# If it is running, the function returns 1, else 0.
+#
+# Function input    :   Accepts none.
+#
+# Function output   :   Returns 0 if the elasticsearch instance is up
+#                       Returns 1 if it is not
+# 
+check_elasticsearch() {
+  # If the variable pointing to elasticsearch URL has been set AND
+  # is not an empty string
+  if [[ -v ELASTICSEARCH_URL && -n "${ELASTICSEARCH_URL}" ]] ; then
+    # Use different query commands based on the tools available
+    if [[ $(command -v nc) ]] ; then
+      # Query the Elasticsearch URL
+      elasticExists="$(echo -ne 'GET / HTTP/1.0\r\n\r\n' | nc localhost 9200 2>/dev/null | grep -o "version")"
+    elif [[ $(command -v curl) ]] ; then
+      # Query the Elasticsearch URL
+      elasticExists="$(curl -XGET --silent "${ELASTICSEARCH_URL}" | grep -o "version")"
+    else
+      printf '%s\n' "Please install either netcat or curl. Required for health checks on Elasticsearch" 1>&2
+      exit 1
+    fi
+
+    # If the query result is not an empty string
+    if [[ -n "${elasticExists}" ]] ; then
+      return 0
+    else
+      return 1
+    fi
+  # If the variable pointing to elasticseach's URL has not been set
+  else
+    # Run the 'setup' function which will set sensible defaults
+    setup
+    return 1
+  fi
+}
+
+
+# Function that waits until Elasticsearch has started up.
+#
+# Function input    :   None
+#
+# Function output   :   None
+#
+waitforElasticsearch() {
+  # Loop that waits for Elasticsearch to start up before running Archivy
+  # If Elasticsearch support has been enabled
+  if [[ ${ELASTICSEARCH_ENABLED} -eq 1 ]] ; then
+    # Run until the 'check_elasticsearch' function returns 0
+    until [[ $(check_elasticsearch) -eq 0 ]] ; do
+      printf '%s\n' "Waiting for Elasticsearch @ "${ELASTICSEARCH_URL}" to start." 1>&2
+      sleep 2
+    done
+  fi
 }
 
 
@@ -127,13 +191,16 @@ main() {
   source venv/bin/activate
 
   # If elasticsearch is enabled and if DEPLOY_ENV is not set
-  if [[ -z "${DEPLOY_ENV}" && "$ELASTICSEARCH_ENABLED" -eq 1 ]] ; then
+  if [[ -z "${DEPLOY_ENV}" && ${ELASTICSEARCH_ENABLED} -eq 1 ]] ; then
     (pkill -f check_changes.py)
     (python3 check_changes.py &)
   fi
 
   # If the first argument is "start"
   if [[ "$1" = "start" ]] ; then
+    # Calling the function which will wait until elasticsearch has started
+    waitforElasticsearch
+
     # Run the flask server in foreground
     exec flask run --host=0.0.0.0
   else

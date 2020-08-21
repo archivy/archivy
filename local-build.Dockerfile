@@ -14,14 +14,17 @@
 #       Buster Slim.                                                #
 #    2. Sets the working directory to /usr/src/app.                 #
 #    3. Copies the requirements.txt file to the container.          #
-#    4. Creates a virtual environment.                              #
-#    5. Installs the dependencies as per requirements.txt.          #
-#    6. Cleans up by deleting some unnecessary files.               #
-#    7. Copies the remaining files to the container.                #
-#    8. Creates a mount point so that external volumes can be       #
+#    4. Installs netcat, which is needed for performing health      #
+#       checks on Elasticsearch by entrypoint.sh.                   #
+#    5. Creates a virtual environment.                              #
+#    6. Installs the dependencies as per requirements.txt.          #
+#    7. Cleans up by deleting some unnecessary files.               #
+#    8. Copies the remaining files to the container.                #
+#    9. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
-#    9. Exposes port 5000 on the container.                         #
-#   10. Runs the startup script as the entrypoint command.          #
+#   10. Exposes port 5000 on the container.                         #
+#   11. Runs the startup script as the entrypoint command with      #
+#       the "start" argument.                                       #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
 #        you wish to access the server. Also, if you want your data #
@@ -55,8 +58,10 @@ WORKDIR /usr/src/app
 # Copying requirments.txt
 COPY requirements.txt ./
 
-# Creating a virtual environment
-RUN python3 -m venv venv/ \
+# Installing netcat
+RUN apt update && apt install --no-install-recommends netcat -y \
+    # Creating a virtual environment
+    && python3 -m venv venv/ \
     # Installing required packages 
     && pip3 install --no-cache-dir -r requirements.txt \
     # Cleaning up
