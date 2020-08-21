@@ -6,7 +6,7 @@ from shutil import rmtree
 
 import frontmatter
 
-from config import Config
+from archivy.config import Config
 
 DIRNAME = Config.APP_PATH + "/data/"
 

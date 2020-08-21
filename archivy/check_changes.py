@@ -1,10 +1,11 @@
-#!/usr/bin/python3
-from archivy import search, models
-import frontmatter
 import time
+
+import frontmatter
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from config import Config
+
+from archivy import search, models
+from archivy.config import Config
 
 class ModifHandler(FileSystemEventHandler):
 

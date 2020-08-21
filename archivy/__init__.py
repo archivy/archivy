@@ -10,22 +10,23 @@ from flask_scss import Scss
 from tinydb import TinyDB, Query
 
 from archivy import extensions
-from config import Config
-from check_changes import run_watcher
+from archivy.config import Config
+from archivy.check_changes import run_watcher
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# create dir that will hold data if it doesn"t already exist
+DIRNAME = app.config["APP_PATH"] + "/data/"
+Path(DIRNAME).mkdir(parents=True, exist_ok=True)
+
 if app.config["ELASTICSEARCH_ENABLED"]:
     elastic_running = subprocess.run("service elasticsearch status", shell=True, stdout=subprocess.DEVNULL).returncode
     if elastic_running != 0:
         print("Enter password to enable elasticsearch")
         subprocess.run("sudo service elasticsearch restart", shell=True) 
-    
-    with open(app.config["APP_PATH"] + "/elasticsearch.json", "r") as search_data:
-        elastic_conf = json.load(search_data)
-        # create index if not already existing
         try:
-            print(extensions.elastic_client().indices.create(index=app.config["INDEX_NAME"], body=elastic_conf))
+            print(extensions.elastic_client().indices.create(index=app.config["INDEX_NAME"], body=app.config["ELASTIC_CONF"]))
         except:
             print("Elasticsearch index already created")
 
@@ -36,9 +37,6 @@ app.jinja_options["extensions"].append("jinja2.ext.do")
 
 Scss(app)
 
-# create dir that will hold data if it doesn"t already exist
-DIRNAME = app.config["APP_PATH"] + "data/"
-Path(DIRNAME).mkdir(parents=True, exist_ok=True)
 
 
 from archivy import data
@@ -51,3 +49,6 @@ for dataobj in data.get_items(structured=False):
 extensions.set_max_id(cur_id)
 
 from archivy import routes, models
+
+
+

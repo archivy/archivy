@@ -23,9 +23,10 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "archivy = main:run"
+            "archivy = archivy.run:main"
         ]
     },
+    include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
     python_requires='>=3.6',
