@@ -6,6 +6,7 @@ from watchdog.events import FileSystemEventHandler
 from archivy import search, models
 from archivy.config import Config
 
+
 class ModifHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
@@ -22,6 +23,7 @@ class ModifHandler(FileSystemEventHandler):
             search.remove_from_index(Config.INDEX_NAME, id)
             print(f"{event.src_path} has been removed")
             self.last_delete_event = event.src_path
+
 
 def run_watcher():
     event_handler = ModifHandler()
