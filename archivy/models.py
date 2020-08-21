@@ -22,7 +22,7 @@ class DataObj:
             parsed_html = BeautifulSoup(url_request)
             self.content = self.extract_content(parsed_html)
             self.title = parsed_html.title.string
-        except:
+        except BaseException:
             self.wipe()
 
     def wipe(self):
