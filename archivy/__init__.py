@@ -49,5 +49,3 @@ for dataobj in data.get_items(structured=False):
 
 
 extensions.set_max_id(cur_id + 1)
-
-from archivy import routes, models
