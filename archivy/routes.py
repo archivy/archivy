@@ -15,6 +15,7 @@ from archivy import data, app
 from archivy.extensions import DB
 from archivy.config import Config
 
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -22,6 +23,8 @@ def index():
     return render_template("home.html", title="Home", dataobjs=dataobjs)
 
 # TODO: refactor two following methods
+
+
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
     form = NewBookmarkForm()
@@ -80,6 +83,7 @@ def show_dataobj(dataobj_id):
         content=content,
         form=DeleteDataForm())
 
+
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
 def delete_data(dataobj_id):
     try:
@@ -89,6 +93,7 @@ def delete_data(dataobj_id):
         return redirect("/")
     flash("Data deleted!")
     return redirect("/")
+
 
 @app.route("/folders/new", methods=["POST"])
 def create_folder():
@@ -106,11 +111,13 @@ def delete_folder():
         return "Successfully deleted", 200
     return "Not found", 404
 
+
 @app.route("/search", methods=["GET"])
 def search_elastic():
     query = request.args.get("query")
     search_results = query_index(Config.INDEX_NAME, query)
     return jsonify(search_results)
+
 
 @app.route("/pocket", methods=["POST", "GET"])
 def pocket_settings():
