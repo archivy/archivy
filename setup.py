@@ -9,7 +9,7 @@ with open('requirements.txt', encoding='utf-8') as f:
 
 setuptools.setup(
     name="archivy", # Replace with your own username
-    version="0.0.3",
+    version="0.0.4",
     author="Uzay-G",
     author_email="uzgirit@gmail.com",
     description="Minimalist knowledge base focused on digital preservation and building your second brain.",
