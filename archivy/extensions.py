@@ -1,18 +1,23 @@
-import os
-
 from tinydb import TinyDB, Query, operations
 from elasticsearch import Elasticsearch
+from archivy.config import Config
 
-ELASTIC_URL = os.environ.get("ELASTICSEARCH_URL")
-ELASTICSEARCH = Elasticsearch([ELASTIC_URL]) if ELASTIC_URL else None
-DB = TinyDB("db.json")
+
+DB = TinyDB(Config.APP_PATH + "/db.json")
+
 
 def get_max_id():
     max_id = DB.search(Query().name == "max_id")
     if not max_id:
         DB.insert({"name": "max_id", "val": 0})
-    
-    else: return max_id[0]["val"]
+        return 0
+    return max_id[0]["val"]
+
 
 def set_max_id(val):
     DB.update(operations.set("val", val), Query().name == "max_id")
+
+
+def elastic_client():
+    return Elasticsearch([Config.ELASTICSEARCH_URL]
+                         ) if Config.ELASTICSEARCH_ENABLED else None
