@@ -6,11 +6,15 @@ from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
 
 from archivy.models import DataObj
-from archivy.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
+from archivy.forms import NewBookmarkForm
+from archivy.forms import NewNoteForm
+from archivy.forms import DeleteDataForm
+from archivy.forms import PocketForm
 from archivy.search import query_index
 from archivy import data, app
 from archivy.extensions import DB
 from archivy.config import Config
+
 
 @app.route("/")
 @app.route("/index")
@@ -19,6 +23,8 @@ def index():
     return render_template("home.html", title="Home", dataobjs=dataobjs)
 
 # TODO: refactor two following methods
+
+
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
     form = NewBookmarkForm()
@@ -77,6 +83,7 @@ def show_dataobj(dataobj_id):
         content=content,
         form=DeleteDataForm())
 
+
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
 def delete_data(dataobj_id):
     try:
@@ -86,6 +93,7 @@ def delete_data(dataobj_id):
         return redirect("/")
     flash("Data deleted!")
     return redirect("/")
+
 
 @app.route("/folders/new", methods=["POST"])
 def create_folder():
@@ -103,11 +111,13 @@ def delete_folder():
         return "Successfully deleted", 200
     return "Not found", 404
 
+
 @app.route("/search", methods=["GET"])
 def search_elastic():
     query = request.args.get("query")
     search_results = query_index(Config.INDEX_NAME, query)
     return jsonify(search_results)
+
 
 @app.route("/pocket", methods=["POST", "GET"])
 def pocket_settings():
@@ -136,7 +146,14 @@ def pocket_settings():
             DB.update(new_data, pocket.type == "pocket_key")
         flash("Settings Saved")
         return redirect(
-            f"https://getpocket.com/auth/authorize?request_token={resp.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
+            # FIXME: the redirect is forced to localhost:5000
+            # but the server is started on 0.0.0.0
+            # port 5000 might be on use by another resource
+            # so add a check here
+            f"https://getpocket.com/auth/authorize?"
+            f"request_token={resp.json()['code']}"
+            f"&redirect_uri=http://localhost:5000/"
+            f"parse_pocket?new=1")
 
     return render_template(
         "pocket/new.html",
@@ -171,7 +188,9 @@ def parse_pocket():
 
     # get date of latest call to pocket api
     since = datetime(1970, 1, 1)
-    for post in data.get_items(collections=["pocket_bookmark"], structured=False):
+    for post in data.get_items(
+            collections=["pocket_bookmark"],
+            structured=False):
         date = datetime.strptime(post["date"].replace("-", "/"), "%x")
         since = max(date, since)
 
@@ -185,7 +204,8 @@ def parse_pocket():
     # api spec: https://getpocket.com/developer/docs/v3/retrieve
     for pocket_bookmark in bookmarks["list"].values():
         if int(pocket_bookmark["status"]) != 2:
-            desc = pocket_bookmark["excerpt"] if int(pocket_bookmark["is_article"]) else None
+            desc = pocket_bookmark["excerpt"] if int(
+                pocket_bookmark["is_article"]) else None
             bookmark = DataObj(
                 desc=desc,
                 url=pocket_bookmark["resolved_url"],

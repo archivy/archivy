@@ -1,0 +1,33 @@
+name: Flake8 Code Quality
+
+on: 
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'archivy/**'
+      - '.github/workflows/flake.yml'
+  pull_request:
+    paths:
+      - 'archivy/**'
+      - '.github/workflows/flake.yml'
+
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 archivy
+        
