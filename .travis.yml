@@ -3,6 +3,9 @@ language: python
 python:
   - "3.7"
 
+install:
+  - pip install -r requirements.txt
+
 deploy:
   provider: pypi
   username: __token__
