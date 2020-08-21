@@ -26,7 +26,11 @@ class ModifHandler(FileSystemEventHandler):
 def run_watcher():
     event_handler = ModifHandler()
     observer = Observer()
-    observer.schedule(event_handler, path=Config.APP_PATH + "/data/", recursive=True)
+    observer.schedule(
+        event_handler,
+        path=Config.APP_PATH +
+        "/data/",
+        recursive=True)
     observer.start()
 
     try:
