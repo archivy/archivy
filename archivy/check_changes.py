@@ -1,11 +1,11 @@
 import time
 
-import frontmatter
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from archivy import search, models
 from archivy.config import Config
+
 
 class ModifHandler(FileSystemEventHandler):
 
@@ -24,10 +24,15 @@ class ModifHandler(FileSystemEventHandler):
             print(f"{event.src_path} has been removed")
             self.last_delete_event = event.src_path
 
+
 def run_watcher():
     event_handler = ModifHandler()
     observer = Observer()
-    observer.schedule(event_handler, path=Config.APP_PATH + "/data/", recursive=True)
+    observer.schedule(
+        event_handler,
+        path=Config.APP_PATH +
+        "/data/",
+        recursive=True)
     observer.start()
 
     try:
