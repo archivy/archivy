@@ -146,7 +146,14 @@ def pocket_settings():
             DB.update(new_data, pocket.type == "pocket_key")
         flash("Settings Saved")
         return redirect(
-            f"https://getpocket.com/auth/authorize?request_token={resp.json()['code']}&redirect_uri=http://localhost:5000/parse_pocket?new=1")
+            # FIXME: the redirect is forced to localhost:5000
+            # but the server is started on 0.0.0.0
+            # port 5000 might be on use by another resource
+            # so add a check here
+            f"https://getpocket.com/auth/authorize?"
+            f"request_token={resp.json()['code']}"
+            f"&redirect_uri=http://localhost:5000/"
+            f"parse_pocket?new=1")
 
     return render_template(
         "pocket/new.html",
