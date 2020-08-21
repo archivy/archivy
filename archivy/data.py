@@ -55,8 +55,9 @@ def get_items(collections=[], path="", structured=True):
     else:
         for filename in glob.glob(DIRNAME + path + "**/*.md", recursive=True):
             data = frontmatter.load(filename)
-            if collections == [] or any(
-                    [collection == data["type"] for collection in collections]):
+            if len(collections) == 0 or \
+                    any([collection == data["type"]
+                        for collection in collections]):
                 datacont.append(data)
 
     return datacont
