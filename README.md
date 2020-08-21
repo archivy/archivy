@@ -24,13 +24,9 @@ Upcoming:
 
 ### Local Setup
 
-- Make sure your system has Python installed.
-- Clone the repository.
-- `cd` into the project directory.
-- create a virtual env by running `python3 -m venv venv/`.
-- run `pip install -r requirements.txt` or `pip3`.
-- execute the `start.sh` script
-- see below for setting up search functionality
+- Make sure your system has Python and pip installed.
+- Install the python package with `pip install archivy`
+- There you go! You should be able to start the app by running `archivy` in your terminal.
 
 
 ### With Docker

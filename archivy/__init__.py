@@ -25,10 +25,10 @@ if app.config["ELASTICSEARCH_ENABLED"]:
     if elastic_running != 0:
         print("Enter password to enable elasticsearch")
         subprocess.run("sudo service elasticsearch restart", shell=True) 
-        try:
-            print(extensions.elastic_client().indices.create(index=app.config["INDEX_NAME"], body=app.config["ELASTIC_CONF"]))
-        except:
-            print("Elasticsearch index already created")
+    try:
+        print(extensions.elastic_client().indices.create(index=app.config["INDEX_NAME"], body=app.config["ELASTIC_CONF"]))
+    except Exception as e:
+        print("Elasticsearch index already created")
 
     Thread(target=run_watcher).start()
 
@@ -49,6 +49,3 @@ for dataobj in data.get_items(structured=False):
 extensions.set_max_id(cur_id)
 
 from archivy import routes, models
-
-
-

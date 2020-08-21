@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from archivy import extensions
 from archivy.search import add_to_index
 from archivy.data import create
+from config import Config
 
 
 class DataObj:
@@ -95,7 +96,7 @@ class DataObj:
             dataobj.metadata = data
             create(frontmatter.dumps(dataobj), str(self.id) + "-" +
                    dataobj["date"] + "-" + dataobj["title"], path=self.path)
-            print(add_to_index("dataobj", self))
+            add_to_index(Config.INDEX_NAME, self)
             return self.id
         return False
 
