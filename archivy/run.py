@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 
 from archivy import app
 
-
-def run():
+def main():
     load_dotenv()
     app.run()

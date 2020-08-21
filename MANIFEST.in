@@ -1,0 +1,6 @@
+include LICENSE
+include README.md
+include main.py
+include requirements.txt
+recursive-include archivy/static *
+recursive-include archivy/templates *
