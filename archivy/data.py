@@ -34,7 +34,8 @@ def get_items(collections=[], path="", structured=True):
     if structured:
         for filename in glob.glob(DIRNAME + path + "**/*", recursive=True):
             paths = filename.split("/data/")[1].split("/")
-            data = frontmatter.load(filename) if filename.endswith(".md") else None
+            data = frontmatter.load(
+                filename) if filename.endswith(".md") else None
 
             current_dir = datacont
 
