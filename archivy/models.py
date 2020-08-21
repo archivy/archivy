@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from archivy import extensions
 from archivy.search import add_to_index
 from archivy.data import create
-from config import Config
+from archivy.config import Config
 
 
 class DataObj:
