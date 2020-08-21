@@ -1,5 +1,6 @@
 import os
 
+
 class Config(object):
     ELASTICSEARCH_ENABLED = os.environ.get("ELASTICSEARCH_ENABLED") or 0
     ELASTICSEARCH_URL = os.environ.get(
@@ -13,24 +14,24 @@ class Config(object):
             "analysis": {
                 "analyzer": {
                     "rebuilt_standard": {
-		        "stopwords": "_english_",
+                        "stopwords": "_english_",
                         "tokenizer": "standard",
-                  "filter": [
-                    "lowercase",       
-                    "kstem",
-                                "trim",
-                                "unique"
-                  ]
+                        "filter": [
+                            "lowercase",
+                            "kstem",
+                            "trim",
+                            "unique"
+                        ]
+                    }
                 }
-              }
             }
-          },
-          "mappings": {
+        },
+        "mappings": {
             "properties": {
-              "title":    { "type": "text", "analyzer": "rebuilt_standard" },  
-              "tags":  { "type": "text", "analyzer": "rebuilt_standard"  }, 
-              "body":   { "type": "text", "analyzer": "rebuilt_standard"  },
-                  "desc": { "type": "text", "analyzer": "rebuilt_standard" }
+                "title": {"type": "text", "analyzer": "rebuilt_standard"},
+                "tags": {"type": "text", "analyzer": "rebuilt_standard"},
+                "body": {"type": "text", "analyzer": "rebuilt_standard"},
+                "desc": {"type": "text", "analyzer": "rebuilt_standard"}
             }
-          }
         }
+    }
