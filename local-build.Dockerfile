@@ -100,7 +100,7 @@ LABEL org.opencontainers.image.vendor="Uzay G" \
       org.opencontainers.image.url="https://github.com/Uzay-G/archivy/tree/master/" \
       org.label-schema.vcs-url="https://github.com/Uzay-G/archivy/tree/master/" \
       org.opencontainers.image.documentation="https://github.com/Uzay-G/archivy/blob/master/README.md" \
-      org.opencontainers.image.source="https://github.com/Uzay-G/archivy/blob/master/Dockerfile" \
+      org.opencontainers.image.source="https://github.com/Uzay-G/archivy/blob/docker/local-build.Dockerfile" \
       org.opencontainers.image.description="Archivy is a self-hosted knowledge repository that \
       allows you to safely preserve useful content that contributes to your knowledge bank." \
       org.opencontainers.image.created=$BUILD_DATE \
