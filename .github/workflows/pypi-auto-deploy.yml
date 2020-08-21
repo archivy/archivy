@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI and create Github Release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   builds-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI + github release
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master 
@@ -26,3 +26,10 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.pypi_password }}
+    - name: Upload to release
+      uses: meeDamian/github-release@2.0
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: dist/
+
+
