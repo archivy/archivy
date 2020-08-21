@@ -13,15 +13,17 @@
 #    1. Starts with a base image of Python3.8.5 built on Debian     #
 #       Buster Slim.                                                #
 #    2. Sets the working directory to /usr/src/app.                 #
-#    3. Installs wget, downloads the repository as a tarball, and   #
-#       extracts the source code.                                   #
+#    3. Installs cURL, downloads the repository as a tarball,       #
+#       extracts the source code, and moves all files to the        #
+#       current working directory.                                  #
 #    4. Creates a virtual environment, and installs all required    #
 #       modules/packages as per the requirements.txt file.          #
 #    5. Cleans up by deleting some unnecessary files.               #
 #    6. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
 #    7. Exposes port 5000 on the container.                         #
-#    8. Runs the startup script as the entrypoint command.          #
+#    8. Runs the startup script as the entrypoint command with      #
+#       the "start" argument.                                       #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
 #        you wish to access the server. Also, if you want your data #
@@ -51,16 +53,13 @@ ARG VERSION
 # Setting working directory
 WORKDIR /usr/src/app
 
-# Updating repo and installing wget
-RUN apt update && apt install --no-install-recommends -y wget \
-    # Downloading a tarball of the repository
-    && wget -qc https://github.com/Uzay-G/archivy/tarball/master \
-    # Extracting the source code
-    && tar -xzf master \
+# Updating repo, and installing curl
+RUN apt update && apt install --no-install-recommends -y curl \
+    # Downloading a tarball of the repository and extracting it
+    && curl -sL https://github.com/Uzay-G/archivy/tarball/master | tar -xz \
     && cd Uzay-G* \
     && cp -Rp . ../. \
     && cd ../ \
-    #&& mv Uzay-G-*/* Uzay-G-*/.flaskenv ./. \
     && rm -rf Uzay-G-* \
     # Creating a virtual environment
     && python3 -m venv venv/ \
