@@ -204,7 +204,8 @@ def parse_pocket():
     # api spec: https://getpocket.com/developer/docs/v3/retrieve
     for pocket_bookmark in bookmarks["list"].values():
         if int(pocket_bookmark["status"]) != 2:
-            desc = pocket_bookmark["excerpt"] if int(pocket_bookmark["is_article"]) else None
+            desc = pocket_bookmark["excerpt"] if int(
+                pocket_bookmark["is_article"]) else None
             bookmark = DataObj(
                 desc=desc,
                 url=pocket_bookmark["resolved_url"],
