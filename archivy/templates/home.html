@@ -56,7 +56,7 @@
 		// match certain semantic elements
 		// refactor to instead ignore <img>
 		let paragraphs = md.render(hit['_source']['content']).replace(/(\r\n\t|\n|\r\t)/gm,"").match(/(<(p|li|blockquote|strong|b).*>.*<\/(p|li|blockquote|strong|b)>)/mg);
-		for(let i = 0; i < paragraphs.length; i++)
+		for(let i = 0; paragraphs && i < paragraphs.length; i++)
 		{
 			if (paragraphs[i].toUpperCase().includes(query.toUpperCase())) {
 				hitText += `${paragraphs[i]}`;

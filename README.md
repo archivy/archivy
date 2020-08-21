@@ -12,6 +12,7 @@ Features:
 
 
 ![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
+
 Upcoming:
 
 - Integrations with HN, Reddit, and many more.
@@ -24,13 +25,9 @@ Upcoming:
 
 ### Local Setup
 
-- Make sure your system has Python installed.
-- Clone the repository.
-- `cd` into the project directory.
-- create a virtual env by running `python3 -m venv venv/`.
-- run `pip install -r requirements.txt` or `pip3`.
-- execute the `start.sh` script
-- see below for setting up search functionality
+- Make sure your system has Python and pip installed.
+- Install the python package with `pip install archivy`
+- There you go! You should be able to start the app by running `archivy` in your terminal.
 
 
 ### With Docker
@@ -41,13 +38,6 @@ See the `docker` branch for details on setting things up with docker.
 
 Archivy uses [ElasticSearch](https://www.elastic.co) to provide efficient full-text search.
 
-Add these lines to your flaskenv:
-
-```bash
-ELASTICSEARCH_ENABLED=1
-ELASTICSEARCH_URL=http://localhost:9200
-```
-
 Instructions to install and run the service are provided [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html).
 
 
@@ -56,4 +46,10 @@ Append these two lines to your [elasticsearch.yml config file](https://www.elast
 ```yaml
 http.cors.enabled: true
 http.cors.allow-origin: "http://localhost:5000"
+```
+
+Run archivy like this:
+
+```bash
+ELASTICSEARCH_ENABLED=1 archivy
 ```

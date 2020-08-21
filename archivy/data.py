@@ -6,9 +6,13 @@ from shutil import rmtree
 
 import frontmatter
 
-DIRNAME = "data/"
+from archivy.config import Config
+
+DIRNAME = Config.APP_PATH + "/data/"
 
 # struct to create tree like file-structure
+
+
 class Directory:
     def __init__(self, name):
         self.name = name
@@ -16,6 +20,8 @@ class Directory:
         self.child_dirs = {}
 
 # method from django to sanitize filename
+
+
 def valid_filename(name):
     name = str(name).strip().replace(" ", "_")
     return re.sub(r"(?u)[^-\w.]", "", name)
@@ -31,14 +37,14 @@ def get_items(collections=[], path="", structured=True):
         datacont = []
     if structured:
         for filename in glob.glob(DIRNAME + path + "**/*", recursive=True):
-            paths = filename.split("/")
+            paths = filename.split("/data/")[1].split("/")
             data = frontmatter.load(
                 filename) if filename.endswith(".md") else None
 
             current_dir = datacont
 
             # iterate through paths
-            for segment in paths[1:]:
+            for segment in paths:
                 if segment.endswith(".md"):
                     current_dir.child_files.append(data)
                 else:
@@ -49,22 +55,25 @@ def get_items(collections=[], path="", structured=True):
     else:
         for filename in glob.glob(DIRNAME + path + "**/*.md", recursive=True):
             data = frontmatter.load(filename)
-            if collections == [] or any(
-                    [collection == data["type"] for collection in collections]):
+            if len(collections) == 0 or \
+                    any([collection == data["type"]
+                        for collection in collections]):
                 datacont.append(data)
 
     return datacont
 
 
 def create(contents, title, path=""):
-    with open(DIRNAME + path + "/" + valid_filename(title) + ".md", "w") as file:
+    path_to_md_file = os.path.join(
+        DIRNAME, path, "{}.md".format(valid_filename(title)))
+    with open(path_to_md_file, "w") as file:
         file.write(contents)
 
 
 def get_item(dataobj_id):
     file = glob.glob(f"{DIRNAME}**/{dataobj_id}-*.md", recursive=True)[0]
     data = frontmatter.load(file)
-    data["fullpath"] = os.getcwd() + "/" + file
+    data["fullpath"] = file
     return data
 
 
@@ -75,7 +84,7 @@ def delete_item(id):
 
 def get_dirs():
     dirnames = glob.glob(DIRNAME + "**/*", recursive=True)
-    dirnames = ["/".join(name.split("/")[1:])
+    dirnames = [name.split("/data/")[1]
                 for name in dirnames if not name.endswith(".md")]
     dirnames.append("not classified")
     return dirnames
