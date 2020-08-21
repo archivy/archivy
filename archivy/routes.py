@@ -6,7 +6,10 @@ from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
 
 from archivy.models import DataObj
-from archivy.forms import NewBookmarkForm, NewNoteForm, DeleteDataForm, PocketForm
+from archivy.forms import NewBookmarkForm
+from archivy.forms import NewNoteForm
+from archivy.forms import DeleteDataForm
+from archivy.forms import PocketForm
 from archivy.search import query_index
 from archivy import data, app
 from archivy.extensions import DB
