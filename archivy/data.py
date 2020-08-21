@@ -84,7 +84,8 @@ def delete_item(id):
 
 def get_dirs():
     dirnames = glob.glob(DIRNAME + "**/*", recursive=True)
-    dirnames = [name.split("/data/")[1] for name in dirnames if not name.endswith(".md")]
+    dirnames = [name.split("/data/")[1]
+                for name in dirnames if not name.endswith(".md")]
     dirnames.append("not classified")
     return dirnames
 
