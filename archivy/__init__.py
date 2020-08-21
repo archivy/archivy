@@ -1,4 +1,3 @@
-from archivy import data
 import elasticsearch
 import subprocess
 from pathlib import Path
@@ -42,6 +41,8 @@ app.jinja_options["extensions"].append("jinja2.ext.do")
 Scss(app)
 
 
+from archivy import data
+
 # get max id
 cur_id = 1
 for dataobj in data.get_items(structured=False):
@@ -49,3 +50,5 @@ for dataobj in data.get_items(structured=False):
 
 
 extensions.set_max_id(cur_id + 1)
+
+from archivy import routes

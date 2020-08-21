@@ -124,8 +124,6 @@ def pocket_settings():
     form = PocketForm()
     pocket = Query()
     if form.validate_on_submit():
-        if DB.search(pocket.type == "pocket_key"):
-            redirect("/parse_pocket")
         request_data = {
             "consumer_key": form.api_key.data,
             "redirect_uri": "http://localhost:5000/parse_pocket?new=1",
@@ -141,9 +139,9 @@ def pocket_settings():
             "consumer_key": form.api_key.data,
             "code": resp.json()["code"]}
         if DB.search(pocket.type == "pocket_key"):
-            DB.insert(new_data)
-        else:
             DB.update(new_data, pocket.type == "pocket_key")
+        else:
+            DB.insert(new_data)
         flash("Settings Saved")
         return redirect(
             # FIXME: the redirect is forced to localhost:5000
