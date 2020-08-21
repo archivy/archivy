@@ -65,7 +65,7 @@ def create(contents, title, path=""):
 def get_item(dataobj_id):
     file = glob.glob(f"{DIRNAME}**/{dataobj_id}-*.md", recursive=True)[0]
     data = frontmatter.load(file)
-    data["fullpath"] = os.getcwd() + "/" + file
+    data["fullpath"] = file
     return data
 
 
