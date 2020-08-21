@@ -17,4 +17,5 @@ def set_max_id(val):
 
 
 def elastic_client():
-    return Elasticsearch([Config.ELASTICSEARCH_URL]) if Config.ELASTICSEARCH_ENABLED else None
+    return Elasticsearch([Config.ELASTICSEARCH_URL]
+                         ) if Config.ELASTICSEARCH_ENABLED else None
