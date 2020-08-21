@@ -7,8 +7,7 @@ class Config(object):
     SECRET_KEY = os.urandom(32)
     INDEX_NAME = "dataobj"
     APP_PATH = os.getenv('ARCHIVY_DATA_DIR') or appdirs.user_data_dir('archivy')
-    if not os.path.exists(APP_PATH):
-        os.makedirs(APP_PATH)
+    os.makedirs(APP_PATH, exist_ok=True)
     ELASTIC_CONF = {
         "settings": {
             "analysis": {
