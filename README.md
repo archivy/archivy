@@ -53,3 +53,9 @@ Run archivy like this:
 ```bash
 ELASTICSEARCH_ENABLED=1 archivy
 ```
+
+## Community and Development
+
+If you're interested in developing and improving Archivy, please join our [community discord server](https://discord.gg/uQsqyxB).
+
+Feel free to [open issues](https://github.com/Uzay-G/archivy/issues/new) if you encounter bugs, have any ideas / feature requests and use the discord server for more casual discussion.
