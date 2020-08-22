@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<input type="text" id="searchBar">
-<ul id="searchHits">
+
+{% if search_enabled %}
+	<input type="text" id="searchBar">
+	<ul id="searchHits">
+{% endif %}
+	
 </ul>
 
 <a href="/bookmarks/new">New Bookmark</a>
@@ -48,50 +52,52 @@
 <script>
 	const SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 	// search functionality
-	var md = window.markdownit();
-	function appendHit(hit, hidden, query) {
-		let hitsDiv = document.getElementById("searchHits");
-		let hitLi = document.createElement("li");
-		let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-		// match certain semantic elements
-		// refactor to instead ignore <img>
-		let paragraphs = md.render(hit['_source']['content']).replace(/(\r\n\t|\n|\r\t)/gm,"").match(/(<(p|li|blockquote|strong|b).*>.*<\/(p|li|blockquote|strong|b)>)/mg);
-		for(let i = 0; paragraphs && i < paragraphs.length; i++)
-		{
-			if (paragraphs[i].toUpperCase().includes(query.toUpperCase())) {
-				hitText += `${paragraphs[i]}`;
+	{% if search_enabled %}	
+		var md = window.markdownit();
+		function appendHit(hit, hidden, query) {
+			let hitsDiv = document.getElementById("searchHits");
+			let hitLi = document.createElement("li");
+			let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
+			// match certain semantic elements
+			// refactor to instead ignore <img>
+			let paragraphs = md.render(hit['_source']['content']).replace(/(\r\n\t|\n|\r\t)/gm,"").match(/(<(p|li|blockquote|strong|b).*>.*<\/(p|li|blockquote|strong|b)>)/mg);
+			for(let i = 0; paragraphs && i < paragraphs.length; i++)
+			{
+				if (paragraphs[i].toUpperCase().includes(query.toUpperCase())) {
+					hitText += `${paragraphs[i]}`;
+				}
 			}
-		}
-		hitText = hitText.replace(query, "<span style='background-color: #f6efa6'>" + query + "</span>");
-		p.innerHTML = hitText, a.textContent = hit['_source']['title'], a.href = `/dataobj/${hit['_id']}`;
-		hitLi.append(a);
-		hitLi.append(p);
-		if (hidden)
-		{
-			hitLi.classList = "hidden";
-		}
-		hitsDiv.appendChild(hitLi);
-	}
-	let input = document.getElementById("searchBar");
-	input.addEventListener('input', async function(e) {
-		if (input.value !== "")
-		{
-			let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
-				"method": "GET"
-			});
-			if (searchQuery.ok) {	
-				let data = await searchQuery.json(), i = 0;
-				console.log(data);
-				document.getElementById("searchHits").innerHTML = "";
-				data.forEach(function(hit)
-				{
-					let hidden = i > 4;
-					appendHit(hit, hidden, input.value);
-					i++;
-				})
+			hitText = hitText.replace(query, "<span style='background-color: #f6efa6'>" + query + "</span>");
+			p.innerHTML = hitText, a.textContent = hit['_source']['title'], a.href = `/dataobj/${hit['_id']}`;
+			hitLi.append(a);
+			hitLi.append(p);
+			if (hidden)
+			{
+				hitLi.classList = "hidden";
 			}
+			hitsDiv.appendChild(hitLi);
 		}
-	});
+		let input = document.getElementById("searchBar");
+		input.addEventListener('input', async function(e) {
+			if (input.value !== "")
+			{
+				let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
+					"method": "GET"
+				});
+				if (searchQuery.ok) {	
+					let data = await searchQuery.json(), i = 0;
+					console.log(data);
+					document.getElementById("searchHits").innerHTML = "";
+					data.forEach(function(hit)
+					{
+						let hidden = i > 4;
+						appendHit(hit, hidden, input.value);
+						i++;
+					})
+				}
+			}
+		});
+	{% endif %}
 	function createInteractive(prevElem, id, path) 
 	{
 		// insert delete
