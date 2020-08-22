@@ -43,7 +43,7 @@ def new_bookmark():
     return render_template(
         "bookmarks/new.html",
         title="New Bookmark",
-        form=form)
+        form=form, search_enabled=Config.ELASTICSEARCH_ENABLED)
 
 
 @app.route("/notes/new", methods=["GET", "POST"])
