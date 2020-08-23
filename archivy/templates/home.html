@@ -100,8 +100,7 @@
 	{% endif %}
 	function createInteractive(prevElem, id, path) 
 	{
-		console.log(prevElem.innerHTML)
-		// insert new folder section (if not exists)
+		// expand
 		if (!document.getElementById("form-" + id)) {
 			// insert delete
 			// make sure root dir is not deleted in ui
@@ -132,6 +131,7 @@
 			document.getElementById("items-" + id).style.display = "block";
 			prevElem.innerHTML = 'Collapse'
 		}
+		// collapse
 		else {
 			prevElem.innerHTML = 'Expand'
 			document.getElementById(`p-${id}`).remove()
