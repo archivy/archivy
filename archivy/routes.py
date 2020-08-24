@@ -20,7 +20,7 @@ from archivy.config import Config
 @app.route("/index")
 def index():
     dataobjs = data.get_items()
-    return render_template("home.html", title="Home", dataobjs=dataobjs)
+    return render_template("home.html", title="Home", dataobjs=dataobjs, search_enabled=Config.ELASTICSEARCH_ENABLED)
 
 # TODO: refactor two following methods
 
@@ -43,7 +43,7 @@ def new_bookmark():
     return render_template(
         "bookmarks/new.html",
         title="New Bookmark",
-        form=form, search_enabled=Config.ELASTICSEARCH_ENABLED)
+        form=form)
 
 
 @app.route("/notes/new", methods=["GET", "POST"])

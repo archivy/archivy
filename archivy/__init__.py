@@ -39,8 +39,6 @@ if app.config["ELASTICSEARCH_ENABLED"]:
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
 
-Scss(app)
-
 
 # get max id
 cur_id = 1
