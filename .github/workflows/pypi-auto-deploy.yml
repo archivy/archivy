@@ -15,9 +15,14 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
-    - name: Install setuptools
+    - name: Install setuptools + pigar
       run: >-
         python -m pip install --user --upgrade setuptools wheel
+        pip install pigar 
+    - name: Generate requirements.txt
+      run: >-
+        rm requirements.txt
+        pigar archivy
     - name: Build a binary wheel and source tarball
       run: >-
           python setup.py sdist bdist_wheel

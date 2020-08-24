@@ -58,26 +58,26 @@ class DataObj:
                 setattr(self, key, value)
         else:
             # still needs processing
-            if "path" in kwargs and kwargs["path"] != "not classified":
-                self.path = kwargs["path"]
-            else:
-                self.path = ""
-            self.desc = kwargs["desc"]
-            self.tags = kwargs["tags"].split()
-            self.type = kwargs["type"]
-            self.content = ""
-            self.id = -1
 
-            if "date" in kwargs:
-                self.date = kwargs["date"]
-            else:
-                self.date = datetime.datetime.now()
+            if "path" not in kwargs or kwargs["path"] == "not classified":
+                kwargs["path"] = ""
+
+            # set_attributes (path, desc, tags, type, title)
+            self.path = kwargs["path"]
+            self.desc = kwargs["desc"]
+            self.tags = kwargs["tags"]
+            self.type = kwargs["type"]
+            if "title" in kwargs:
+                self.title = kwargs["title"]
+
+            self.date = datetime.datetime.now()
+            self.content = ""
+            self.fullpath = ""
+            self.id = None
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 self.url = kwargs["url"]
                 if validators.url(self.url):
                     self.process_bookmark_url()
-            else:
-                self.title = kwargs["title"]
 
     def validate(self):
         valid_url = (
@@ -94,6 +94,7 @@ class DataObj:
 
     def insert(self):
         if self.validate():
+            extensions.set_max_id(extensions.get_max_id() + 1)
             self.id = extensions.get_max_id()
             data = {
                 "type": self.type,
@@ -112,8 +113,12 @@ class DataObj:
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
-            create(frontmatter.dumps(dataobj), str(self.id) + "-" +
-                   dataobj["date"] + "-" + dataobj["title"], path=self.path)
+            self.fullpath = create(
+                                frontmatter.dumps(dataobj),
+                                str(self.id) + "-" +
+                                dataobj["date"] + "-" + dataobj["title"],
+                                path=self.path)
+
             add_to_index(Config.INDEX_NAME, self)
             return self.id
         return False
