@@ -4,7 +4,6 @@ from pathlib import Path
 from threading import Thread
 
 from flask import Flask
-from flask_scss import Scss
 
 from archivy import extensions
 from archivy import data
