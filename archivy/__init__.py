@@ -4,7 +4,6 @@ from pathlib import Path
 from threading import Thread
 
 from flask import Flask
-from flask_scss import Scss
 
 from archivy import extensions
 from archivy import data
@@ -38,8 +37,6 @@ if app.config["ELASTICSEARCH_ENABLED"]:
 
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
-
-Scss(app)
 
 
 # get max id
