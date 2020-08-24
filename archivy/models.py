@@ -59,15 +59,16 @@ class DataObj:
         else:
             # still needs processing
 
-            if not "path" in kwargs or kwargs["path"] == "not classified": 
-                kwargs["path"] = "" 
+            if "path" not in kwargs or kwargs["path"] == "not classified":
+                kwargs["path"] = ""
 
             # set_attributes (path, desc, tags, type, title)
             self.path = kwargs["path"]
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"]
             self.type = kwargs["type"]
-            if "title" in kwargs: self.title = kwargs["title"]
+            if "title" in kwargs:
+                self.title = kwargs["title"]
 
             self.date = datetime.datetime.now()
             self.content = ""
@@ -112,8 +113,12 @@ class DataObj:
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
-            self.fullpath = create(frontmatter.dumps(dataobj), str(self.id) + "-" +
-                          dataobj["date"] + "-" + dataobj["title"], path=self.path)
+            self.fullpath = create(
+                                frontmatter.dumps(dataobj),
+                                str(self.id) + "-" +
+                                dataobj["date"] + "-" + dataobj["title"],
+                                path=self.path)
+
             add_to_index(Config.INDEX_NAME, self)
             return self.id
         return False

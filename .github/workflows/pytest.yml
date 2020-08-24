@@ -28,5 +28,5 @@ jobs:
         pip install pytest
     - name: Run tests
       run: |
-        pytest archivy
+        pytest tests/
         
