@@ -29,6 +29,24 @@ Upcoming:
 - Install the python package with `pip install archivy`
 - There you go! You should be able to start the app by running `archivy` in your terminal.
 
+### Configuration
+
+Archivy uses environment variables for its configuration:
+
+| Variable                | Default                     | Description                           |
+|-------------------------|-----------------------------|---------------------------------------|
+| `ARCHIVY_DATA_DIR`      | System-dependant, see below | Directory in which data will be saved |
+| `ELASTICSEARCH_ENABLED` | 0                           | Enable Elasticsearch integration      |
+| `ELASTICSEARCH_URL`     | http://localhost:9200       | Url to the elasticsearch server       |
+
+
+`ARCHIVY_DATA_DIR` by default will be set by the
+[appdirs](https://pypi.org/project/appdirs/) python library:
+
+On Linux systems, it follows the [XDG
+specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html):
+`~/.local/share/archivy`
+
 
 ### With Docker
 

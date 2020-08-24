@@ -14,10 +14,10 @@ Markdown == 3.2.2
 WTForms == 2.3.1
 
 # archivy/config.py: 2
-appdirs == 1.4.3
+appdirs == 1.4.4
 
 # archivy/models.py: 8
-beautifulsoup4 == 4.6.0
+beautifulsoup4 == 4.9.1
 
 # archivy/__init__.py: 1
 # archivy/extensions.py: 2
@@ -35,7 +35,7 @@ python_frontmatter == 0.5.0
 
 # archivy/models.py: 5
 # archivy/routes.py: 4
-requests == 2.18.4
+requests == 2.24.0
 
 # archivy/extensions.py: 1
 # archivy/routes.py: 5
