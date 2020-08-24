@@ -28,13 +28,7 @@ def valid_filename(name):
 
 
 def get_items(collections=[], path="", structured=True):
-    datacont = None
-    if structured:
-        # for structured datacont
-        datacont = Directory("root")
-    else:
-        # unstructured
-        datacont = []
+    datacont = Directory("root") if structured else []
     if structured:
         for filename in glob.glob(DIRNAME + path + "**/*", recursive=True):
             paths = filename.split("/data/")[1].split("/")
@@ -68,6 +62,8 @@ def create(contents, title, path=""):
         DIRNAME, path, "{}.md".format(valid_filename(title)))
     with open(path_to_md_file, "w") as file:
         file.write(contents)
+
+    return path_to_md_file
 
 
 def get_item(dataobj_id):
