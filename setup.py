@@ -8,7 +8,7 @@ with open('requirements.txt', encoding='utf-8') as f:
     install_requires = [x.strip() for x in all_reqs if not x.startswith('#') and not x.startswith("-e git")]
 
 setuptools.setup(
-    name="archivy", # Replace with your own username
+    name="archivy",
     version="0.0.5",
     author="Uzay-G",
     author_email="uzgirit@gmail.com",
