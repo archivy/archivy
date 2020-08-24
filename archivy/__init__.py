@@ -6,7 +6,6 @@ from threading import Thread
 from flask import Flask
 
 from archivy import extensions
-from archivy import data
 from archivy.config import Config
 from archivy.check_changes import run_watcher
 
