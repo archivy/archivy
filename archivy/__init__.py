@@ -6,7 +6,6 @@ from threading import Thread
 from flask import Flask
 
 from archivy import extensions
-from archivy import data
 from archivy.config import Config
 from archivy.check_changes import run_watcher
 
@@ -37,14 +36,5 @@ if app.config["ELASTICSEARCH_ENABLED"]:
 
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
-
-
-# get max id
-cur_id = 1
-for dataobj in data.get_items(structured=False):
-    cur_id = max(cur_id, dataobj["id"])
-
-
-extensions.set_max_id(cur_id + 1)
 
 from archivy import routes  # noqa:

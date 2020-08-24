@@ -4,9 +4,6 @@
 # archivy/routes.py: 6
 Flask == 1.1.2
 
-# archivy/__init__.py: 7
-Flask_Scss == 0.5
-
 # archivy/forms.py: 2
 Flask_WTF == 0.14.3
 
