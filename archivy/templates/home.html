@@ -25,7 +25,7 @@
 		<h2>
 			{{ dir.name }} 
 		</h2>
-		<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{"/".join(path)}}'); this.classList.add('hidden')">Expand</button>
+		<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{"/".join(path)}}');">Expand</button>
 
 		<ul id="items-{{i.value}}">
 			{% for dataobj in dir.child_files %}
@@ -100,33 +100,47 @@
 	{% endif %}
 	function createInteractive(prevElem, id, path) 
 	{
-		// insert delete
-		// make sure root dir is not deleted in ui
-		if (id != 1) {
+		// expand
+		if (!document.getElementById("form-" + id)) {
+			// insert delete
+			// make sure root dir is not deleted in ui
+			if (id != 1) {
+				prevElem.insertAdjacentHTML("afterend",
+					`
+						<button id="delete-btn-${id}" class="delete-btn" onclick="deleteFolder('${path}', ${id})">
+							<img src="/static/delete.png" alt="delete icon">
+						</button>
+					`
+				)
+			}
+
 			prevElem.insertAdjacentHTML("afterend",
 				`
-					<button id="delete-btn-${id}" class="delete-btn" onclick="deleteFolder('${path}', ${id})">
-						<img src="/static/delete.png" alt="delete icon">
-					</button>
+					<p id="p-${id}">Create a new folder</p>
+					<form id="form-${id}" class="new-folder fadein">
+						<span id="form-path-${id}">${path}</span>
+						<input type="text" id="form-input-${id}" class="folder-inputs">
+						<input type="submit">
+					</form>
 				`
 			)
+			document.getElementById("form-" + id).addEventListener("submit", function (e) {
+				e.preventDefault();
+				createFolder(id);
+			})
+			document.getElementById("items-" + id).style.display = "block";
+			prevElem.innerHTML = 'Collapse'
 		}
-		// insert new folder section
-		prevElem.insertAdjacentHTML("afterend",
-			`
-				<p>Create a new folder</p>
-				<form id="form-${id}" class="new-folder fadein">
-					<span id="form-path-${id}">${path}</span>
-					<input type="text" id="form-input-${id}" class="folder-inputs">
-					<input type="submit">
-				</form>
-			`
-		)
-		document.getElementById("form-" + id).addEventListener("submit", function(e) {
-			e.preventDefault();
-			createFolder(id);
-		})
-		document.getElementById("items-" + id).style.display = "block";
+		// collapse
+		else {
+			prevElem.innerHTML = 'Expand'
+			document.getElementById(`p-${id}`).remove()
+			document.getElementById("form-" + id).remove()
+			if(document.getElementById(`delete-btn-${id}`))
+				document.getElementById(`delete-btn-${id}`).remove()
+			document.getElementById("items-" + id).style.display = "none";
+		}
+
 	}
 	function createFolder(id)
 	{
@@ -146,7 +160,7 @@
 					<h2>
 						${input.value}		
 					</h2>
-					<button class="expand-btn" onclick="createInteractive(this, ${id + 1}, '${totalPath}'); this.classList.add('hidden')">Expand</button>
+					<button class="expand-btn" onclick="createInteractive(this, ${id + 1}, '${totalPath}');">Expand</button>
 			`
 		)
 		input.value = "";
