@@ -12,7 +12,7 @@ from archivy.forms import DeleteDataForm
 from archivy.forms import PocketForm
 from archivy.search import query_index
 from archivy import data, app
-from archivy.extensions import DB
+from archivy.extensions import get_db
 from archivy.config import Config
 
 
@@ -125,6 +125,7 @@ def search_elastic():
 
 @app.route("/pocket", methods=["POST", "GET"])
 def pocket_settings():
+    db = get_db()
     form = PocketForm()
     pocket = Query()
     if form.validate_on_submit():
@@ -142,10 +143,10 @@ def pocket_settings():
             "type": "pocket_key",
             "consumer_key": form.api_key.data,
             "code": resp.json()["code"]}
-        if DB.search(pocket.type == "pocket_key"):
-            DB.update(new_data, pocket.type == "pocket_key")
+        if db.search(pocket.type == "pocket_key"):
+            db.update(new_data, pocket.type == "pocket_key")
         else:
-            DB.insert(new_data)
+            db.insert(new_data)
         flash("Settings Saved")
         return redirect(
             # FIXME: the redirect is forced to localhost:5000
@@ -165,7 +166,8 @@ def pocket_settings():
 
 @app.route("/parse_pocket")
 def parse_pocket():
-    pocket = DB.search(Query().type == "pocket_key")[0]
+    db = get_db()
+    pocket = db.search(Query().type == "pocket_key")[0]
     if request.args.get("new") == "1":
         auth_data = {
             "consumer_key": pocket["consumer_key"],
@@ -176,7 +178,7 @@ def parse_pocket():
             headers={
                 "X-Accept": "application/json",
                 "Content-Type": "application/json"})
-        DB.update(
+        db.update(
             operations.set(
                 "access_token",
                 resp.json()["access_token"]),
