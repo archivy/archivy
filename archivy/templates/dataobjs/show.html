@@ -3,7 +3,7 @@
 {% block content %}
 	<h2>{{ dataobj['title'] }}</h2>
 	<p>You can edit this file at <a href="file://{{ dataobj['fullpath'] }}">{{dataobj['fullpath']}}</a></p>
-    {{ " ".join(dataobj['tags']) }}
+    {{ ", ".join(dataobj['tags']) }}
     <br>
     {{ dataobj['date'] }}
 	{% if dataobj['type'] == 'bookmarks' or dataobj['type'] == 'pocket_bookmarks' %}

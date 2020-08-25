@@ -67,8 +67,7 @@ class DataObj:
             self.desc = kwargs["desc"]
             self.tags = kwargs["tags"]
             self.type = kwargs["type"]
-            if "title" in kwargs:
-                self.title = kwargs["title"]
+            self.title = kwargs.get("title")
 
             self.date = datetime.datetime.now()
             self.content = ""
@@ -107,8 +106,6 @@ class DataObj:
             }
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
-
-            extensions.set_max_id(self.id + 1)
 
             # convert to markdown
             dataobj = frontmatter.Post(self.content)
