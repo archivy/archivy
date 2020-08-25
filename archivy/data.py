@@ -1,7 +1,7 @@
-import os
-import re
 import glob
+import os
 import platform
+import re
 import subprocess
 from pathlib import Path
 from shutil import rmtree

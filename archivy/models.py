@@ -1,16 +1,17 @@
 import datetime
 from urllib.parse import urljoin
 
-import validators
-import requests
-import html2text
 import frontmatter
+import html2text
+import requests
+import validators
 from bs4 import BeautifulSoup
+from flask import current_app
 
 from archivy import extensions
-from archivy.search import add_to_index
 from archivy.data import create
 from archivy.config import Config
+from archivy.search import add_to_index
 
 
 class DataObj:
