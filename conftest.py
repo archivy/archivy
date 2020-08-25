@@ -5,21 +5,37 @@ import tempfile
 import pytest
 import responses
 
-from archivy import app, config
+from archivy import app
+from archivy.extensions import get_db
 from archivy.models import DataObj
 
+
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
+def test_app():
+    """Create and configure a new app instance for each test."""
+    # create a temporary file to isolate the database for each test
     app_dir = tempfile.mkdtemp()
     app.config['APP_PATH'] = app_dir
     data_dir = os.path.join(app_dir, "data")
     os.mkdir(data_dir)
 
+    app.config['TESTING'] = True
+
+    # create the database and load test data
+    with app.app_context():
+        _ = get_db()
+
+    yield app
+
+    # close and remove the temporary database
+    shutil.rmtree(app_dir)
+
+
+@pytest.fixture
+def client(test_app):
     with app.test_client() as client:
         yield client
 
-    shutil.rmtree(app_dir)
 
 @pytest.fixture
 def mocked_responses():
