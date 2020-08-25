@@ -185,6 +185,9 @@ def parse_pocket():
             Query().type == "pocket_key")
         flash(f"{resp.json()['username']} Signed in!")
 
+    # update pocket dictionary
+    pocket = db.search(Query().type == "pocket_key")[0]
+
     pocket_data = {
         "consumer_key": pocket["consumer_key"],
         "access_token": pocket["access_token"],
