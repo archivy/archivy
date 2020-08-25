@@ -1,0 +1,67 @@
+# Container Structure Test for '' image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Uzay G'
+    - key: 'org.opencontainers.image.title'
+      value: 'Archivy'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/Uzay-G'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/Uzay-G/archivy/tree/master/'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/Uzay-G/archivy/tree/master/'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/Uzay-G/archivy/blob/master/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/Uzay-G/archivy/blob/docker/Dockerfile'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'MIT'
+    - key: 'org.opencontainers.image.version'
+      value: '0.0.7'
+    - key: 'org.label-schema.version'
+      value: '0.0.7'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+  entrypoint: ["entrypoint.sh"]
+  cmd: ["start"]
+  volumes: ["/home/archivy/.local/share/archivy/data"]
+  exposedPorts: ["5000"]
+fileExistenceTests:
+  - name: 'Check if ~/.local/bin directory exists'
+    path: '/home/archivy/.local/bin'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 1000
+    gid: 1000
+    isExecutableBy: 'any'
+  - name: 'Check if ~/.local/lib directory exists'
+    path: '/home/archivy/.local/lib'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 1000
+    gid: 1000
+    isExecutableBy: 'any'
+  - name: 'Check if archivy executable exists'
+    path: '/home/archivy/.local/bin/archivy'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 1000
+    gid: 1000
+    isExecutableBy: 'any'
+  - name: 'Check if ~/.local/lib/share/archivy/data directory exists'
+    path: '/home/archivy/.local/share/archivy/data'
+    shouldExist: true
+    permissions: 'dgrwxr-xr-x'
+    uid: 1000
+    gid: 1000
+    isExecutableBy: 'any'
+commandTests:
+  - name: 'Check if archivy is installed in PATH'
+    setup: [["entrypoint.sh", "sleep 1"]]
+    command: "which"
+    args: ["archivy"]
+    expectedOutput: ["/home/archivy/.local/bin/archivy"]
+
