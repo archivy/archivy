@@ -45,7 +45,7 @@ def new_bookmark():
             flash("Bookmark Saved!")
             return redirect(f"/dataobj/{bookmark_id}")
     return render_template(
-        "bookmarks/new.html",
+        "dataobjs/new.html",
         title="New Bookmark",
         form=form)
 
@@ -66,7 +66,7 @@ def new_note():
             flash("Note Saved!")
             return redirect(f"/dataobj/{note_id}")
     return render_template(
-        "/notes/new.html",
+        "/dataobjs/new.html",
         title="New Note",
         form=form)
 

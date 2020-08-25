@@ -11,7 +11,7 @@ def test_new_note(note_fixture):
     with the right attributes and the right id.
     """
     max_id = get_max_id()
-    assert note_fixture.id + 1 == max_id
+    assert note_fixture.id == max_id
     
     saved_file = frontmatter.load(note_fixture.fullpath)
     for attr in attributes:
