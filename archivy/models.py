@@ -117,7 +117,8 @@ class DataObj:
                                 frontmatter.dumps(dataobj),
                                 str(self.id) + "-" +
                                 dataobj["date"] + "-" + dataobj["title"],
-                                path=self.path)
+                                path=self.path,
+                                needs_to_open=self.type == "note")
 
             add_to_index(Config.INDEX_NAME, self)
             return self.id
