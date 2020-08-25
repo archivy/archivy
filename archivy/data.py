@@ -59,13 +59,14 @@ def get_items(collections=[], path="", structured=True):
     return datacont
 
 
-def create(contents, title, path=""):
+def create(contents, title, path="", needs_to_open=False):
     path_to_md_file = os.path.join(
         DIRNAME, path, "{}.md".format(valid_filename(title)))
     with open(path_to_md_file, "w") as file:
         file.write(contents)
-    
-    open_file(path_to_md_file)
+
+    if needs_to_open:
+        open_file(path_to_md_file)
     return path_to_md_file
 
 
@@ -101,6 +102,7 @@ def delete_dir(name):
         return True
     except FileNotFoundError:
         return False
+
 
 def open_file(path):
     if platform.system() == "Windows":
