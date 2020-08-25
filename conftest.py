@@ -46,7 +46,11 @@ def mocked_responses():
 
 @pytest.fixture()
 def note_fixture(test_app):
-    datapoints = {"type": "note", "title": "Test Note", "desc": "A note to test model functionality", "tags": ["testing", "archivy"], "path": ""}
+    datapoints = {
+        "type": "note", "title": "Test Note",
+        "desc": "A note to test model functionality",
+        "tags": ["testing", "archivy"], "path": ""
+    }
 
     with test_app.app_context():
         note = DataObj(**datapoints)
