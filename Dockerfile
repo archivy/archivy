@@ -73,6 +73,9 @@ ARG VCS_REF
 ARG ARCHIVY_USER=archivy
 ARG ARCHIVY_GROUP=archivy
 
+# Archivy version
+ARG VERSION=0.0.7
+
 # Installing netcat and xdg-utils
 RUN apk update && apk add --no-cache \
       netcat-openbsd \

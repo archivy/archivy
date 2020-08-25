@@ -8,9 +8,6 @@ services:
       - "5000:5000"
     volumes:
       - archivyData:/home/archivy/.local/share/archivy/data
-    environment:
-      - FLASK_DEBUG=0
-      - ELASTICSEARCH_ENABLED=0
 
 volumes:
   archivyData:
