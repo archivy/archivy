@@ -1,6 +1,8 @@
 import os
 import re
 import glob
+import platform
+import subprocess
 from pathlib import Path
 from shutil import rmtree
 
@@ -62,7 +64,8 @@ def create(contents, title, path=""):
         DIRNAME, path, "{}.md".format(valid_filename(title)))
     with open(path_to_md_file, "w") as file:
         file.write(contents)
-
+    
+    open_file(path_to_md_file)
     return path_to_md_file
 
 
@@ -98,3 +101,11 @@ def delete_dir(name):
         return True
     except FileNotFoundError:
         return False
+
+def open_file(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
