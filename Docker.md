@@ -44,20 +44,6 @@ If you don't have Docker installed, take a look at the [official installation gu
 
 ## Building Archivy
 
-This repository contains two Dockerfiles:
-
-- `Dockerfile` - Default choice. Portable.
-- `local-build.Dockerfile` - Better for rapid local development. Requires repository to be cloned.
-
-The way you choose to build the image depends on your workflow, which in turn influences your choice of `Dockerfile`. The steps taken by each file is given in the preamble within each file which are liberally commented. The primary difference between the two files is in *how* the source code is obtained:
-
-In `Dockerfile`, each time the image is built, a tarball of the repository is *downloaded* to the container.
-In `local-build.Dockerfile`, all files present in the current context(current working directory) are *copied*
-to the container. This assumes that the `local-build.Dockerfile` is in the root directory of the repository.
-Therefore, to use this file, you will first need a copy of the repository on your machine.
-
-
-
 ### Building using `Dockerfile`
 
 The file `Dockerfile` is much more portable than the `local-build.Dockerfile` as you do not need any other additional files to build the image. The Dockerfile automatically downloads the source code during the build stage. Just download `Dockerfile` and run the following command to build the image:
@@ -74,32 +60,13 @@ $ docker build -t archivy:1.0 .
 There's an easier way to build the image. You can pass the URL to the GitHub repository directly to `docker`, and as long as there’s a file named `Dockerfile` in the root of the repository, Docker will build it.
 
 ```sh
-$ docker build -t archivy:1.0 github.com/Uzay-G/archivy
+$ docker build -t archivy:1.0 https://github.com/Uzay-G/archivy.git#docker
 ```
 This will clone the GitHub repository and use the cloned repository as context. The Dockerfile at the root of the repository is used as `Dockerfile`.
 
-
-
-### Building using `local-build.Dockerfile`
-
-This file does *not* download the source code like the previous `Dockerfile` does. So, you will need to fetch/clone the whole repository in order to build an image using the `local-build.Dockerfile`. To build the image:
-
-```shell
-# Clone the repository(docker branch)
-$ git clone https://github.com/Uzay-G/archivy.git
-
-# Change directory
-$ cd archivy
-
-# Build the image using the `local-build.Dockerfile` as Dockerfile
-$ docker build -t archivy:1.0 -f ./local-build.Dockerfile .
-```
-
 > **NOTE**:
 >
-> Do not forget to add the `.` at the end of the `docker build` command. This specifies the *context*, and all files within this *context* are transferred to the Docker daemon during build time.
-
-For rapid local development and building of container images, the `local-build.Dockerfile` is quicker and more efficient as any changes made to the source code are immediately available to the container without having to commit and/or push those changes upstream.
+> The `master` branch of the Archivy repository does **not** contain any Dockerfiles. All files pertaining to Docker are available in the `docker` branch of this repository.
 
 
 
@@ -155,14 +122,14 @@ will start an interactive shell inside the container. Remember to pass the `-it`
 You can bind-mount any directory on your host to the data directory on the container in order to ensure that if and when the container is stopped/terminated, the data saved to the container isn’t lost. This can be done as follows:
 
 ```shell
-$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/usr/src/app/data harshavardhanj/archivy
+$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/home/archivy/.local/share/archivy/data harshavardhanj/archivy
 ```
 
 > `-v/--volume host:container`			——		Bind-mount host path to container path
 
-The argument `-v /path/to/host/dir:/usr/src/app/data` bind-mounts the directory `/path/to/host/dir` on the host to `/usr/src/app/data` on the container.
+The argument `-v /path/to/host/dir:/home/archivy/.local/share/archivy/data` bind-mounts the directory `/path/to/host/dir` on the host to `/home/archivy/.local/share/archivy/data` on the container.
 
-If you wish to mount, say `/home/bob/data`, you would first need to create the `data` directory at `/home/bob`, and then change the argument to `-v /home/bob/data:/usr/src/app/data`.
+If you wish to mount, say `/home/bob/data`, you would first need to create the `data` directory at `/home/bob`, and then change the argument to `-v /home/bob/data:/home/archivy/.local/share/archivy/data`.
 
 
 
@@ -171,7 +138,7 @@ If you wish to mount, say `/home/bob/data`, you would first need to create the `
 You can inject environment variables while starting the container as follows:
 
 ```shell
-$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/usr/src/app/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="http://localhost:9200/" harshavardhanj/archivy
+$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/home/archivy/.local/share/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="http://localhost:9200/" harshavardhanj/archivy
 ```
 
 > `-e/--env KEY=value`							——		Set the environment variable(`key=value`)
@@ -206,7 +173,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/usr/src/app/data
+      - archivyData:/home/archivy/.local/share/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=0
@@ -241,11 +208,10 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/usr/src/app/data
+      - archivyData:/home/archivy/.local/share/archivy/data
     environment:
     	- FLASK_DEBUG=1
     	- ELASTICSEARCH_ENABLED=0
-    	- ELASTICSEARCH_URL=""
     	
 volumes:
   archivyData:
@@ -257,16 +223,16 @@ This file
 
 - binds port `5000` on the host to port `5000` on the container.
 
-- creates a named volume `archivyData` on the host and mounts it to the `/usr/src/app/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/home/archivy/.local/share/archivy/data` directory on the container(which is where all persistent data will be stored).
 - Sets the following environment variables so that they can be used by Archivy during run time
   - `FLASK_DEBUG=1`
   - `ELASTICSEARCH_ENABLED=0`
-  - `ELASTICSEARCH_URL=""`
 
-This would be the same as running the following command:
+This would be the same as running the following commands:
 
 ```sh
-$ docker run -d -p 5000:5000 -v ./data:/usr/src/app/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="" harshavardhanj/archivy
+$ docker volume create archivyData
+$ docker run -d -p 5000:5000 -v archivy:/home/archivy/.local/share/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 harshavardhanj/archivy
 ```
 
 When multiple container get involved, it becomes a lot easier to deal with compose files.
@@ -275,10 +241,9 @@ When multiple container get involved, it becomes a lot easier to deal with compo
 
 ### Which compose file to use?
 
-There are currently three compose files in the repository:
+There are currently two compose files in the repository:
 
 - `docker-compose.yml`
-- `docker-compose-local-build.yml`
 - `docker-compose-with-elasticsearch.yml`
 
 If you would like to test Archivy, just download the `docker-compose.yml` and run
@@ -287,23 +252,20 @@ If you would like to test Archivy, just download the `docker-compose.yml` and ru
 $ docker-compose -f ./docker-compose.yml up -d
 ```
 
-If you would like to build the image for yourself *and then* run it using Docker Compose, use the `docker-compose-local-build.yml`. The contents of the file are shown below:
+The contents of the file are shown below:
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
   archivy:
-    build:
-      context: .
-      dockerfile: local-build.Dockerfile
+    image: harshavardhanj/archivy
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/usr/src/app/data
+      - archivyData:/home/archivy/.local/share/archivy/data
     environment:
-    	- FLASK_DEBUG=1
+    	- FLASK_DEBUG=0
     	- ELASTICSEARCH_ENABLED=0
-    	- ELASTICSEARCH_URL=""
     	
 volumes:
   archivyData:
@@ -311,26 +273,24 @@ volumes:
 
 This file
 
-- builds an image with the current context(with all files present in the current working directory) and the `local-build.Dockerfile` Dockerfile.
+- pulls the `archivy` image.
 - binds port `5000` on the host to port `5000` on the container.
-- creates a named volume `archivyData` on the host and mounts it to the `/usr/src/app/data` directory on the container(which is where all persistent data will be stored).
-
-This is the same as the `docker-compose.yml` file but it differs in the way it obtains the `archivy` container image. This compose file will look for a Dockerfile from which to build the container image, which will then be run. Just like with the `local-build.Dockerfile`, this compose file needs to be present in the root of the repository for it to run.
+- creates a named volume `archivyData` on the host and mounts it to the `/home/archivy/.local/share/archivy/data` directory on the container(which is where all persistent data will be stored).
 
 > **NOTE**:
 >
-> If you don't want to clone the whole repository to use the above compose file, just replace `local-build.Dockerfile` with `Dockerfile`. As long as you have the `Dockerfile` file present, you can build and run the container. So, download `Dockerfile`, `docker-compose-local-build.yml`, and replace the value of the `dockerfile` key in the compose file as shown below:
+> If you wish to bind-mount a folder to Archivy, modify the `volumes` as shown below:
 >
 > ```yaml
 > services:
 >   archivy:
->     build:
->       context: .
->       dockerfile: Dockerfile
+>      ...
+>      volumes:
+>        - ./archivyData:/home/archivy/.local/share/archivy/data
 > 
 > ```
 >
-> Make sure that you have `Dockerfile` in the same directory as the compose file.
+> This will create a folder named `archivyData` in your current working directory. This is the folder in which all user-generated notes/bookmarks will be stored.
 
 If you wish to test Archivy’s full capabilities with Elasticsearch, use the `docker-compose-with-elasticsearch.yml` . The usage of this file is explained in the next section.
 
@@ -351,13 +311,13 @@ version: '3.8'
 services:
 
   archivy:
-    image: harshavardhanj/archivy:latest
+    image: harshavardhanj/archivy
     ports:
       - target: 5000
         published: 5000
         protocol: tcp
     volumes:
-      - archivyData:/usr/src/app/data
+      - archivyData:/home/archivy/.local/share/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
@@ -411,11 +371,11 @@ version: '3.8'
 services:
 
   archivy:
-    image: harshavardhanj/archivy:latest
+    image: harshavardhanj/archivy
     ports:
     	- "5000:5000"
     volumes:
-      - ./archivyData:/usr/src/app/data
+      - ./archivyData:/home/archivy/.local/share/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
@@ -438,7 +398,7 @@ The declarations are described below:
 * For the `archivy` service
   * Pulls the `harshavardhanj/archivy` image. (`image:`)
   * Connects port `5000` on the host to port `5000` on the container. (`ports:`)
-  * Creates the `archivyData` directory in the current working directory and bind-mounts it to the `/usr/src/app/data` directory in the `archivy` container. (`volumes:`)
+  * Creates the `archivyData` directory in the current working directory and bind-mounts it to the `/home/archivy/.local/share/archivy/data` directory in the `archivy` container. (`volumes:`)
   * Sets the following environment variables. (`environment:`)
     * `FLASK_DEBUG=0`
     * `ELASTICSEARCH_ENABLED=1` (*required to enable Elasticsearch support*)
