@@ -33,7 +33,7 @@ def test_app():
 
 @pytest.fixture
 def client(test_app):
-    with app.test_client() as client:
+    with test_app.test_client() as client:
         yield client
 
 
@@ -43,10 +43,11 @@ def mocked_responses():
         yield rsps
 
 
-@pytest.fixture(scope="session")
-def note_fixture():
+@pytest.fixture()
+def note_fixture(test_app):
     datapoints = {"type": "note", "title": "Test Note", "desc": "A note to test model functionality", "tags": ["testing", "archivy"], "path": ""}
 
-    note = DataObj(**datapoints)
-    note.insert()
+    with test_app.app_context():
+        note = DataObj(**datapoints)
+        note.insert()
     return note
