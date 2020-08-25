@@ -37,7 +37,7 @@ def new_bookmark():
         bookmark = DataObj(
             url=form.url.data,
             desc=form.desc.data,
-            tags=form.tags.data,
+            tags=form.tags.data.split(","),
             path=form.path.data,
             type="bookmarks")
         bookmark_id = bookmark.insert()
@@ -58,7 +58,7 @@ def new_note():
         note = DataObj(
             title=form.title.data,
             desc=form.desc.data,
-            tags=form.tags.data,
+            tags=form.tags.data.split(","),
             path=form.path.data,
             type="note")
         note_id = note.insert()
