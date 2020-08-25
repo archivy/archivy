@@ -1,4 +1,5 @@
 import datetime
+import sys
 from urllib.parse import urljoin
 
 import validators
@@ -19,11 +20,27 @@ class DataObj:
     def process_bookmark_url(self):
         try:
             url_request = requests.get(self.url).text
-            parsed_html = BeautifulSoup(url_request)
-            self.content = self.extract_content(parsed_html)
-            self.title = parsed_html.title.string
-        except BaseException:
+        except Exception:
+            sys.stderr.write("Could not retrieve {url}".format(url=self.url))
             self.wipe()
+            return
+        try:
+            parsed_html = BeautifulSoup(url_request)
+        except Exception:
+            sys.stderr.write("Could not parse {url}".format(url=self.url))
+            self.wipe()
+            return
+
+        try:
+            self.content = self.extract_content(parsed_html)
+        except Exception:
+            sys.stderr.write("Could not extract content from {url}".format(
+                             url=self.url))
+            return
+
+        parsed_title = parsed_html.title
+        self.title = (parsed_title.string if parsed_title is not None
+                      else self.url)
 
     def wipe(self):
         self.title = None
