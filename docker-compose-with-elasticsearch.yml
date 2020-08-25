@@ -2,13 +2,13 @@ version: '3.8'
 services:
 
   archivy:
-    image: harshavardhanj/archivy:latest
+    image: harshavardhanj/archivy:0.0.7
     ports:
       - target: 5000
         published: 5000
         protocol: tcp
     volumes:
-      - archivyData:/usr/src/app/data
+      - archivyData:/home/archivy/.local/share/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1

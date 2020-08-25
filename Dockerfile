@@ -1,7 +1,7 @@
-######## Dockerfile for Archivy Built On Debian Buster Slim  ########
+########    Dockerfile for Archivy Built On Alpine Linux     ########
 #                                                                   #
 #####################################################################
-#     CONTAINERISED ARCHIVY BUILT ON TOP OF DEBIAN BUSTER SLIM      #
+#        CONTAINERISED ARCHIVY BUILT ON TOP OF ALPINE LINUX         #
 #-------------------------------------------------------------------#
 #                   Built and maintained by                         #
 #                       Harsha Vardhan J                            #
@@ -11,14 +11,23 @@
 # This Dockerfile does the following:                               #
 #                                                                   #
 #    1. Starts with a base image of Python3.8.5 built on Debian     #
-#       Buster Slim.                                                #
-#    2. Sets the working directory to /usr/src/app.                 #
-#    3. Installs cURL, downloads the repository as a tarball,       #
-#       extracts the source code, and moves all files to the        #
-#       current working directory.                                  #
-#    4. Creates a virtual environment, and installs all required    #
-#       modules/packages as per the requirements.txt file.          #
-#    5. Cleans up by deleting some unnecessary files.               #
+#       Buster Slim to be used as builder stage.                    #
+#    2. Pins a version of archivy.                                  #
+#    3. Installs Archivy using pip in the /install directory.       #
+#    4. Starts with Python3.8.5 based on Alpine 3.12 for the final  #
+#       stage.                                                      #
+#    5. Installs netcat(used for health check on Elasticsearch)     #
+#       and xdg-utils(needed by archivy for opening notes/files),   #
+#       creates a non-root user account and group which will be     #
+#       used to run run Archivy, creates the directory which        #
+#       Archivy uses to store its data, and changes ownership of    #
+#       all files in user's home directory.                         #
+#    6. Copies binaries and libraries of Archivy from the builder   #
+#       stage. Copies the entrypoint.sh script from the host. The   #
+#       ownership of all copied files is set to archivy user and    #
+#       group.                                                      #
+#    7. Adds the directory in which binaries and libraries are      #
+#       installed to PATH.                                          #
 #    6. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
 #    7. Exposes port 5000 on the container.                         #
@@ -30,17 +39,28 @@
 #        to persist, bind-mount a directory to the container.       #
 #                                                                   #
 #        Example:                                                   #
-#        docker run --name archivy -p 5000:5000 \                   #
-#        -v "$(pwd)"/testDir:/usr/src/app/data archivy:latest       #
+#        docker run --name archivy -p 5000:5000 -v \                #
+#        "$(pwd)"/testDir:/home/archivy/.local/share/archivy/data \ #
+#        archivy:latest                                             #
 #                                                                   #
 #        where 'testDir' is the directory on the host and           #
-#        '/usr/src/app/data' is the path of the volume on the       #
-#        container(fixed in Dockerfile).                            #
+#        '/home/archivy/.local/share/archivy/data' is the path of   #
+#        the volume on the container(fixed in Dockerfile).          #
 #                                                                   #
 #####################################################################
 
 # Starting with base image of python3.8.5 built on Debian Buster Slim
-FROM python:3.8.5-slim-buster
+FROM python:3.8.5-slim-buster AS builder
+
+# Archivy version
+ARG VERSION=0.0.7
+
+# Installing pinned version of Archivy using pip
+RUN pip3.8 install --prefix=/install archivy==$VERSION
+
+
+# Starting with a base image of python:3.8.5-alpine3.12 for the final stage
+FROM python:3.8.5-alpine3.12
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
@@ -48,35 +68,38 @@ FROM python:3.8.5-slim-buster
 #       lifetime of the stage that they're declared in.
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION
 
-# Setting working directory
-WORKDIR /usr/src/app
+# ARG for setting user and group of non-root user
+ARG ARCHIVY_USER=archivy
+ARG ARCHIVY_GROUP=archivy
 
-# Updating repo, and installing curl
-RUN apt update && apt install --no-install-recommends -y curl \
-    # Downloading a tarball of the repository and extracting it
-    && curl -sL https://github.com/Uzay-G/archivy/tarball/master | tar -xz \
-    && cd Uzay-G* \
-    && cp -Rp . ../. \
-    && cd ../ \
-    && rm -rf Uzay-G-* \
-    # Creating a virtual environment
-    && python3 -m venv venv/ \
-    # Installing required packages
-    && pip3 install --no-cache-dir -r requirements.txt \
-    # Cleaning up
-    && apt remove wget -y \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/* \
-    && rm -rf /var/lib/apt \
-    && rm -rf /var/lib/dpkg \
-    && rm -f /usr/src/app/archivy.gif \
-    && rm -f /usr/src/app/*.md
+# Installing netcat and xdg-utils
+RUN apk update && apk add --no-cache \
+      netcat-openbsd \
+      xdg-utils \
+    # Creating non-root user and group for running Archivy
+    && addgroup -S -g 1000 $ARCHIVY_GROUP \
+    && adduser -h /home/$ARCHIVY_USER -g "User account for running Archivy" \
+    -s /bin/nologin -S -D -G $ARCHIVY_GROUP -u 1000 $ARCHIVY_USER \
+    # Creating directory in which Archivy's files will be stored
+    # (If this directory isn't created, Archivy exits with a "permission denied" error)
+    && mkdir -p /home/archivy/.local/share/archivy/data \
+    # Changing ownership of all files in user's home directory
+    && chown -R archivy:archivy /home/archivy
+
+# Copying binaries and libraries from builder stage
+COPY --from=builder --chown=archivy:archivy /install /home/archivy/.local
+# Copying entrypoint script from host
+COPY --chown=archivy:archivy entrypoint.sh /home/archivy/.local/bin/entrypoint.sh
+
+# Setting PATH variable to include binaries installed in user's home directory
+ENV PATH=/home/archivy/.local/bin:$PATH
+
+# Run as user 'archivy'
+USER archivy
 
 # Creating mount point for persistent data
-VOLUME /usr/src/app/data
+VOLUME /home/archivy/.local/share/archivy/data
 
 # Exposing port 5000
 EXPOSE 5000
@@ -87,7 +110,7 @@ STOPSIGNAL SIGTERM
 # Entrypoint - Run 'entrypoint.sh' script. Any command given to 'docker container run' will be added as an argument
 # to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'start' as an argument in order to set up
 # the Archivy server.
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 
 # The 'start' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
 # Any command given to the 'docker container run' will override the CMD below which
