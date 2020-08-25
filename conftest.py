@@ -40,6 +40,7 @@ def client(test_app):
 @pytest.fixture
 def mocked_responses():
     with responses.RequestsMock() as rsps:
+        rsps.assert_all_requests_are_fired = True
         yield rsps
 
 
