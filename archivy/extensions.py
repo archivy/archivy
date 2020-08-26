@@ -28,14 +28,13 @@ def elastic_client():
         health = es.cluster.health()
     except elasticsearch.exceptions.ConnectionError:
         sys.stderr.write(
-            "Elasticsearch does not seem to be running on {url}. Please start "
-            "it, for example with: sudo service elasticsearch restart".format(
-                url=Config.ELASTICSEARCH_URL
-            )
+            "Elasticsearch does not seem to be running on "
+            f"{Config.ELASTICSEARCH_URL}. Please start "
+            "it, for example with: sudo service elasticsearch restart\n"
         )
         sys.stderr.write(
             "You can disable Elasticsearch by setting the "
-            "ELASTICSEARCH_ENABLED environment variable to 0"
+            "ELASTICSEARCH_ENABLED environment variable to 0\n"
         )
         sys.exit(1)
 
