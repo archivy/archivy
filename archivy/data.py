@@ -7,10 +7,12 @@ from pathlib import Path
 from shutil import rmtree
 
 import frontmatter
+from flask import current_app
 
-from archivy.config import Config
 
-DIRNAME = Config.APP_PATH + "/data/"
+# FIXME: ugly hack to make sure the app path is evaluated at the right time
+def get_data_dir():
+    return os.path.join(current_app.config['APP_PATH'], "data/")
 
 # struct to create tree like file-structure
 
@@ -32,7 +34,8 @@ def valid_filename(name):
 def get_items(collections=[], path="", structured=True):
     datacont = Directory("root") if structured else []
     if structured:
-        for filename in glob.glob(DIRNAME + path + "**/*", recursive=True):
+        for filename in glob.glob(get_data_dir() + path + "**/*",
+                                  recursive=True):
             paths = filename.split("/data/")[1].split("/")
             data = frontmatter.load(
                 filename) if filename.endswith(".md") else None
@@ -49,7 +52,8 @@ def get_items(collections=[], path="", structured=True):
                         current_dir.child_dirs[segment] = Directory(segment)
                     current_dir = current_dir.child_dirs[segment]
     else:
-        for filename in glob.glob(DIRNAME + path + "**/*.md", recursive=True):
+        for filename in glob.glob(get_data_dir() + path + "**/*.md",
+                                  recursive=True):
             data = frontmatter.load(filename)
             if len(collections) == 0 or \
                     any([collection == data["type"]
@@ -61,7 +65,7 @@ def get_items(collections=[], path="", structured=True):
 
 def create(contents, title, path="", needs_to_open=False):
     path_to_md_file = os.path.join(
-        DIRNAME, path, "{}.md".format(valid_filename(title)))
+        get_data_dir(), path, "{}.md".format(valid_filename(title)))
     with open(path_to_md_file, "w") as file:
         file.write(contents)
 
@@ -71,19 +75,20 @@ def create(contents, title, path="", needs_to_open=False):
 
 
 def get_item(dataobj_id):
-    file = glob.glob(f"{DIRNAME}**/{dataobj_id}-*.md", recursive=True)[0]
+    file = glob.glob(f"{get_data_dir()}**/{dataobj_id}-*.md",
+                     recursive=True)[0]
     data = frontmatter.load(file)
     data["fullpath"] = file
     return data
 
 
 def delete_item(id):
-    file = glob.glob(f"{DIRNAME}**/{id}-*.md", recursive=True)[0]
+    file = glob.glob(f"{get_data_dir()}**/{id}-*.md", recursive=True)[0]
     os.remove(file)
 
 
 def get_dirs():
-    dirnames = glob.glob(DIRNAME + "**/*", recursive=True)
+    dirnames = glob.glob(get_data_dir() + "**/*", recursive=True)
     dirnames = [name.split("/data/")[1]
                 for name in dirnames if not name.endswith(".md")]
     dirnames.append("not classified")
@@ -93,12 +98,12 @@ def get_dirs():
 def create_dir(name):
     sanitized_name = "/".join([valid_filename(pathname)
                                for pathname in name.split("/")])
-    Path(DIRNAME + sanitized_name).mkdir(parents=True, exist_ok=True)
+    Path(get_data_dir() + sanitized_name).mkdir(parents=True, exist_ok=True)
 
 
 def delete_dir(name):
     try:
-        rmtree(DIRNAME + name)
+        rmtree(get_data_dir() + name)
         return True
     except FileNotFoundError:
         return False
