@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 #
 #: Title        : entrypoint.sh
 #: Date         :	19-Aug-2020
@@ -7,7 +7,9 @@
 #: Description  : This file handles the startup of the 'Archivy' server
 #                 and other functions necessary for its startup such as
 #                 setting default environment variables and overriding
-#                 the defaults with user-provided values.
+#                 the defaults with user-provided values. Also, if
+#                 Elasticsearch support is enabled, the script waits for
+#                 it to start up before running the Archivy server.
 #                 
 #: Options      : Takes at least one argument, which is provided by the
 #                 Dockerfile. Any commands/arguments passed to the container
@@ -25,93 +27,118 @@
 ################
 
 
-# Function used to export variables set at run time.
-# The function below was taken from the 'entrypoint.sh' script that the Postgres Dockerfile refers to, and modified.
-# This function is called by the 'setup' function. There is no necessity to call this function outside the 'setup' function.
+# Function used to export variables.
 #
 # usage: env_export VAR [VALUE]
 #     ie: env_export 'FLASK_DEBUG' '0'
 #
 env_export() {
   # Assign first argument to the 'var' variable
-  local var="$1"
-
-  # Assign second argument to the 'val' variable
-  local val="${2:-}"
-
-  # If the variable that 'var' points to is set
-  if [[ "${!var:-}" ]]; then
-    # Set 'val' to the value of the variable that 'var' points to
-    val="${!var}"
-
-    # Export the variable that 'var' points to
-    export "$var"="$val"
-  #else
-  #  printf '%s\n' "${var} is unset." 1>&2
-  fi
-}
-
-
-# This function exports variables only if they have not been set previously
-#
-# usage: env_export_check VAR [VALUE]
-#     ie: env_export_check 'FLASK_DEBUG' '0'
-#
-env_export_check() {
-  # Assigns the first argument to the 'variableName' variable
   local variableName="$1"
 
-  # Assigns the second argument to the 'variableValue' variable
+  # Assign second argument to the 'val' variable
   local variableValue="${2:-}"
 
-  # If the variable that 'variableName' points to is not set
-  if [[ ! "${!variableName:-}" ]] ; then
-    # Export the variable
-    export "${variableName}"="${variableValue}"
-  fi
+  # Export variable with provided value
+  export "${variableName}"="${variableValue}"
 }
 
 
-# Function used to export variables defined in the '.flaskenv' file
+# Function that sets user-defined variables along with
+# sensible defaults.
 #
-# usage: flaskvar_export VAR [VALUE]
-#     ie: flaskvar_export 'FLASK_DEBUG' '0'
-#
-#
-flaskvar_export() {
-  # If the '.flaskenv' file is present
-  if [[ -f .flaskenv ]]; then
-    # Run through all lines in the file and export the variables defined
-    # if they haven't been set already
-    while IFS="=" read -r variableName variableValue ; do
-      env_export_check "${variableName}" "${variableValue:-}"
-    done < .flaskenv
-  else
-    printf '%s\n' "Could not find .flaskenv file. Setting default values." 1>&2
-    export FLASK_DEBUG=0 ELASTICSEARCH_ENABLED=0 ELASTICSEARCH_URL=""
-  fi
-}
-
-
-# Function that first sets the variables defined in the 'flaskenv' file
-# then overrides it with the user-supplied values at run time
+# Function input    :   None
+# Function output   :   None. Sets environment variables.
 #
 setup() {
-  # Passing variables to the 'env_export' function
+  # Setting environment variables(with sensible defaults)
   env_export FLASK_DEBUG "${FLASK_DEBUG:-0}"
   env_export ELASTICSEARCH_ENABLED "${ELASTICSEARCH_ENABLED:-0}"
+  env_export ARCHIVY_DATA_DIR "/archivy"
 
   # If ELASTICSEARCH_ENABLED variable is set to 1
-  if [[ "${ELASTICSEARCH_ENABLED}" -eq 1 ]] ; then
+  if [ ${ELASTICSEARCH_ENABLED} -eq 1 ] ; then
     # Export with fallback default value for URL
-    env_export ELASTICSEARCH_URL "${ELASTICSEARCH_URL:-"http://localhost:9200"}"
+    env_export ELASTICSEARCH_URL "${ELASTICSEARCH_URL:-"http://localhost:9200/"}"
   else
-    # Export as empty string
-    export ELASTICSEARCH_URL=""
+    # Export as default value
+    env_export ELASTICSEARCH_URL "http://localhost:9200/"
   fi
+}
 
-  # Exporting all variables defined in the '.flaskenv' file
-  flaskvar_export
+
+# Function that checks if elasticsearch is up and running.
+# If it is running, the function returns 0, else 1.
+#
+# Function input    :   Accepts none.
+#
+# Function output   :   Returns 0 if the elasticsearch instance is up
+#                       Returns 1 if it is not
+# 
+check_elasticsearch() {
+  # Local variables for storing hostname and port of Elasticsearch
+  local elasticHostname
+  local elasticPort
+
+  # Get hostname and port from ELASTICSEARCH_URL variable's value.
+  # Required for use with netcat as the host and port will have to be passed
+  # as separate arguments to it.
+  elasticHostname="$(echo "${ELASTICSEARCH_URL}" | awk -F[:/] '{print $4}')"
+  elasticPort="$(echo "${ELASTICSEARCH_URL}" | awk -F[:/] '{print $5}')"
+
+  # If the variable pointing to elasticsearch URL is not an empty string
+  if [ "$( echo "${ELASTICSEARCH_URL}" )" != "" ] ;  then
+    # Use different query commands based on the tools available
+    if [ $(command -v nc) ] ; then
+      # Query the Elasticsearch URL
+      elasticExists="$(echo -ne 'GET / HTTP/1.0\r\n\r\n' | nc ${elasticHostname:-"elasticsearch"} ${elasticPort:-"9200"} 2>/dev/null | grep -o "version")"
+    elif [ $(command -v curl) ] ; then
+      # Query the Elasticsearch URL
+      elasticExists="$(curl -X GET --silent "${ELASTICSEARCH_URL}" | grep -o "version")"
+    else
+      printf '%s\n' "Please install either netcat or curl. Required for health checks on Elasticsearch" 1>&2
+      exit 1
+    fi
+
+    # If the query result is not an empty string
+    if [ "$( echo "${elasticExists}" )" != "" ] ; then
+      return 0
+    else
+      return 1
+    fi
+  # If the variable pointing to elasticseach's URL has not been set
+  else
+    # Run the 'setup' function which will set sensible defaults
+    setup
+    return 1
+  fi
+}
+
+
+# Function that waits until Elasticsearch has started up.
+#
+# Function input    :   None
+#
+# Function output   :   None
+#
+waitforElasticsearch() {
+  # Loop that waits for Elasticsearch to start up before running Archivy
+  # If Elasticsearch support has been enabled
+  if [ ${ELASTICSEARCH_ENABLED} -eq 1 ] ; then
+    # Run the 'check_elasticsearch' function
+    check_elasticsearch
+    # Run until function's exit code is 0
+    until [ $? -eq 0 ] ; do
+      printf '%s\n' "Waiting for Elasticsearch @ "${ELASTICSEARCH_URL}" to start." 1>&2
+      sleep 2
+      # Run function
+      check_elasticsearch
+    done
+    printf '%s\n' "Elasticsearch is running @ "${ELASTICSEARCH_URL}"."
+  else
+    printf '%s\n' "ELASTICSEARCH_ENABLED variable is set to ${ELASTICSEARCH_ENABLED}. Expected 1." 1>&2
+    exit 1
+  fi
 }
 
 
@@ -120,23 +147,32 @@ setup() {
 # Runs any command if passed instead of the "start" argument.
 #
 main() {
+  printf '%s\n' "Setting environment variables."
   # Calling the setup function which takes care of setting environment variables
   setup || printf '%s\n' "'setup' function failed" 1>&2
 
-  # Activate virtual environment
-  source venv/bin/activate
-
-  # If elasticsearch is enabled and if DEPLOY_ENV is not set
-  if [[ -z "${DEPLOY_ENV}" && "$ELASTICSEARCH_ENABLED" -eq 1 ]] ; then
-    (pkill -f check_changes.py)
-    (python3 check_changes.py &)
-  fi
+  # Printing environment variables set
+  printf '%s\n' "The following environment variables were set:"
+  for varName in "FLASK_DEBUG" "ELASTICSEARCH_ENABLED" "ELASTICSEARCH_URL" ; do
+    varVal="$( eval echo "\$${varName}" )"
+    printf '\t\t%s\n' "${varName}=${varVal}"
+  done
 
   # If the first argument is "start"
-  if [[ "$1" = "start" ]] ; then
-    # Run the flask server in foreground
-    exec flask run --host=0.0.0.0
+  if [ "$1" = "start" ] ; then
+    if [ ${ELASTICSEARCH_ENABLED} -eq 1 ] ; then
+      printf '%s\n' "Checking if Elasticsearch is up and running"
+      # Calling the function which will wait until elasticsearch has started
+      waitforElasticsearch
+    else
+      printf '%s\n' "Elasticsearch not used. Search function will not work."
+    fi
+
+    # Starting archivy
+    printf '%s\n' "Starting Archivy"
+    exec archivy
   else
+    printf '%s\n' "Not starting Archivy. Running \"$@\" instead."
     # Executing any arguments passed to the script
     # This is useful when the container needs to be run in interactive mode
     exec "$@"
