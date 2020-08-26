@@ -27,32 +27,32 @@ metadataTest:
       value: '1.0'
   entrypoint: ["entrypoint.sh"]
   cmd: ["start"]
-  volumes: ["/home/archivy/.local/share/archivy/data"]
+  volumes: ["/archivy/data"]
   exposedPorts: ["5000"]
 fileExistenceTests:
-  - name: 'Check if ~/.local/bin directory exists'
-    path: '/home/archivy/.local/bin'
+  - name: 'Check if /usr/local/bin directory exists'
+    path: '/usr/local/bin'
     shouldExist: true
     permissions: 'drwxr-xr-x'
     uid: 1000
     gid: 1000
     isExecutableBy: 'any'
-  - name: 'Check if ~/.local/lib directory exists'
-    path: '/home/archivy/.local/lib'
+  - name: 'Check if /usr/local/lib directory exists'
+    path: '/usr/local/lib'
     shouldExist: true
     permissions: 'drwxr-xr-x'
     uid: 1000
     gid: 1000
     isExecutableBy: 'any'
   - name: 'Check if archivy executable exists'
-    path: '/home/archivy/.local/bin/archivy'
+    path: '/usr/local/bin/archivy'
     shouldExist: true
     permissions: '-rwxr-xr-x'
     uid: 1000
     gid: 1000
     isExecutableBy: 'any'
-  - name: 'Check if ~/.local/lib/share/archivy/data directory exists'
-    path: '/home/archivy/.local/share/archivy/data'
+  - name: 'Check if /archivy/data directory exists'
+    path: '/archivy/data'
     shouldExist: true
     permissions: 'dgrwxr-xr-x'
     uid: 1000
@@ -63,5 +63,5 @@ commandTests:
     setup: [["entrypoint.sh", "sleep 1"]]
     command: "which"
     args: ["archivy"]
-    expectedOutput: ["/home/archivy/.local/bin/archivy"]
+    expectedOutput: ["/usr/local/bin/archivy"]
 
