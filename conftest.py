@@ -78,3 +78,42 @@ def note_fixture(test_app):
         note = DataObj(**datapoints)
         note.insert()
     return note
+
+
+@pytest.fixture()
+def pocket_fixture(test_app, mocked_responses):
+    """Sets up pocket key and mocked responses for testing pocket sync
+
+    When using this fixture, all calls to https://getpocket.com/v3/get will
+    succeed and return a single article whose url is https://example.com.
+    """
+    with test_app.app_context():
+        db = get_db()
+
+    mocked_responses.add(
+        responses.POST,
+        "https://getpocket.com/v3/oauth/authorize",
+        json={
+            "access_token": "5678defg-5678-defg-5678-defg56",
+            "username": "test_user"
+        })
+
+
+    # fake /get response from pocket API
+    mocked_responses.add(responses.POST, "https://getpocket.com/v3/get", json={
+        'status': 1, 'complete': 1, 'list': {
+            '3088163616': {
+                'given_url': 'https://example.com', 'status': '0',
+                'resolved_url': 'https://example.com',
+                'excerpt': 'Lorem ipsum', 'is_article': '1',
+            },
+        },
+    })
+
+    pocket_key = {
+        "type": "pocket_key",
+        "consumer_key": "1234-abcd1234abcd1234abcd1234",
+        "code": "dcba4321-dcba-4321-dcba-4321dc",
+    }
+    db.insert(pocket_key)
+    return pocket_key
