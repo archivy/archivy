@@ -22,12 +22,10 @@
 #       stage. Copies the entrypoint.sh script from the host. The   #
 #       ownership of all copied files is set to archivy user and    #
 #       group.                                                      #
-#    7. Adds the directory in which binaries and libraries are      #
-#       installed to PATH.                                          #
-#    6. Creates a mount point so that external volumes can be       #
+#    7. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
-#    7. Exposes port 5000 on the container.                         #
-#    8. Runs the startup script as the entrypoint command with      #
+#    8. Exposes port 5000 on the container.                         #
+#    9. Runs the startup script as the entrypoint command with      #
 #       the "start" argument.                                       #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
@@ -36,12 +34,11 @@
 #                                                                   #
 #        Example:                                                   #
 #        docker run --name archivy -p 5000:5000 -v \                #
-#        "$(pwd)"/testDir:/home/archivy/.local/share/archivy/data \ #
-#        archivy:latest                                             #
+#        "$(pwd)"/testDir:/archivy/data archivy:latest              #
 #                                                                   #
 #        where 'testDir' is the directory on the host and           #
-#        '/home/archivy/.local/share/archivy/data' is the path of   #
-#        the volume on the container(fixed in Dockerfile).          #
+#        '/archivy/data' is the path of the volume on the           #
+#        container(fixed in Dockerfile).                            #
 #                                                                   #
 #####################################################################
 
@@ -65,10 +62,6 @@ FROM python:3.8.5-alpine3.12
 ARG BUILD_DATE
 ARG VCS_REF
 
-# ARG for setting user and group of non-root user
-ARG ARCHIVY_USER=archivy
-ARG ARCHIVY_GROUP=archivy
-
 # Archivy version
 ARG VERSION=0.0.7
 
@@ -77,28 +70,25 @@ RUN apk update && apk add --no-cache \
       netcat-openbsd \
       xdg-utils \
     # Creating non-root user and group for running Archivy
-    && addgroup -S -g 1000 $ARCHIVY_GROUP \
-    && adduser -h /home/$ARCHIVY_USER -g "User account for running Archivy" \
-    -s /bin/nologin -S -D -G $ARCHIVY_GROUP -u 1000 $ARCHIVY_USER \
+    && addgroup -S -g 1000 archivy \
+    && adduser -h /archivy -g "User account for running Archivy" \
+    -s /bin/nologin -S -D -G archivy -u 1000 archivy \
     # Creating directory in which Archivy's files will be stored
     # (If this directory isn't created, Archivy exits with a "permission denied" error)
-    && mkdir -p /home/archivy/.local/share/archivy/data \
+    && mkdir -p /archivy/data \
     # Changing ownership of all files in user's home directory
-    && chown -R archivy:archivy /home/archivy
+    && chown -R archivy:archivy /archivy
 
 # Copying binaries and libraries from builder stage
-COPY --from=builder --chown=archivy:archivy /install /home/archivy/.local
+COPY --from=builder --chown=archivy:archivy /install /usr/local/
 # Copying entrypoint script from host
-COPY --chown=archivy:archivy entrypoint.sh /home/archivy/.local/bin/entrypoint.sh
-
-# Setting PATH variable to include binaries installed in user's home directory
-ENV PATH=/home/archivy/.local/bin:$PATH
+COPY --chown=archivy:archivy entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Run as user 'archivy'
 USER archivy
 
 # Creating mount point for persistent data
-VOLUME /home/archivy/.local/share/archivy/data
+VOLUME /archivy/data
 
 # Exposing port 5000
 EXPOSE 5000
