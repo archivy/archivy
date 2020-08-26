@@ -25,7 +25,7 @@ class DataObj:
             self.wipe()
             return
         try:
-            parsed_html = BeautifulSoup(url_request)
+            parsed_html = BeautifulSoup(url_request, features="html.parser")
         except Exception:
             flash(f"Could not parse {self.url}\n")
             self.wipe()
