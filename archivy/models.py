@@ -21,21 +21,20 @@ class DataObj:
         try:
             url_request = requests.get(self.url).text
         except Exception:
-            sys.stderr.write("Could not retrieve {url}".format(url=self.url))
+            sys.stderr.write(f"Could not retrieve {self.url}\n")
             self.wipe()
             return
         try:
             parsed_html = BeautifulSoup(url_request)
         except Exception:
-            sys.stderr.write("Could not parse {url}".format(url=self.url))
+            sys.stderr.write(f"Could not parse {self.url}\n")
             self.wipe()
             return
 
         try:
             self.content = self.extract_content(parsed_html)
         except Exception:
-            sys.stderr.write("Could not extract content from {url}".format(
-                             url=self.url))
+            sys.stderr.write(f"Could not extract content from {self.url}\n")
             return
 
         parsed_title = parsed_html.title
