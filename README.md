@@ -107,7 +107,7 @@ which will continuously stream the logs to the terminal. To exit, type `ctrl+c`.
 You can also pass commands to the container by appending it to the `docker run` command. Keep in mind that the container will execute your commands and **not run** Archivy. This is useful if you want to find out what is going on inside the container. For example,
 
 ```sh
-$ docker run -it --name archivy-test -p 5000:5000 harshavardhanj/archivy bash
+$ docker run -it --name archivy-test -p 5000:5000 harshavardhanj/archivy sh
 ```
 
 will start an interactive shell inside the container. Remember to pass the `-it` flags when you want access to a terminal inside the container. 
@@ -122,14 +122,14 @@ will start an interactive shell inside the container. Remember to pass the `-it`
 You can bind-mount any directory on your host to the data directory on the container in order to ensure that if and when the container is stopped/terminated, the data saved to the container isn’t lost. This can be done as follows:
 
 ```shell
-$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/home/archivy/.local/share/archivy/data harshavardhanj/archivy
+$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/archivy/data harshavardhanj/archivy
 ```
 
 > `-v/--volume host:container`			——		Bind-mount host path to container path
 
-The argument `-v /path/to/host/dir:/home/archivy/.local/share/archivy/data` bind-mounts the directory `/path/to/host/dir` on the host to `/home/archivy/.local/share/archivy/data` on the container.
+The argument `-v /path/to/host/dir:/archivy/data` bind-mounts the directory `/path/to/host/dir` on the host to `/archivy/data` on the container.
 
-If you wish to mount, say `/home/bob/data`, you would first need to create the `data` directory at `/home/bob`, and then change the argument to `-v /home/bob/data:/home/archivy/.local/share/archivy/data`.
+If you wish to mount, say `/home/bob/data`, you would first need to create the `data` directory at `/home/bob`, and then change the argument to `-v /home/bob/data:/archivy/data`.
 
 
 
@@ -138,7 +138,7 @@ If you wish to mount, say `/home/bob/data`, you would first need to create the `
 You can inject environment variables while starting the container as follows:
 
 ```shell
-$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/home/archivy/.local/share/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="http://localhost:9200/" harshavardhanj/archivy
+$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="http://localhost:9200/" harshavardhanj/archivy
 ```
 
 > `-e/--env KEY=value`							——		Set the environment variable(`key=value`)
@@ -173,7 +173,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/home/archivy/.local/share/archivy/data
+      - archivyData:/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=0
@@ -208,7 +208,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/home/archivy/.local/share/archivy/data
+      - archivyData:/archivy/data
     environment:
     	- FLASK_DEBUG=1
     	- ELASTICSEARCH_ENABLED=0
@@ -223,7 +223,7 @@ This file
 
 - binds port `5000` on the host to port `5000` on the container.
 
-- creates a named volume `archivyData` on the host and mounts it to the `/home/archivy/.local/share/archivy/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/archivy/data` directory on the container(which is where all persistent data will be stored).
 - Sets the following environment variables so that they can be used by Archivy during run time
   - `FLASK_DEBUG=1`
   - `ELASTICSEARCH_ENABLED=0`
@@ -232,7 +232,7 @@ This would be the same as running the following commands:
 
 ```sh
 $ docker volume create archivyData
-$ docker run -d -p 5000:5000 -v archivy:/home/archivy/.local/share/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 harshavardhanj/archivy
+$ docker run -d -p 5000:5000 -v archivy:/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 harshavardhanj/archivy
 ```
 
 When multiple container get involved, it becomes a lot easier to deal with compose files.
@@ -262,7 +262,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/home/archivy/.local/share/archivy/data
+      - archivyData:/archivy/data
     environment:
     	- FLASK_DEBUG=0
     	- ELASTICSEARCH_ENABLED=0
@@ -275,7 +275,7 @@ This file
 
 - pulls the `archivy` image.
 - binds port `5000` on the host to port `5000` on the container.
-- creates a named volume `archivyData` on the host and mounts it to the `/home/archivy/.local/share/archivy/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/archivy/data` directory on the container(which is where all persistent data will be stored).
 
 > **NOTE**:
 >
@@ -286,7 +286,7 @@ This file
 >   archivy:
 >      ...
 >      volumes:
->        - ./archivyData:/home/archivy/.local/share/archivy/data
+>        - ./archivyData:/archivy/data
 > 
 > ```
 >
@@ -317,7 +317,7 @@ services:
         published: 5000
         protocol: tcp
     volumes:
-      - archivyData:/home/archivy/.local/share/archivy/data
+      - archivyData:/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
@@ -375,7 +375,7 @@ services:
     ports:
     	- "5000:5000"
     volumes:
-      - ./archivyData:/home/archivy/.local/share/archivy/data
+      - ./archivyData:/archivy/data
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
@@ -398,7 +398,7 @@ The declarations are described below:
 * For the `archivy` service
   * Pulls the `harshavardhanj/archivy` image. (`image:`)
   * Connects port `5000` on the host to port `5000` on the container. (`ports:`)
-  * Creates the `archivyData` directory in the current working directory and bind-mounts it to the `/home/archivy/.local/share/archivy/data` directory in the `archivy` container. (`volumes:`)
+  * Creates the `archivyData` directory in the current working directory and bind-mounts it to the `/archivy/data` directory in the `archivy` container. (`volumes:`)
   * Sets the following environment variables. (`environment:`)
     * `FLASK_DEBUG=0`
     * `ELASTICSEARCH_ENABLED=1` (*required to enable Elasticsearch support*)
