@@ -1,0 +1,5 @@
+.git
+docker-compose*
+*.md
+LICENSE
+container-structure-test*
