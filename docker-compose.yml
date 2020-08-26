@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/home/archivy/.local/share/archivy/data
+      - archivyData:/archivy/data
 
 volumes:
   archivyData:
