@@ -7,6 +7,7 @@ from tinydb import TinyDB, Query, operations
 
 from archivy.config import Config
 
+
 def get_db():
     if 'db' not in g:
         g.db = TinyDB(
