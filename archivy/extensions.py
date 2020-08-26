@@ -1,10 +1,11 @@
 import os
+import sys
 
+import elasticsearch
 from flask import current_app, g
 from tinydb import TinyDB, Query, operations
-from elasticsearch import Elasticsearch
-from archivy.config import Config
 
+from archivy.config import Config
 
 def get_db():
     if 'db' not in g:
@@ -33,5 +34,27 @@ def set_max_id(val):
 
 
 def elastic_client():
-    return Elasticsearch([Config.ELASTICSEARCH_URL]
-                         ) if Config.ELASTICSEARCH_ENABLED else None
+    if not Config.ELASTICSEARCH_ENABLED:
+        return None
+    es = elasticsearch.Elasticsearch([Config.ELASTICSEARCH_URL])
+    try:
+        health = es.cluster.health()
+    except elasticsearch.exceptions.ConnectionError:
+        sys.stderr.write(
+            "Elasticsearch does not seem to be running on "
+            f"{Config.ELASTICSEARCH_URL}. Please start "
+            "it, for example with: sudo service elasticsearch restart\n"
+        )
+        sys.stderr.write(
+            "You can disable Elasticsearch by setting the "
+            "ELASTICSEARCH_ENABLED environment variable to 0\n"
+        )
+        sys.exit(1)
+
+    if health["status"] not in ("yellow", "green"):
+        sys.stderr.write(
+            "WARNING: Elasticsearch reports that it is not working "
+            "properly. Search might not work. You can disable "
+            "Elasticsearch by setting ELASTICSEARCH_ENABLED to 0."
+        )
+    return es

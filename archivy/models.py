@@ -5,6 +5,7 @@ import validators
 import requests
 import html2text
 import frontmatter
+from flask import flash
 from bs4 import BeautifulSoup
 from flask import current_app
 
@@ -19,11 +20,26 @@ class DataObj:
     def process_bookmark_url(self):
         try:
             url_request = requests.get(self.url).text
-            parsed_html = BeautifulSoup(url_request)
-            self.content = self.extract_content(parsed_html)
-            self.title = parsed_html.title.string
-        except BaseException:
+        except Exception:
+            flash(f"Could not retrieve {self.url}\n")
             self.wipe()
+            return
+        try:
+            parsed_html = BeautifulSoup(url_request)
+        except Exception:
+            flash(f"Could not parse {self.url}\n")
+            self.wipe()
+            return
+
+        try:
+            self.content = self.extract_content(parsed_html)
+        except Exception:
+            flash(f"Could not extract content from {self.url}\n")
+            return
+
+        parsed_title = parsed_html.title
+        self.title = (parsed_title.string if parsed_title is not None
+                      else self.url)
 
     def wipe(self):
         self.title = None
