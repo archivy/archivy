@@ -7,11 +7,11 @@ import html2text
 import frontmatter
 from flask import flash
 from bs4 import BeautifulSoup
+from flask import current_app
 
 from archivy import extensions
 from archivy.search import add_to_index
 from archivy.data import create
-from archivy.config import Config
 
 
 class DataObj:
@@ -133,7 +133,7 @@ class DataObj:
                                 path=self.path,
                                 needs_to_open=self.type == "note")
 
-            add_to_index(Config.INDEX_NAME, self)
+            add_to_index(current_app.config['INDEX_NAME'], self)
             return self.id
         return False
 

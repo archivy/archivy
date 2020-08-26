@@ -1,11 +1,119 @@
-import pytest
+import os
+import shutil
+import tempfile
 
+import pytest
+import responses
+
+from archivy import app
+from archivy.extensions import get_db
 from archivy.models import DataObj
 
-@pytest.fixture(scope="session")
-def note_fixture():
-    datapoints = {"type": "note", "title": "Test Note", "desc": "A note to test model functionality", "tags": ["testing", "archivy"], "path": ""}
 
-    note = DataObj(**datapoints)
-    note.insert()
+@pytest.fixture
+def test_app():
+    """Instantiate the app for each test with its own temporary data directory
+
+    Each test using this fixture will use its own db.json and its own data
+    directory, and then delete them.
+    """
+    # create a temporary file to isolate the database for each test
+    app_dir = tempfile.mkdtemp()
+    app.config['APP_PATH'] = app_dir
+    data_dir = os.path.join(app_dir, "data")
+    os.mkdir(data_dir)
+
+    app.config['TESTING'] = True
+
+    # This setups a TinyDB instance, using the `app_dir` temporary
+    # directory defined above
+    # Required so that `flask.current_app` can be called in data.py and
+    # models.py
+    # See https://flask.palletsprojects.com/en/1.1.x/appcontext/ for more
+    # information.
+    with app.app_context():
+        _ = get_db()
+
+    yield app
+
+    # close and remove the temporary database
+    shutil.rmtree(app_dir)
+
+
+@pytest.fixture
+def client(test_app):
+    """ HTTP client for calling a test instance of the app"""
+    with test_app.test_client() as client:
+        yield client
+
+
+@pytest.fixture
+def mocked_responses():
+    """Setup mock responses using the `responses` python package.
+
+    Using https://pypi.org/project/responses/, this fixture will mock out
+    HTTP calls made by the requests library.
+
+    For example,
+    >>> mocked_responses.add(responses.GET, "http://example.org", json={'key': 'val'})
+    >>> r = requests.get("http://example.org")
+    >>> print(r.json())
+    {'key': 'val'}
+    """
+    with responses.RequestsMock() as rsps:
+        # this ensure that all requests calls are mocked out
+        rsps.assert_all_requests_are_fired = True
+        yield rsps
+
+
+@pytest.fixture()
+def note_fixture(test_app):
+    datapoints = {
+        "type": "note", "title": "Test Note",
+        "desc": "A note to test model functionality",
+        "tags": ["testing", "archivy"], "path": ""
+    }
+
+    with test_app.app_context():
+        note = DataObj(**datapoints)
+        note.insert()
     return note
+
+
+@pytest.fixture()
+def pocket_fixture(test_app, mocked_responses):
+    """Sets up pocket key and mocked responses for testing pocket sync
+
+    When using this fixture, all calls to https://getpocket.com/v3/get will
+    succeed and return a single article whose url is https://example.com.
+    """
+    with test_app.app_context():
+        db = get_db()
+
+    mocked_responses.add(
+        responses.POST,
+        "https://getpocket.com/v3/oauth/authorize",
+        json={
+            "access_token": "5678defg-5678-defg-5678-defg56",
+            "username": "test_user"
+        })
+
+
+    # fake /get response from pocket API
+    mocked_responses.add(responses.POST, "https://getpocket.com/v3/get", json={
+        'status': 1, 'complete': 1, 'list': {
+            '3088163616': {
+                'given_url': 'https://example.com', 'status': '0',
+                'resolved_url': 'https://example.com',
+                'excerpt': 'Lorem ipsum', 'is_article': '1',
+            },
+        },
+    })
+
+    pocket_key = {
+        "type": "pocket_key",
+        "consumer_key": "1234-abcd1234abcd1234abcd1234",
+        "code": "dcba4321-dcba-4321-dcba-4321dc",
+    }
+    db.insert(pocket_key)
+    return pocket_key
