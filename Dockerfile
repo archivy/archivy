@@ -2,10 +2,6 @@
 #                                                                   #
 #####################################################################
 #        CONTAINERISED ARCHIVY BUILT ON TOP OF ALPINE LINUX         #
-#-------------------------------------------------------------------#
-#                   Built and maintained by                         #
-#                       Harsha Vardhan J                            #
-#               https://github.com/HarshaVardhanJ                   #
 #####################################################################
 #                                                                   #
 # This Dockerfile does the following:                               #
