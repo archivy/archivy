@@ -1,5 +1,4 @@
 import os
-import re
 import glob
 import platform
 import subprocess
