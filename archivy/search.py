@@ -1,27 +1,28 @@
-from archivy.extensions import elastic_client
-
-ELASTICSEARCH = elastic_client()
+from archivy.extensions import get_elastic_client
 
 
 def add_to_index(index, model):
-    if not ELASTICSEARCH:
+    es = get_elastic_client()
+    if not es:
         return
     payload = {}
     for field in model.__searchable__:
         payload[field] = getattr(model, field)
-    ELASTICSEARCH.index(index=index, id=model.id, body=payload)
+    es.index(index=index, id=model.id, body=payload)
 
 
 def remove_from_index(index, dataobj_id):
-    if not ELASTICSEARCH:
+    es = get_elastic_client()
+    if not es:
         return
-    ELASTICSEARCH.delete(index=index, id=dataobj_id)
+    es.delete(index=index, id=dataobj_id)
 
 
 def query_index(index, query):
-    if not ELASTICSEARCH:
+    es = get_elastic_client()
+    if not es:
         return []
-    search = ELASTICSEARCH.search(
+    search = es.search(
         index=index,
         body={
             "query": {
