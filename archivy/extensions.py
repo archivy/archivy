@@ -2,6 +2,7 @@ import os
 import sys
 
 import elasticsearch
+from elasticsearch import Elasticsearch
 from flask import current_app, g
 from tinydb import TinyDB, Query, operations
 
@@ -34,27 +35,28 @@ def set_max_id(val):
     db.update(operations.set("val", val), Query().name == "max_id")
 
 
-def elastic_client():
-    if not Config.ELASTICSEARCH_ENABLED:
+def get_elastic_client():
+    if not current_app.config['ELASTICSEARCH_ENABLED']:
         return None
-    es = elasticsearch.Elasticsearch([Config.ELASTICSEARCH_URL])
+
+    es = Elasticsearch(current_app.config['ELASTICSEARCH_URL'])
     try:
         health = es.cluster.health()
     except elasticsearch.exceptions.ConnectionError:
-        sys.stderr.write(
+        current_app.logger.error(
             "Elasticsearch does not seem to be running on "
             f"{Config.ELASTICSEARCH_URL}. Please start "
-            "it, for example with: sudo service elasticsearch restart\n"
+            "it, for example with: sudo service elasticsearch restart"
         )
-        sys.stderr.write(
+        current_app.logger.error(
             "You can disable Elasticsearch by setting the "
-            "ELASTICSEARCH_ENABLED environment variable to 0\n"
+            "ELASTICSEARCH_ENABLED environment variable to 0"
         )
         sys.exit(1)
 
     if health["status"] not in ("yellow", "green"):
-        sys.stderr.write(
-            "WARNING: Elasticsearch reports that it is not working "
+        current_app.logger.warning(
+            "Elasticsearch reports that it is not working "
             "properly. Search might not work. You can disable "
             "Elasticsearch by setting ELASTICSEARCH_ENABLED to 0."
         )
