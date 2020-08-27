@@ -17,6 +17,8 @@ services:
       - archivy
     depends_on:
       - elasticsearch
+    cap_drop:
+      - ALL
     deploy:
       replicas: 1
       restart_policy:
@@ -38,6 +40,11 @@ services:
       archivy:
         aliases:
           - search
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_CHROOT
+      - SETUID
     deploy:
       replicas: 1
       restart_policy:

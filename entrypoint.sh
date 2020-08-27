@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
 #
 #: Title        : entrypoint.sh
-#: Date         :	19-Aug-2020
-#: Author       :	"Harsha Vardhan J" <vardhanharshaj@gmail.com>
+#: Date         : 19-Aug-2020
 #: Version      : 0.1
 #: Description  : This file handles the startup of the 'Archivy' server
 #                 and other functions necessary for its startup such as
