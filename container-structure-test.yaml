@@ -63,5 +63,22 @@ commandTests:
     setup: [["entrypoint.sh", "sleep 1"]]
     command: "which"
     args: ["archivy"]
+    exitCode: 0
     expectedOutput: ["/usr/local/bin/archivy"]
-
+  - name: 'Check if running as non-root user'
+    setup: [["entrypoint.sh", "sleep 1"]]
+    command: "whoami"
+    expectedOutput: ["archivy"]
+    exitCode: 0
+  - name: 'Check group of non-root user'
+    setup: [["entrypoint.sh", "sleep 1"]]
+    command: "groups"
+    args: ["archivy"]
+    expectedOutput: ["archivy"]
+    exitCode: 0
+  - name: 'Check user details'
+    setup: [["entrypoint.sh", "sleep 1"]]
+    command: "getent"
+    args: ["passwd", "archivy"]
+    expectedOutput: ["archivy:x:1000:1000:(.*):/archivy:/sbin/nologin"]
+    exitCode: 0
