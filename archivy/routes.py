@@ -105,7 +105,7 @@ def create_folder():
     try:
         sanitized_name = data.create_dir(directory)
     except FileExistsError:
-        return "Directory already exists", 401 
+        return "Directory already exists", 401
     return sanitized_name, 200
 
 
