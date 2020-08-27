@@ -101,9 +101,12 @@ def delete_data(dataobj_id):
 
 @app.route("/folders/new", methods=["POST"])
 def create_folder():
-    directory = request.json.get("name")
-    data.create_dir(directory)
-    return "Successfully Created", 200
+    directory = request.json.get("paths")
+    try:
+        sanitized_name = data.create_dir(directory)
+    except FileExistsError:
+        return "Directory already exists", 401 
+    return sanitized_name, 200
 
 
 @app.route("/folders/delete", methods=["DELETE"])

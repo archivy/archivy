@@ -51,6 +51,8 @@
 </script>
 <script>
 	const SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+	let max_folder_id = {{ i.value }}; 
+	console.log(max_folder_id);
 	// search functionality
 	{% if search_enabled %}	
 		var md = window.markdownit();
@@ -128,7 +130,10 @@
 				e.preventDefault();
 				createFolder(id);
 			})
-			document.getElementById("items-" + id).style.display = "block";
+			let childNotes = document.getElementById("items-" + id);
+			if (childNotes) {
+				childNotes.style.display = "block";
+			}
 			prevElem.innerHTML = 'Collapse'
 		}
 		// collapse
@@ -142,29 +147,42 @@
 		}
 
 	}
-	function createFolder(id)
+	async function createFolder(id)
 	{
+		max_folder_id++;
 		let input = document.getElementById(`form-input-${id}`);
-		let totalPath = document.getElementById(`form-path-${id}`).textContent + "/" + input.value;
-		fetch(`${SCRIPT_ROOT}/folders/new`, {
+		let basePath = document.getElementById(`form-path-${id}`).textContent; 
+		let totalPath = basePath === "" ? [] : basePath.split("/");
+		totalPath.push(input.value);
+		let result = await fetch(`${SCRIPT_ROOT}/folders/new`, {
 			method: "POST",
 			body: JSON.stringify({
-				"name": totalPath
+				"paths": totalPath
 			}),
 			headers: {"content-type": "application/json"}
 		})
-		let currentFolderDiv = document.getElementById("cont-" + id);
-		currentFolderDiv.insertAdjacentHTML("beforeend", 
-			`
-				<div style="margin-left: 30px" id="cont-${id + 1}" class="folder-cont">
-					<h2>
-						${input.value}		
-					</h2>
-					<button class="expand-btn" onclick="createInteractive(this, ${id + 1}, '${totalPath}');">Expand</button>
-			`
-		)
 		input.value = "";
-		document.getElementById("cont-" + (id + 1)).scrollIntoView();
+		if (result.status === 401)
+		{
+			input.placeholder = "Directory already exists";
+		}
+		else {
+			totalPath = await result.text();
+			// get last element of totalPath
+			let sanitizedDirname = totalPath.split("/").slice(-1).pop();
+			let currentFolderDiv = document.getElementById("cont-" + id);
+			currentFolderDiv.insertAdjacentHTML("beforeend", 
+				`
+					<div style="margin-left: 15px" id="cont-${max_folder_id}" class="folder-cont">
+						<h2>
+							${sanitizedDirname}		
+						</h2>
+						<button class="expand-btn" onclick="createInteractive(this, ${max_folder_id}, '${totalPath}');">Expand</button>
+					</div>
+				`
+			)
+			document.getElementById("cont-" + max_folder_id).scrollIntoView();
+		}
 	}
 
 	function deleteFolder(path, id)
