@@ -72,7 +72,7 @@ RUN apk update && apk add --no-cache \
     # Creating non-root user and group for running Archivy
     && addgroup -S -g 1000 archivy \
     && adduser -h /archivy -g "User account for running Archivy" \
-    -s /bin/nologin -S -D -G archivy -u 1000 archivy \
+    -s /sbin/nologin -S -D -G archivy -u 1000 archivy \
     # Creating directory in which Archivy's files will be stored
     # (If this directory isn't created, Archivy exits with a "permission denied" error)
     && mkdir -p /archivy/data \

@@ -3,11 +3,13 @@ version: '3.8'
 services:
 
   archivy:
-    image: harshavardhanj/archivy:latest
+    image: harshavardhanj/archivy:0.0.7
     ports:
       - "5000:5000"
     volumes:
       - archivyData:/archivy/data
+    cap_drop:
+      - ALL
 
 volumes:
   archivyData:
