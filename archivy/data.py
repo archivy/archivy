@@ -8,6 +8,7 @@ from shutil import rmtree
 
 import frontmatter
 from flask import current_app
+from werkzeug.utils import secure_filename
 
 
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
@@ -24,11 +25,6 @@ class Directory:
         self.child_dirs = {}
 
 # method from django to sanitize filename
-
-
-def valid_filename(name):
-    name = str(name).strip().replace(" ", "_")
-    return re.sub(r"(?u)[^-\w.]", "", name)
 
 
 def get_items(collections=[], path="", structured=True):
@@ -65,7 +61,7 @@ def get_items(collections=[], path="", structured=True):
 
 def create(contents, title, path="", needs_to_open=False):
     path_to_md_file = os.path.join(
-        get_data_dir(), path, "{}.md".format(valid_filename(title)))
+        get_data_dir(), path, "{}.md".format(secure_filename(title)))
     with open(path_to_md_file, "w") as file:
         file.write(contents)
 
@@ -96,9 +92,11 @@ def get_dirs():
 
 
 def create_dir(name):
-    sanitized_name = "/".join([valid_filename(pathname)
-                               for pathname in name.split("/")])
-    Path(get_data_dir() + sanitized_name).mkdir(parents=True, exist_ok=True)
+    sanitized_name = "/".join([secure_filename(pathname)
+                               for pathname in name])
+    Path(get_data_dir() + sanitized_name).mkdir(parents=True)
+    print(sanitized_name)
+    return sanitized_name
 
 
 def delete_dir(name):
