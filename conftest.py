@@ -1,9 +1,12 @@
 import os
 import shutil
 import tempfile
+from typing import Iterator
 
+import flask
 import pytest
 import responses
+from flask.testing import FlaskClient
 
 from archivy import app
 from archivy.extensions import get_db
@@ -40,7 +43,7 @@ def test_app():
 
 
 @pytest.fixture
-def client(test_app):
+def client(test_app: flask.Flask) -> Iterator[FlaskClient]:
     """ HTTP client for calling a test instance of the app"""
     with test_app.test_client() as client:
         yield client
