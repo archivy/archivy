@@ -25,7 +25,7 @@ class DataObj:
             self.wipe()
             return
         try:
-            parsed_html = BeautifulSoup(url_request)
+            parsed_html = BeautifulSoup(url_request, features="html.parser")
         except Exception:
             flash(f"Could not parse {self.url}\n")
             self.wipe()
@@ -56,11 +56,11 @@ class DataObj:
         resources = beautsoup.find_all(["a", "img"])
         for external in resources:
             if external.name == "a" and \
-                    "href" in external and \
+                    external.has_attr("href") and \
                     external["href"].startswith("/"):
                 external["href"] = urljoin(url, external["href"])
             elif external.name == "img" and \
-                    "src" in external and \
+                    external.has_attr("src") and \
                     external["src"].startswith("/"):
                 external["src"] = urljoin(url, external["src"])
 
