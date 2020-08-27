@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from threading import Thread
 
@@ -10,23 +11,25 @@ from archivy.config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.logger.setLevel(logging.INFO)
 
 # create dir that will hold data if it doesn't already exist
 DIRNAME = app.config["APP_PATH"] + "/data/"
 Path(DIRNAME).mkdir(parents=True, exist_ok=True)
 
 if app.config["ELASTICSEARCH_ENABLED"]:
-    es = extensions.elastic_client()
+    with app.app_context():
+        es = extensions.get_elastic_client()
 
-    try:
-        print(
-            es.indices.create(
-                index=app.config["INDEX_NAME"],
-                body=app.config["ELASTIC_CONF"]))
-    except elasticsearch.ElasticsearchException:
-        print("Elasticsearch index already created")
+        try:
+            print(
+                es.indices.create(
+                    index=app.config["INDEX_NAME"],
+                    body=app.config["ELASTIC_CONF"]))
+        except elasticsearch.ElasticsearchException:
+            app.logger.info("Elasticsearch index already created")
 
-    Thread(target=run_watcher).start()
+        Thread(target=run_watcher, args=[app]).start()
 
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
