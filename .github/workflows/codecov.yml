@@ -8,7 +8,7 @@ on:
       - 'archivy/**'
       - 'tests/**'
       - '.github/workflows/codecov.yml'
-  pull_requests:
+  pull_request:
     paths:
       - 'archivy/**'
       - 'tests/**'
