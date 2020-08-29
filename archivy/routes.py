@@ -220,7 +220,6 @@ def parse_pocket():
                 desc=desc,
                 url=pocket_bookmark["resolved_url"],
                 date=datetime.now(),
-                tags="",
                 type="pocket_bookmarks")
             bookmark.process_bookmark_url()
 
