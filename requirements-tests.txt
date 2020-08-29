@@ -1,6 +1,6 @@
 -r requirements.txt
 
 pytest==6.0.1
-
+pytest-cov
 # for mocking out requests HTTP calls
 responses==0.10.16
