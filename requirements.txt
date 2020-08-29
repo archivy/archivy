@@ -11,7 +11,7 @@ Flask_WTF == 0.14.3
 Markdown == 3.2.2
 
 # archivy/forms.py: 4
-WTForms == 2.3.1
+WTForms == 2.3.3
 
 # archivy/config.py: 2
 appdirs == 1.4.4
@@ -21,7 +21,7 @@ beautifulsoup4 == 4.9.1
 
 # archivy/__init__.py: 1
 # archivy/extensions.py: 2
-elasticsearch == 7.7.1
+elasticsearch == 7.9.1
 
 # archivy/models.py: 6
 html2text == 2020.1.16
@@ -42,7 +42,7 @@ requests == 2.24.0
 tinydb == 4.1.1
 
 # archivy/models.py: 4
-validators == 0.15.0
+validators == 0.18.0
 
 # archivy/check_changes.py: 3,4
 watchdog == 0.10.3
