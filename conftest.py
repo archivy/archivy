@@ -103,6 +103,7 @@ def bookmark_fixture(test_app, mocked_responses):
 
     with test_app.app_context():
         bookmark = DataObj(**datapoints)
+        bookmark.process_bookmark_url()
         bookmark.insert()
     return bookmark
 
