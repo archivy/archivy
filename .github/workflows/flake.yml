@@ -7,10 +7,15 @@ on:
     paths:
       - 'archivy/**'
       - '.github/workflows/flake.yml'
+      - 'conftest.py'
+      - 'tests/**'
+
   pull_request:
     paths:
       - 'archivy/**'
       - '.github/workflows/flake.yml'
+      - 'conftest.py'
+      - 'tests/**'
 
 
 jobs:
