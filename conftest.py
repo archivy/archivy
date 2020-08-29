@@ -43,7 +43,7 @@ def test_app():
 
 
 @pytest.fixture
-def client(test_app: flask.Flask) -> Iterator[FlaskClient]:
+def client(test_app):
     """ HTTP client for calling a test instance of the app"""
     with test_app.test_client() as client:
         yield client
