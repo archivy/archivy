@@ -10,10 +10,11 @@ attributes = ["type", "title", "desc", "tags", "path", "id"]
 
 def test_new_bookmark(test_app):
     bookmark = DataObj(
-        type="bookmarks",
+        url="http://example.org",
         desc="example description",
         tags=["example"],
-        url="http://example.org",
+        path="",
+        type="bookmarks",
     )
     bookmark.process_bookmark_url()
     bookmark_id = bookmark.insert()

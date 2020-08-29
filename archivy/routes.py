@@ -264,6 +264,7 @@ def create_bookmark():
         path=json_data['path'],
         type="bookmarks",
     )
+    bookmark.process_bookmark_url()
     bookmark_id = bookmark.insert()
     if bookmark_id:
         return jsonify(
