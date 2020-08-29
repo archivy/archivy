@@ -1,0 +1,25 @@
+name: Automated code coverage
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'archivy/**'
+      - 'tests/**'
+      - '.github/workflows/codecov.yml'
+  pull_requests:
+    paths:
+      - 'archivy/**'
+      - 'tests/**'
+      - '.github/workflows/codecov.yml'
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true # optional (default = false)
+
