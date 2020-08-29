@@ -1,23 +1,68 @@
-import datetime
+from datetime import datetime
+from typing import List, Optional
 from urllib.parse import urljoin
 
-import validators
-import requests
-import html2text
 import frontmatter
-from flask import flash
+import html2text
+import requests
+import validators
 from bs4 import BeautifulSoup
 from flask import current_app
+from flask import flash
 
 from archivy import extensions
-from archivy.search import add_to_index
 from archivy.data import create
+from archivy.search import add_to_index
+
+
+# TODO: use this as 'type' field
+# class DataobjType(Enum):
+#     BOOKMARK = 'bookmark'
+#     POCKET_BOOKMARK = 'bookmark imported from pocket'
+#     NOTE = 'note'
+#     PROCESSED_DATAOBJ = 'bookmark that has been processed'
 
 
 class DataObj:
     __searchable__ = ["title", "content", "desc", "tags"]
 
+    id: Optional[int] = None
+    type: Optional[str] = None
+    desc: Optional[str] = None
+    tags: List[str] = []
+    title: Optional[str] = None
+    date: Optional[datetime] = None
+    content: Optional[str] = None
+    fullpath: Optional[str] = None
+
+    def __init__(self, **kwargs):
+        # data has already been processed
+        if kwargs["type"] == "processed-dataobj":
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+        else:
+            if "path" not in kwargs or kwargs["path"] == "not classified":
+                kwargs["path"] = ""
+
+            # set_attributes (path, desc, tags, type, title, url)
+            self.path = kwargs["path"]
+            self.desc = kwargs["desc"]
+            self.tags = kwargs["tags"]
+            self.type = kwargs["type"]
+            self.title = kwargs.get("title")
+            self.url = kwargs.get("url")
+
+            self.date = None
+            self.content = ""
+            self.fullpath = ""
+            self.id = None
+
     def process_bookmark_url(self):
+        if self.type not in ("bookmarks", "pocket_bookmarks"):
+            return None
+
+        if not validators.url(self.url):
+            return None
         try:
             url_request = requests.get(self.url).text
         except Exception:
@@ -66,34 +111,6 @@ class DataObj:
 
         return html2text.html2text(str(beautsoup))
 
-    def __init__(self, **kwargs):
-
-        # data has already been processed
-        if kwargs["type"] == "processed-dataobj":
-            for key, value in kwargs.items():
-                setattr(self, key, value)
-        else:
-            # still needs processing
-
-            if "path" not in kwargs or kwargs["path"] == "not classified":
-                kwargs["path"] = ""
-
-            # set_attributes (path, desc, tags, type, title)
-            self.path = kwargs["path"]
-            self.desc = kwargs.get("desc") or ""
-            self.tags = kwargs.get("tags") or []
-            self.type = kwargs["type"]
-            self.title = kwargs.get("title") or ""
-
-            self.date = datetime.datetime.now()
-            self.content = kwargs.get("content") or ""
-            self.fullpath = ""
-            self.id = None
-            if self.type == "bookmarks" or self.type == "pocket_bookmarks":
-                self.url = kwargs["url"]
-                if validators.url(self.url):
-                    self.process_bookmark_url()
-
     def validate(self):
         valid_url = (
             self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
@@ -111,6 +128,7 @@ class DataObj:
         if self.validate():
             extensions.set_max_id(extensions.get_max_id() + 1)
             self.id = extensions.get_max_id()
+            self.date = datetime.now()
             data = {
                 "type": self.type,
                 "desc": self.desc,
