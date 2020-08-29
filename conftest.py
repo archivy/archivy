@@ -79,6 +79,30 @@ def note_fixture(test_app):
         note.insert()
     return note
 
+@pytest.fixture
+def bookmark_fixture(test_app, mocked_responses):
+
+    mocked_responses.add(responses.GET, "https://example.com/", body="""<html>
+        <head><title>Example</title></head><body><p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        <script>console.log("this should be sanitized")</script>
+        <img src="/images/image1.png"> 
+        <a href="/testing-absolute-url">
+        </p></body></html>
+    """)
+
+
+    datapoints = {
+        "type": "bookmarks", "title": "Test Bookmark",
+        "desc": "",
+        "tags": ["testing", "archivy"], "path": "",
+        "url": "https://example.com/"
+    }
+
+    with test_app.app_context():
+        bookmark = DataObj(**datapoints)
+        bookmark.insert()
+    return bookmark
 
 @pytest.fixture()
 def pocket_fixture(test_app, mocked_responses):

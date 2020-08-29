@@ -64,7 +64,7 @@ def create(contents, title, path="", needs_to_open=False):
     with open(path_to_md_file, "w") as file:
         file.write(contents)
 
-    if needs_to_open:
+    if needs_to_open and not current_app.config["TESTING"]:
         open_file(path_to_md_file)
     return path_to_md_file
 
