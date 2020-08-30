@@ -80,13 +80,13 @@ class DataObj:
 
             # set_attributes (path, desc, tags, type, title)
             self.path = kwargs["path"]
-            self.desc = kwargs["desc"]
-            self.tags = kwargs["tags"]
+            self.desc = kwargs.get("desc") or ""
+            self.tags = kwargs.get("tags") or []
             self.type = kwargs["type"]
-            self.title = kwargs.get("title")
+            self.title = kwargs.get("title") or ""
 
             self.date = datetime.datetime.now()
-            self.content = ""
+            self.content = kwargs.get("content") or ""
             self.fullpath = ""
             self.id = None
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
