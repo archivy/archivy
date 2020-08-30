@@ -1,4 +1,5 @@
 import os
+import re
 import time
 
 import flask
@@ -7,6 +8,7 @@ from watchdog.events import FileSystemEventHandler
 
 from archivy import search, models
 
+DATAOBJ_REGEX = re.compile("^\d+-\d{2}-\d{2}-\d{2}-.*\.md$")
 
 class ModifHandler(FileSystemEventHandler):
     def __init__(self, app: flask.Flask):
@@ -14,8 +16,8 @@ class ModifHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         with self.app.app_context():
-            if event.src_path.endswith(
-                    ".md"):
+            filename = event.src_path.split("/")[-1]
+            if re.match(DATAOBJ_REGEX, filename):
                 self.app.logger.info(f"Detected changes to {event.src_path}")
                 dataobj = models.DataObj.from_file(event.src_path)
                 search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
@@ -23,7 +25,8 @@ class ModifHandler(FileSystemEventHandler):
 
     def on_deleted(self, event):
         with self.app.app_context():
-            if event.src_path.endswith(".md"):
+            filename = event.src_path.split("/")[-1]
+            if re.match(DATAOBJ_REGEX, filename):
                 id = event.src_path.split("/")[-1].split("-")[0]
                 search.remove_from_index(self.app.config['INDEX_NAME'], id)
                 self.app.logger.info(f"{event.src_path} has been removed")
