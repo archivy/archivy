@@ -46,11 +46,10 @@
 FROM python:3.8.5-slim-buster AS builder
 
 # Archivy version
-ARG VERSION=0.0.7
+ARG VERSION=0.0.8
 
 # Installing pinned version of Archivy using pip
 RUN pip3.8 install --prefix=/install archivy==$VERSION
-
 
 # Starting with a base image of python:3.8.5-alpine3.12 for the final stage
 FROM python:3.8.5-alpine3.12
@@ -63,7 +62,7 @@ ARG BUILD_DATE
 ARG VCS_REF
 
 # Archivy version
-ARG VERSION=0.0.7
+ARG VERSION=0.0.8
 
 # Installing netcat and xdg-utils
 RUN apk update && apk add --no-cache \
