@@ -2,7 +2,6 @@ import responses
 from flask import Flask
 
 from archivy import data
-from archivy.extensions import get_db
 
 
 def test_parse_pocket(test_app, client, mocked_responses, pocket_fixture):
