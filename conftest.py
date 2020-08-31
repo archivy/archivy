@@ -55,7 +55,9 @@ def mocked_responses():
     HTTP calls made by the requests library.
 
     For example,
-    >>> mocked_responses.add(responses.GET, "http://example.org", json={'key': 'val'})
+    >>> mocked_responses.add(responses.GET, "http://example.org",
+     json={'key': 'val'}
+     )
     >>> r = requests.get("http://example.org")
     >>> print(r.json())
     {'key': 'val'}
@@ -79,6 +81,7 @@ def note_fixture(test_app):
         note.insert()
     return note
 
+
 @pytest.fixture
 def bookmark_fixture(test_app, mocked_responses):
 
@@ -91,7 +94,6 @@ def bookmark_fixture(test_app, mocked_responses):
         </p></body></html>
     """)
 
-
     datapoints = {
         "type": "bookmarks", "title": "Test Bookmark",
         "desc": "",
@@ -103,6 +105,7 @@ def bookmark_fixture(test_app, mocked_responses):
         bookmark = DataObj(**datapoints)
         bookmark.insert()
     return bookmark
+
 
 @pytest.fixture()
 def pocket_fixture(test_app, mocked_responses):
@@ -121,7 +124,6 @@ def pocket_fixture(test_app, mocked_responses):
             "access_token": "5678defg-5678-defg-5678-defg56",
             "username": "test_user"
         })
-
 
     # fake /get response from pocket API
     mocked_responses.add(responses.POST, "https://getpocket.com/v3/get", json={
