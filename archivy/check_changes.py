@@ -2,14 +2,13 @@ import os
 import re
 import time
 
-import frontmatter
 import flask
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from archivy import search, models
 
-DATAOBJ_REGEX = re.compile("^\d+-\d{2}-\d{2}-\d{2}-.*\.md$")
+DATAOBJ_REGEX = re.compile(r"^\d+-\d{2}-\d{2}-\d{2}-.*\.md$")
 
 
 class ModifHandler(FileSystemEventHandler):
@@ -62,7 +61,8 @@ class ModifHandler(FileSystemEventHandler):
     def on_created(self, event):
         with self.app.app_context():
             filename = event.src_path.split("/")[-1]
-            if not re.match(DATAOBJ_REGEX, filename) and filename.endswith(".md"):
+            if (not re.match(DATAOBJ_REGEX, filename)
+                    and filename.endswith(".md")):
                 self.format_file(event.src_path)
 
 
