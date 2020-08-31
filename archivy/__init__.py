@@ -20,7 +20,6 @@ Path(DIRNAME).mkdir(parents=True, exist_ok=True)
 if app.config["ELASTICSEARCH_ENABLED"]:
     with app.app_context():
         es = extensions.get_elastic_client()
-
         try:
             print(
                 es.indices.create(
@@ -29,9 +28,8 @@ if app.config["ELASTICSEARCH_ENABLED"]:
         except elasticsearch.ElasticsearchException:
             app.logger.info("Elasticsearch index already created")
 
-        Thread(target=run_watcher, args=[app]).start()
 
-
+Thread(target=run_watcher, args=[app]).start()
 app.jinja_options["extensions"].append("jinja2.ext.do")
 
 from archivy import routes  # noqa:
