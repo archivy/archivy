@@ -14,6 +14,7 @@ DATAOBJ_REGEX = re.compile(r"^\d+-\d{2}-\d{2}-\d{2}-.*\.md$")
 class ModifHandler(FileSystemEventHandler):
     def __init__(self, app: flask.Flask):
         self.app = app
+        self.ELASTIC = app.config["ELASTICSEARCH_ENABLED"]
         self.data_dir = os.path.join(app.config["APP_PATH"], "data/")
 
     def format_file(self, filepath):
@@ -43,17 +44,19 @@ class ModifHandler(FileSystemEventHandler):
     def on_modified(self, event):
         with self.app.app_context():
             filename = event.src_path.split("/")[-1]
-            if re.match(DATAOBJ_REGEX, filename) and self.app.config["ELASTICSEARCH_ENABLED"]:
+            if re.match(DATAOBJ_REGEX, filename) and self.ELASTIC:
                 self.app.logger.info(f"Detected changes to {event.src_path}")
                 dataobj = models.DataObj.from_file(event.src_path)
                 search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
-            elif not re.match(DATAOBJ_REGEX, filename) and event.src_path.endswith(".md"):
+            elif (not re.match(DATAOBJ_REGEX, filename) and
+                    event.src_path.endswith(".md")):
                 self.format_file(event.src_path)
 
     def on_deleted(self, event):
         with self.app.app_context():
             filename = event.src_path.split("/")[-1]
-            if re.match(DATAOBJ_REGEX, filename) and self.app.config["ELASTICSEARCH_ENABLED"]:
+            if (re.match(DATAOBJ_REGEX, filename)
+                    and self.ELASTIC):
                 id = event.src_path.split("/")[-1].split("-")[0]
                 search.remove_from_index(self.app.config['INDEX_NAME'], id)
                 self.app.logger.info(f"{event.src_path} has been removed")
