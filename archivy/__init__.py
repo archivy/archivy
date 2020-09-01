@@ -30,7 +30,7 @@ if app.config["ELASTICSEARCH_ENABLED"]:
             app.logger.info("Elasticsearch index already created")
 
 # prevent pytest from hanging because of running thread
-if not 'pytest' in sys.argv[0]:
+if 'pytest' not in sys.argv[0]:
     Thread(target=run_watcher, args=[app]).start()
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
