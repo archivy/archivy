@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 from threading import Thread
 
@@ -28,8 +29,10 @@ if app.config["ELASTICSEARCH_ENABLED"]:
         except elasticsearch.ElasticsearchException:
             app.logger.info("Elasticsearch index already created")
 
+# prevent pytest from hanging because of running thread
+if not 'pytest' in sys.argv[0]:
+    Thread(target=run_watcher, args=[app]).start()
 
-Thread(target=run_watcher, args=[app]).start()
 app.jinja_options["extensions"].append("jinja2.ext.do")
 
 from archivy import routes  # noqa:
