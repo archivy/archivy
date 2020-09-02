@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   archivy:
-    image: harshavardhanj/archivy:0.0.8
+    image: harshavardhanj/archivy:0.1.0
     ports:
       - "5000:5000"
     volumes:
