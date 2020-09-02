@@ -49,7 +49,8 @@ class ModifHandler(FileSystemEventHandler):
                 dataobj = models.DataObj.from_file(event.src_path)
                 search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
             elif (not re.match(DATAOBJ_REGEX, filename) and
-                    event.src_path.endswith(".md")):
+                    filename.endswith(".md")
+                    and not filename.startswith(".")):
                 self.format_file(event.src_path)
 
     def on_deleted(self, event):
@@ -64,8 +65,11 @@ class ModifHandler(FileSystemEventHandler):
     def on_created(self, event):
         with self.app.app_context():
             filename = event.src_path.split("/")[-1]
+            print(filename)
+            # check file is not formatted and is md file and is not temp file
             if (not re.match(DATAOBJ_REGEX, filename)
-                    and filename.endswith(".md")):
+                    and filename.endswith(".md")
+                    and not filename.startswith(".")):
                 self.format_file(event.src_path)
 
 

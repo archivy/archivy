@@ -1,7 +1,7 @@
 from datetime import datetime
 
-import markdown
 import requests
+import pypandoc
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
 
@@ -79,7 +79,7 @@ def show_dataobj(dataobj_id):
         flash("Data not found")
         return redirect("/")
 
-    content = markdown.markdown(dataobj.content, extensions=["fenced_code"])
+    content = pypandoc.convert_text(dataobj.content, 'html', format='md')
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
