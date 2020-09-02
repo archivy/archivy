@@ -19,13 +19,15 @@
 #       Archivy uses to store its data, and changes ownership of    #
 #       all files in user's home directory.                         #
 #    6. Copies binaries and libraries of Archivy from the builder   #
-#       stage. Copies the entrypoint.sh script from the host. The   #
-#       ownership of all copied files is set to archivy user and    #
-#       group.                                                      #
+#       stage. Copies the entrypoint.sh and healthcheck.sh script   #
+#       from the host. The ownership of all copied files is set to  #
+#       archivy user and group.                                     #
 #    7. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
 #    8. Exposes port 5000 on the container.                         #
-#    9. Runs the startup script as the entrypoint command with      #
+#    9. Sets a command which will be to check the health of the     #
+#       container.                                                  #
+#   10. Runs the startup script as the entrypoint command with      #
 #       the "start" argument.                                       #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
@@ -46,7 +48,7 @@
 FROM python:3.8.5-slim-buster AS builder
 
 # Archivy version
-ARG VERSION=0.0.8
+ARG VERSION=0.1.0
 
 # Installing pinned version of Archivy using pip
 RUN pip3.8 install --prefix=/install archivy==$VERSION
@@ -62,7 +64,7 @@ ARG BUILD_DATE
 ARG VCS_REF
 
 # Archivy version
-ARG VERSION=0.0.8
+ARG VERSION=0.1.0
 
 # Installing netcat and xdg-utils
 RUN apk update && apk add --no-cache \
@@ -80,8 +82,8 @@ RUN apk update && apk add --no-cache \
 
 # Copying binaries and libraries from builder stage
 COPY --from=builder --chown=archivy:archivy /install /usr/local/
-# Copying entrypoint script from host
-COPY --chown=archivy:archivy entrypoint.sh /usr/local/bin/entrypoint.sh
+# Copying entrypoint and healthcheck script from host
+COPY --chown=archivy:archivy entrypoint.sh healthcheck.sh /usr/local/bin/
 
 # Run as user 'archivy'
 USER archivy
@@ -94,6 +96,9 @@ EXPOSE 5000
 
 # System call signal that will be sent to the container to exit
 STOPSIGNAL SIGTERM
+
+# Healthcheck command used to check if Archivy is up and running
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=5 CMD healthcheck.sh
 
 # Entrypoint - Run 'entrypoint.sh' script. Any command given to 'docker container run' will be added as an argument
 # to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'start' as an argument in order to set up
