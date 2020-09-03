@@ -15,6 +15,9 @@ class Config(object):
     PANDOC_HIGHLIGHT_THEME = os.environ.get("PANDOC_THEME") or "kate"
     ELASTIC_CONF = {
         "settings": {
+            "highlight": {
+                "max_analyzed_offset": 100000000
+            },
             "analysis": {
                 "analyzer": {
                     "rebuilt_standard": {
@@ -32,7 +35,8 @@ class Config(object):
         },
         "mappings": {
             "properties": {
-                "title": {"type": "text", "analyzer": "rebuilt_standard"},
+                "title": {"type": "text", "analyzer": "rebuilt_standard",
+                                    "term_vector": "with_positions_offsets"},
                 "tags": {"type": "text", "analyzer": "rebuilt_standard"},
                 "body": {"type": "text", "analyzer": "rebuilt_standard"},
                 "desc": {"type": "text", "analyzer": "rebuilt_standard"}

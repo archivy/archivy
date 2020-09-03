@@ -24,45 +24,38 @@
 	// search functionality
 	{% if search_enabled %}	
 		var md = window.markdownit();
-		function appendHit(hit, hidden, query) {
+		function appendHit(hit,  query) {
 			let hitsDiv = document.getElementById("searchHits");
 			let hitLi = document.createElement("li");
-			let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-			// match certain semantic elements
-			// refactor to instead ignore <img>
-			let paragraphs = md.render(hit['_source']['content']).replace(/(\r\n\t|\n|\r\t)/gm,"").match(/(<(p|li|blockquote|strong|b).*>.*<\/(p|li|blockquote|strong|b)>)/mg);
-			for(let i = 0; paragraphs && i < paragraphs.length; i++)
+			let body = document.createElement("div");
+			if ("highlight" in hit)
 			{
-				if (paragraphs[i].toUpperCase().includes(query.toUpperCase())) {
-					hitText += `${paragraphs[i]}`;
+				for(let i = 0; i < hit["highlight"].length; i++)
+				{
+					body.innerHTML += hit["highlight"][i];	
 				}
 			}
-			hitText = hitText.replace(query, "<span style='background-color: #f6efa6'>" + query + "</span>");
-			p.innerHTML = hitText, a.textContent = hit['_source']['title'], a.href = `/dataobj/${hit['_id']}`;
+			let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
+			p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
 			hitLi.append(a);
 			hitLi.append(p);
-			if (hidden)
-			{
-				hitLi.classList = "hidden";
-			}
+			hitLi.append(body);
 			hitsDiv.appendChild(hitLi);
 		}
 		let input = document.getElementById("searchBar");
 		input.addEventListener('input', async function(e) {
+			let query = input.value;
 			if (input.value !== "")
 			{
 				let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
 					"method": "GET"
 				});
-				if (searchQuery.ok) {	
+				if (searchQuery.ok && query == input.value) {	
 					let data = await searchQuery.json(), i = 0;
-					console.log(data);
 					document.getElementById("searchHits").innerHTML = "";
 					data.forEach(function(hit)
 					{
-						let hidden = i > 4;
-						appendHit(hit, hidden, input.value);
-						i++;
+						appendHit(hit, input.value);
 					})
 				}
 			}
