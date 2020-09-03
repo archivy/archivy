@@ -3,6 +3,7 @@ import re
 import time
 
 import flask
+import pypandoc
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -16,13 +17,28 @@ class ModifHandler(FileSystemEventHandler):
         self.app = app
         self.ELASTIC = app.config["ELASTICSEARCH_ENABLED"]
         self.data_dir = os.path.join(app.config["APP_PATH"], "data/")
+        self.last_formatted = ""
+        self.time_formatted = time.time() 
+
+    def is_unformatted(self, filename):
+        return (not re.match(DATAOBJ_REGEX, filename)
+                    and not filename.startswith("."))
 
     def format_file(self, filepath):
-        # weird buggy errors with watchdog
-        try:
-            file_contents = open(filepath, "r").read()
-        except FileNotFoundError:
+        # weird buggy errors with watchdog where event is triggered twice
+        print(self.last_formatted, time.time() - self.time_formatted)
+        if filepath == self.last_formatted and time.time() - self.time_formatted <= 40:
             return
+        if filepath.find(".epub") != -1:
+            file_contents = pypandoc.convert_file(filepath, "md")
+        elif filepath.find(".md") != -1:
+            try:
+                file_contents = open(filepath, "r").read()
+            except FileNotFoundError:
+                return
+        else: 
+            return
+
         # extract name of file
         split_path = filepath.replace(self.data_dir, "").split("/")
         file_title = split_path[-1].split(".")[0]
@@ -36,6 +52,9 @@ class ModifHandler(FileSystemEventHandler):
 
         dataobj = models.DataObj(**note_dataobj)
         dataobj.insert()
+
+        self.last_formatted = filepath
+        self.time_formatted = time.time()
         try:
             os.remove(filepath)
         except FileNotFoundError:
@@ -48,9 +67,7 @@ class ModifHandler(FileSystemEventHandler):
                 self.app.logger.info(f"Detected changes to {event.src_path}")
                 dataobj = models.DataObj.from_file(event.src_path)
                 search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
-            elif (not re.match(DATAOBJ_REGEX, filename) and
-                    filename.endswith(".md")
-                    and not filename.startswith(".")):
+            elif self.is_unformatted(filename):
                 self.format_file(event.src_path)
 
     def on_deleted(self, event):
@@ -65,11 +82,8 @@ class ModifHandler(FileSystemEventHandler):
     def on_created(self, event):
         with self.app.app_context():
             filename = event.src_path.split("/")[-1]
-            print(filename)
             # check file is not formatted and is md file and is not temp file
-            if (not re.match(DATAOBJ_REGEX, filename)
-                    and filename.endswith(".md")
-                    and not filename.startswith(".")):
+            if self.is_unformatted(filename):
                 self.format_file(event.src_path)
 
 

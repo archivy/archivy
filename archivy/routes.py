@@ -79,7 +79,8 @@ def show_dataobj(dataobj_id):
         flash("Data not found")
         return redirect("/")
 
-    content = pypandoc.convert_text(dataobj.content, 'html', format='md')
+    content = pypandoc.convert_text(dataobj.content, 'html', format='md',
+            extra_args=["--standalone", f"--highlight-style={app.config['PANDOC_HIGHLIGHT_THEME']}"])
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -223,5 +224,5 @@ def parse_pocket():
                 tags="",
                 type="pocket_bookmarks")
 
-            print(bookmark.insert())
+            bookmark.insert()
     return redirect("/")

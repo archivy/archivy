@@ -8,6 +8,7 @@ import frontmatter
 from flask import flash
 from bs4 import BeautifulSoup
 from flask import current_app
+import pypandoc
 
 from archivy import extensions
 from archivy.search import add_to_index
@@ -19,27 +20,31 @@ class DataObj:
 
     def process_bookmark_url(self):
         try:
-            url_request = requests.get(self.url).text
+            url_request = requests.get(self.url)
         except Exception:
             flash(f"Could not retrieve {self.url}\n")
             self.wipe()
             return
-        try:
-            parsed_html = BeautifulSoup(url_request, features="html.parser")
-        except Exception:
-            flash(f"Could not parse {self.url}\n")
-            self.wipe()
-            return
+        if self.url.find(".epub") != -1:
+            self.content = pypandoc.convert_text(url_request.content, "md", format="epub")
+            self.title = self.url.split("/")[-1]
+        else:
+            try:
+                parsed_html = BeautifulSoup(url_request.text, features="html.parser")
+            except Exception:
+                flash(f"Could not parse {self.url}\n")
+                self.wipe()
+                return
 
-        try:
-            self.content = self.extract_content(parsed_html)
-        except Exception:
-            flash(f"Could not extract content from {self.url}\n")
-            return
+            try:
+                self.content = self.extract_content(parsed_html)
+            except Exception:
+                flash(f"Could not extract content from {self.url}\n")
+                return
 
-        parsed_title = parsed_html.title
-        self.title = (parsed_title.string if parsed_title is not None
-                      else self.url)
+            parsed_title = parsed_html.title
+            self.title = (parsed_title.string if parsed_title is not None
+                          else self.url)
 
     def wipe(self):
         self.title = None

@@ -94,7 +94,6 @@ def create_dir(name):
     sanitized_name = "/".join([secure_filename(pathname)
                                for pathname in name])
     Path(get_data_dir() + sanitized_name).mkdir(parents=True)
-    print(sanitized_name)
     return sanitized_name
 
 
