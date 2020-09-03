@@ -106,7 +106,6 @@ def bookmark_fixture(test_app, mocked_responses):
         bookmark.insert()
     return bookmark
 
-
 @pytest.fixture()
 def pocket_fixture(test_app, mocked_responses):
     """Sets up pocket key and mocked responses for testing pocket sync

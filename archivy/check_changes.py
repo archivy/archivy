@@ -18,15 +18,14 @@ class ModifHandler(FileSystemEventHandler):
         self.ELASTIC = app.config["ELASTICSEARCH_ENABLED"]
         self.data_dir = os.path.join(app.config["APP_PATH"], "data/")
         self.last_formatted = ""
-        self.time_formatted = time.time() 
+        self.time_formatted = time.time()
 
     def is_unformatted(self, filename):
         return (not re.match(DATAOBJ_REGEX, filename)
-                    and not filename.startswith("."))
+                and not filename.startswith("."))
 
     def format_file(self, filepath):
         # weird buggy errors with watchdog where event is triggered twice
-        print(self.last_formatted, time.time() - self.time_formatted)
         if filepath == self.last_formatted and time.time() - self.time_formatted <= 40:
             return
         if filepath.find(".epub") != -1:
@@ -36,7 +35,7 @@ class ModifHandler(FileSystemEventHandler):
                 file_contents = open(filepath, "r").read()
             except FileNotFoundError:
                 return
-        else: 
+        else:
             return
 
         # extract name of file

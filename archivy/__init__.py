@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.logger.setLevel(logging.INFO)
 
-   
+ 
 # check if pandoc is installed, otherwise install
 try:
     pypandoc.get_pandoc_version()
