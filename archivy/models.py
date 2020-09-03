@@ -27,8 +27,8 @@ class DataObj:
             return
         if self.url.find(".epub") != -1:
             self.content = pypandoc.convert_text(url_request.content,
-                                                "md",
-                                                format="epub")
+                                                    "md",
+                                                    format="epub")
             self.title = self.url.split("/")[-1]
         else:
             try:

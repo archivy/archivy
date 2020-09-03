@@ -79,12 +79,12 @@ def show_dataobj(dataobj_id):
         flash("Data not found")
         return redirect("/")
 
-    extra_pandoc_args = ["--hightlight-style="
+    extra_pandoc_args = ["--highlight-style="
                          + app.config['PANDOC_HIGHLIGHT_THEME'],
                          "--standalone"]
 
     content = pypandoc.convert_text(dataobj.content, 'html', format='md',
-                extra_args=extra_pandoc_args)
+                                    extra_args=extra_pandoc_args)
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
