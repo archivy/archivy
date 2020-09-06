@@ -33,8 +33,7 @@ def test_app():
     # information.
     with app.app_context():
         _ = get_db()
-
-    yield app
+        yield app
 
     # close and remove the temporary database
     shutil.rmtree(app_dir)
