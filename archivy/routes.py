@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import requests
+import frontmatter
 import pypandoc
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
@@ -73,11 +74,10 @@ def new_note():
 
 @app.route("/dataobj/<dataobj_id>")
 def show_dataobj(dataobj_id):
-    try:
-        dataobj = data.get_item(dataobj_id)
-    except BaseException:
-        flash("Data not found")
-        return redirect("/")
+    dataobj = data.get_item(dataobj_id)
+
+    if request.args.get("raw") == "1":
+        return frontmatter.dumps(dataobj)
 
     extra_pandoc_args = ["--highlight-style="
                          + app.config['PANDOC_HIGHLIGHT_THEME'],
@@ -91,7 +91,6 @@ def show_dataobj(dataobj_id):
         dataobj=dataobj,
         content=content,
         form=DeleteDataForm())
-
 
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
 def delete_data(dataobj_id):

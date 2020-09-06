@@ -15,16 +15,14 @@ def get_data_dir():
     return os.path.join(current_app.config['APP_PATH'], "data/")
 
 # struct to create tree like file-structure
-
-
 class Directory:
     def __init__(self, name):
         self.name = name
         self.child_files = []
         self.child_dirs = {}
 
-# method from django to sanitize filename
-
+FILE_GLOB = "-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
+GET_BY_ID = lambda dataobj_id : glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)[0]
 
 def get_items(collections=[], path="", structured=True):
     datacont = Directory("root") if structured else []
@@ -32,6 +30,9 @@ def get_items(collections=[], path="", structured=True):
         for filename in glob.glob(get_data_dir() + path + "**/*",
                                   recursive=True):
             paths = filename.split("/data/")[1].split("/")
+
+            if filename.endswith(".md"):
+                data = frontmatter.load(filename)
             data = frontmatter.load(
                 filename) if filename.endswith(".md") else None
 
@@ -39,7 +40,7 @@ def get_items(collections=[], path="", structured=True):
 
             # iterate through paths
             for segment in paths:
-                if segment.endswith(".md"):
+                if segment.endswith(".md") or segment.endswith(".epub"):
                     current_dir.child_files.append(data)
                 else:
                     # directory has not been saved in tree yet
@@ -47,7 +48,7 @@ def get_items(collections=[], path="", structured=True):
                         current_dir.child_dirs[segment] = Directory(segment)
                     current_dir = current_dir.child_dirs[segment]
     else:
-        for filename in glob.glob(get_data_dir() + path + "**/*.md",
+        for filename in glob.glob(f"{get_data_dir()}{path}**/[0-9]*{FILE_GLOB}",
                                   recursive=True):
             data = frontmatter.load(filename)
             if len(collections) == 0 or \
@@ -70,15 +71,15 @@ def create(contents, title, path="", needs_to_open=False):
 
 
 def get_item(dataobj_id):
-    file = glob.glob(f"{get_data_dir()}**/{dataobj_id}-*.md",
-                     recursive=True)[0]
+    file = GET_BY_ID(dataobj_id)
+    
     data = frontmatter.load(file)
     data["fullpath"] = file
     return data
 
 
-def delete_item(id):
-    file = glob.glob(f"{get_data_dir()}**/{id}-*.md", recursive=True)[0]
+def delete_item(dataobj_id):
+    file = GET_BY_ID(dataobj_id)
     os.remove(file)
 
 
