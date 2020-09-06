@@ -2,8 +2,21 @@ import frontmatter
 import responses
 
 from archivy.extensions import get_max_id
+from archivy.models import DataObj
 
 attributes = ["type", "title", "desc", "tags", "path", "id"]
+
+
+def test_new_bookmark(test_app):
+    bookmark = DataObj(
+        type="bookmarks",
+        desc="example description",
+        tags=["example"],
+        url="http://example.org",
+    )
+    bookmark.process_bookmark_url()
+    bookmark_id = bookmark.insert()
+    assert bookmark_id == 1
 
 
 def test_new_note(test_app, note_fixture):
@@ -20,8 +33,10 @@ def test_new_note(test_app, note_fixture):
     for attr in attributes:
         assert getattr(note_fixture, attr) == saved_file[attr]
 
-def test_bookmark_sanitization(test_app, client, mocked_responses, bookmark_fixture):
-    """Tests bookmark contents are correctly saved and converted to proper Markdown"""
+
+def test_bookmark_sanitization(test_app, client, mocked_responses,
+                               bookmark_fixture):
+    """Test that bookmark content is correctly saved as correct Markdown"""
 
     with test_app.app_context():
         assert bookmark_fixture.id == get_max_id()
