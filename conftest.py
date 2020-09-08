@@ -33,8 +33,7 @@ def test_app():
     # information.
     with app.app_context():
         _ = get_db()
-
-    yield app
+        yield app
 
     # close and remove the temporary database
     shutil.rmtree(app_dir)
@@ -64,20 +63,20 @@ def mocked_responses():
     """
     with responses.RequestsMock() as rsps:
         # this ensure that all requests calls are mocked out
-        rsps.assert_all_requests_are_fired = True
+        rsps.assert_all_requests_are_fired = False
         yield rsps
 
 
 @pytest.fixture()
 def note_fixture(test_app):
-    datapoints = {
+    note_dict = {
         "type": "note", "title": "Test Note",
         "desc": "A note to test model functionality",
         "tags": ["testing", "archivy"], "path": ""
     }
 
     with test_app.app_context():
-        note = DataObj(**datapoints)
+        note = DataObj(**note_dict)
         note.insert()
     return note
 
@@ -103,6 +102,7 @@ def bookmark_fixture(test_app, mocked_responses):
 
     with test_app.app_context():
         bookmark = DataObj(**datapoints)
+        bookmark.process_bookmark_url()
         bookmark.insert()
     return bookmark
 

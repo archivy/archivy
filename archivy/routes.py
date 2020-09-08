@@ -35,12 +35,14 @@ def new_bookmark():
     form = NewBookmarkForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
+        path = form.path.data if form.path.data != "not classified" else ""
         bookmark = DataObj(
             url=form.url.data,
             desc=form.desc.data,
             tags=form.tags.data.split(","),
-            path=form.path.data,
+            path=path,
             type="bookmarks")
+        bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
         if bookmark_id:
             flash("Bookmark Saved!")
@@ -56,11 +58,12 @@ def new_note():
     form = NewNoteForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
+        path = form.path.data if form.path.data != "not classified" else ""
         note = DataObj(
             title=form.title.data,
             desc=form.desc.data,
             tags=form.tags.data.split(","),
-            path=form.path.data,
+            path=path,
             type="note")
         note_id = note.insert()
         if note_id:
@@ -224,8 +227,8 @@ def parse_pocket():
                 desc=desc,
                 url=pocket_bookmark["resolved_url"],
                 date=datetime.now(),
-                tags="",
                 type="pocket_bookmarks")
+            bookmark.process_bookmark_url()
 
             print(bookmark.insert())
     return redirect("/")

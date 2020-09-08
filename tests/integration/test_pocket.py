@@ -1,10 +1,15 @@
+from typing import Mapping
+
 import responses
 from flask import Flask
+from flask.testing import FlaskClient
 
 from archivy import data
 
 
-def test_parse_pocket(test_app, client, mocked_responses, pocket_fixture):
+def test_parse_pocket(test_app, client: FlaskClient,
+                      mocked_responses: responses.RequestsMock,
+                      pocket_fixture: Mapping[str, str]):
     """Test the /pocket endpoint
 
     HTTP calls to the pocket API are mocked out
@@ -16,7 +21,6 @@ def test_parse_pocket(test_app, client, mocked_responses, pocket_fixture):
             Lorem ipsum dolor sit amet, consectetur adipiscing elit
         </p></body></html>
     """)
-
 
 
     r: Flask.response_class = client.get('/parse_pocket?new=1')

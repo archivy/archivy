@@ -1,30 +1,64 @@
-import datetime
+from datetime import datetime
+from typing import List, Optional
 from urllib.parse import urljoin
 
-import validators
-import requests
-import html2text
 import frontmatter
-from flask import flash
+import html2text
+import requests
+import validators
+from attr import attrs, attrib
+from attr.validators import instance_of, optional
 from bs4 import BeautifulSoup
-from flask import current_app
 import pypandoc
+from flask import current_app, flash
 
 from archivy import extensions
-from archivy.search import add_to_index
 from archivy.data import create
+from archivy.search import add_to_index
 
 
+# TODO: use this as 'type' field
+# class DataobjType(Enum):
+#     BOOKMARK = 'bookmark'
+#     POCKET_BOOKMARK = 'bookmark imported from pocket'
+#     NOTE = 'note'
+#     PROCESSED_DATAOBJ = 'bookmark that has been processed'
+
+@attrs(kw_only=True)
 class DataObj:
     __searchable__ = ["title", "content", "desc", "tags"]
 
+    id: Optional[int] = attrib(validator=optional(instance_of(int)),
+                               default=None)
+    type: str = attrib(validator=instance_of(str))
+    title: str = attrib(validator=instance_of(str), default="")
+    content: str = attrib(validator=instance_of(str), default="")
+    desc: Optional[str] = attrib(validator=optional(instance_of(str)),
+                                 default=None)
+    tags: List[str] = attrib(validator=instance_of(list), default=[])
+    url: Optional[str] = attrib(validator=optional(instance_of(str)),
+                                default=None)
+    date: Optional[datetime] = attrib(
+        validator=optional(instance_of(datetime)),
+        default=None,
+    )
+    path: str = attrib(validator=instance_of(str), default="")
+    fullpath: Optional[str] = attrib(validator=optional(instance_of(str)),
+                                     default=None)
+
     def process_bookmark_url(self):
+        if self.type not in ("bookmarks", "pocket_bookmarks"):
+            return None
+
+        if not validators.url(self.url):
+            return None
         try:
             url_request = requests.get(self.url)
         except Exception:
             flash(f"Could not retrieve {self.url}\n")
             self.wipe()
             return
+
         if self.url.find(".epub") != -1:
             self.content = pypandoc.convert_text(url_request.content,
                                                 "md",
@@ -50,9 +84,9 @@ class DataObj:
                           else self.url)
 
     def wipe(self):
-        self.title = None
+        self.title = ""
         self.desc = None
-        self.content = None
+        self.content = ""
 
     def extract_content(self, beautsoup):
         stripped_tags = ["footer", "nav"]
@@ -74,34 +108,6 @@ class DataObj:
 
         return html2text.html2text(str(beautsoup))
 
-    def __init__(self, **kwargs):
-
-        # data has already been processed
-        if kwargs["type"] == "processed-dataobj":
-            for key, value in kwargs.items():
-                setattr(self, key, value)
-        else:
-            # still needs processing
-
-            if "path" not in kwargs or kwargs["path"] == "not classified":
-                kwargs["path"] = ""
-
-            # set_attributes (path, desc, tags, type, title)
-            self.path = kwargs["path"]
-            self.desc = kwargs.get("desc") or ""
-            self.tags = kwargs.get("tags") or []
-            self.type = kwargs["type"]
-            self.title = kwargs.get("title") or ""
-
-            self.date = datetime.datetime.now()
-            self.content = kwargs.get("content") or ""
-            self.fullpath = ""
-            self.id = None
-            if self.type == "bookmarks" or self.type == "pocket_bookmarks":
-                self.url = kwargs["url"]
-                if validators.url(self.url):
-                    self.process_bookmark_url()
-
     def validate(self):
         valid_url = (
             self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
@@ -110,15 +116,15 @@ class DataObj:
                 str) and validators.url(
                 self.url))
         valid_title = isinstance(self.title, str)
-        valid_content = (self.type != "bookmark" and
-                         self.type != "pocket_bookmarks") or \
-            isinstance(self.content, str)
+        valid_content = (self.type not in ("bookmark", "pocket_bookmarks")
+                         or isinstance(self.content, str))
         return valid_url and valid_title and valid_content
 
     def insert(self):
         if self.validate():
             extensions.set_max_id(extensions.get_max_id() + 1)
             self.id = extensions.get_max_id()
+            self.date = datetime.now()
             data = {
                 "type": self.type,
                 "desc": self.desc,
