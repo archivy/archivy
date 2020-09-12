@@ -8,12 +8,14 @@ from flask import Flask
 import pypandoc
 
 from archivy import extensions
+from archivy.api import api_bp
 from archivy.check_changes import run_watcher
 from archivy.config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
 app.logger.setLevel(logging.INFO)
+app.register_blueprint(api_bp, url_prefix='/api')
 
 
 # check if pandoc is installed, otherwise install

@@ -4,7 +4,7 @@ import requests
 import frontmatter
 import pypandoc
 from tinydb import Query, operations
-from flask import render_template, flash, redirect, request, jsonify, Response
+from flask import render_template, flash, redirect, request, jsonify
 
 from archivy.models import DataObj
 from archivy.forms import NewBookmarkForm
@@ -237,37 +237,3 @@ def parse_pocket():
 
             print(bookmark.insert())
     return redirect("/")
-
-
-@app.route("/api/bookmarks/<int:bookmark_id>")
-def get_bookmark(bookmark_id):
-    try:
-        dataobj = data.get_item(bookmark_id)
-    except BaseException:
-        return Response(status=404)
-
-    return jsonify(
-        bookmark_id=bookmark_id,
-        title=dataobj["title"],
-        content=dataobj.content,
-        md_path=dataobj["fullpath"],
-    )
-
-
-@app.route("/api/bookmarks", methods=["POST"])
-def create_bookmark():
-    json_data = request.get_json()
-    bookmark = DataObj(
-        url=json_data['url'],
-        desc=json_data['desc'],
-        tags=json_data['tags'],
-        path=json_data['path'],
-        type="bookmarks",
-    )
-    bookmark.process_bookmark_url()
-    bookmark_id = bookmark.insert()
-    if bookmark_id:
-        return jsonify(
-            bookmark_id=bookmark_id,
-        )
-    return Response(status=400)
