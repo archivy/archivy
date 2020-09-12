@@ -28,11 +28,9 @@ jobs:
       run: |
         pip install pigar
         pigar -i . tests/
-        pigar -i archivy/ -p requirements-tests.txt
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
         pip install -r requirements-tests.txt
     - name: Run tests
       run: |
