@@ -27,7 +27,7 @@ jobs:
     - name: Update requirements
       run: |
         pip install pigar
-        pigar -P archivy/
+        pigar -P archivy/ <<< "Y\n"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
