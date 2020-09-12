@@ -42,7 +42,7 @@ python_frontmatter == 0.5.0
 
 # archivy/models.py: 5
 # archivy/routes.py: 4
-requests == 2.18.4
+requests == 2.20.0
 
 # archivy/extensions.py: 7
 # archivy/routes.py: 5
