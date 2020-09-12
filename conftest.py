@@ -1,12 +1,9 @@
 import os
 import shutil
 import tempfile
-from typing import Iterator
 
-import flask
 import pytest
 import responses
-from flask.testing import FlaskClient
 
 from archivy import app
 from archivy.extensions import get_db
@@ -86,7 +83,6 @@ def note_fixture(test_app):
 
 @pytest.fixture
 def bookmark_fixture(test_app, mocked_responses):
-
     mocked_responses.add(responses.GET, "https://example.com/", body="""<html>
         <head><title>Example</title></head><body><p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit
