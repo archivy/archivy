@@ -1,7 +1,8 @@
 from datetime import datetime
 
-import markdown
 import requests
+import frontmatter
+import pypandoc
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
 
@@ -76,13 +77,21 @@ def new_note():
 
 @app.route("/dataobj/<dataobj_id>")
 def show_dataobj(dataobj_id):
-    try:
-        dataobj = data.get_item(dataobj_id)
-    except BaseException:
-        flash("Data not found")
+    dataobj = data.get_item(dataobj_id)
+
+    if not dataobj:
+        flash("Data could not be found!")
         return redirect("/")
 
-    content = markdown.markdown(dataobj.content, extensions=["fenced_code"])
+    if request.args.get("raw") == "1":
+        return frontmatter.dumps(dataobj)
+
+    extra_pandoc_args = ["--highlight-style="
+                         + app.config['PANDOC_HIGHLIGHT_THEME'],
+                         "--standalone"]
+
+    content = pypandoc.convert_text(dataobj.content, 'html', format='md',
+                                    extra_args=extra_pandoc_args)
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
