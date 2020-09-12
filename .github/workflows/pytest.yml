@@ -21,9 +21,15 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
+    - name: Update requirements
+      run: |
+        pip install pigar
+        pigar -i . tests/
+        pigar -i archivy/ -p requirements-tests.txt
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install -r requirements.txt
         pip install -r requirements-tests.txt
     - name: Run tests
       run: |
