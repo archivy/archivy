@@ -17,17 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: stefanzweifel/git-auto-commit-action@v4
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-        commit_message: Add dep to requirements
-        file_pattern: requirements*.txt
-    - name: Update requirements
-      run: |
-        pip install git+https://github.com/damnever/pigar.git@master --upgrade
-        pigar -P archivy/ --yes
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
