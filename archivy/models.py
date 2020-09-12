@@ -9,7 +9,6 @@ import validators
 from attr import attrs, attrib
 from attr.validators import instance_of, optional
 from bs4 import BeautifulSoup
-import pypandoc
 from flask import current_app, flash
 
 from archivy import extensions
