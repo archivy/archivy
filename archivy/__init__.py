@@ -5,6 +5,7 @@ from threading import Thread
 
 import elasticsearch
 from flask import Flask
+import pypandoc
 
 from archivy import extensions
 from archivy.check_changes import run_watcher
@@ -13,6 +14,14 @@ from archivy.config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 app.logger.setLevel(logging.INFO)
+
+
+# check if pandoc is installed, otherwise install
+try:
+    pypandoc.get_pandoc_version()
+except OSError:
+    app.logger.info("Installing pandoc")
+    pypandoc.download_pandoc()
 
 # create dir that will hold data if it doesn't already exist
 DIRNAME = app.config["APP_PATH"] + "/data/"

@@ -14,16 +14,21 @@ from werkzeug.utils import secure_filename
 def get_data_dir():
     return os.path.join(current_app.config['APP_PATH'], "data/")
 
+
 # struct to create tree like file-structure
-
-
 class Directory:
     def __init__(self, name):
         self.name = name
         self.child_files = []
         self.child_dirs = {}
 
-# method from django to sanitize filename
+
+FILE_GLOB = "-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
+
+
+def get_by_id(dataobj_id):
+    results = glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)
+    return results[0] if results else None
 
 
 def get_items(collections=[], path="", structured=True):
@@ -32,6 +37,9 @@ def get_items(collections=[], path="", structured=True):
         for filename in glob.glob(get_data_dir() + path + "**/*",
                                   recursive=True):
             paths = filename.split("/data/")[1].split("/")
+
+            if filename.endswith(".md"):
+                data = frontmatter.load(filename)
             data = frontmatter.load(
                 filename) if filename.endswith(".md") else None
 
@@ -39,7 +47,7 @@ def get_items(collections=[], path="", structured=True):
 
             # iterate through paths
             for segment in paths:
-                if segment.endswith(".md"):
+                if segment.endswith(".md") or segment.endswith(".epub"):
                     current_dir.child_files.append(data)
                 else:
                     # directory has not been saved in tree yet
@@ -47,7 +55,7 @@ def get_items(collections=[], path="", structured=True):
                         current_dir.child_dirs[segment] = Directory(segment)
                     current_dir = current_dir.child_dirs[segment]
     else:
-        for filename in glob.glob(get_data_dir() + path + "**/*.md",
+        for filename in glob.glob(f"{get_data_dir()}{path}**/[0-9]*{FILE_GLOB}",
                                   recursive=True):
             data = frontmatter.load(filename)
             if len(collections) == 0 or \
@@ -70,16 +78,19 @@ def create(contents, title, path="", needs_to_open=False):
 
 
 def get_item(dataobj_id):
-    file = glob.glob(f"{get_data_dir()}**/{dataobj_id}-*.md",
-                     recursive=True)[0]
-    data = frontmatter.load(file)
-    data["fullpath"] = file
-    return data
+    file = get_by_id(dataobj_id)
+    if file:
+        data = frontmatter.load(file)
+        data["fullpath"] = file
+        return data
+    return None
 
 
-def delete_item(id):
-    file = glob.glob(f"{get_data_dir()}**/{id}-*.md", recursive=True)[0]
-    os.remove(file)
+def delete_item(dataobj_id):
+    file = get_by_id(dataobj_id)
+
+    if file:
+        os.remove(file)
 
 
 def get_dirs():
@@ -94,7 +105,6 @@ def create_dir(name):
     sanitized_name = "/".join([secure_filename(pathname)
                                for pathname in name])
     Path(get_data_dir() + sanitized_name).mkdir(parents=True)
-    print(sanitized_name)
     return sanitized_name
 
 

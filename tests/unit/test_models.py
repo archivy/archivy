@@ -1,6 +1,7 @@
 import frontmatter
 import responses
 
+from archivy.models import DataObj
 from archivy.extensions import get_max_id
 from archivy.models import DataObj
 
@@ -53,6 +54,5 @@ def test_bookmark_sanitization(test_app, client, mocked_responses,
     # test relative urls in the HTML are remapped to an absolute urls
     assert bookmark_fixture.content.find("example.com/images/image1.png") != -1
     assert bookmark_fixture.content.find("example.com/testing-absolute-url") != -1
-    
 
 
