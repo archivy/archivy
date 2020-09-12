@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-
 from archivy import app
 
 
