@@ -99,6 +99,7 @@ def show_dataobj(dataobj_id):
         content=content,
         form=DeleteDataForm())
 
+
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
 def delete_data(dataobj_id):
     try:

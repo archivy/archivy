@@ -3,7 +3,6 @@ import re
 import time
 
 import flask
-import pypandoc
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 

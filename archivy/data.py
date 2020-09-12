@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 def get_data_dir():
     return os.path.join(current_app.config['APP_PATH'], "data/")
 
+
 # struct to create tree like file-structure
 class Directory:
     def __init__(self, name):
@@ -21,11 +22,14 @@ class Directory:
         self.child_files = []
         self.child_dirs = {}
 
+
 FILE_GLOB = "-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
 
+
 def get_by_id(dataobj_id):
-    results  =glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)
-    return results[0] if results else None 
+    results = glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)
+    return results[0] if results else None
+
 
 def get_items(collections=[], path="", structured=True):
     datacont = Directory("root") if structured else []
@@ -75,7 +79,6 @@ def create(contents, title, path="", needs_to_open=False):
 
 def get_item(dataobj_id):
     file = get_by_id(dataobj_id)
-    
     if file:
         data = frontmatter.load(file)
         data["fullpath"] = file
