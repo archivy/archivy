@@ -18,6 +18,14 @@ def get_bookmark(bookmark_id):
     ) if bookmark_post is not None else Response(status=404)
 
 
+@api_bp.route("/bookmarks/<int:bookmark_id>", methods=["DELETE"])
+def delete_bookmark(bookmark_id):
+    if data.get_item(bookmark_id) is None:
+        return Response(status=404)
+    data.delete_item(bookmark_id)
+    return Response(status=204)
+
+
 @api_bp.route("/bookmarks", methods=["POST"])
 def create_bookmark():
     json_data = request.get_json()
@@ -35,3 +43,4 @@ def create_bookmark():
             bookmark_id=bookmark_id,
         )
     return Response(status=400)
+

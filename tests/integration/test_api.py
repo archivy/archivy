@@ -23,3 +23,13 @@ def test_create_bookmark(test_app, client: FlaskClient, mocked_responses):
     assert response.json['title'] == 'http://example.org'
     assert response.json['bookmark_id'] == 1
     assert response.json['content'] == 'Example'
+
+
+def test_delete_bookmark_not_found(test_app, client: FlaskClient):
+    response: Flask.response_class = client.delete('/api/bookmarks/1')
+    assert response.status_code == 404
+
+
+def test_delete_bookmark(test_app, client: FlaskClient, bookmark_fixture):
+    response: Flask.response_class = client.delete('/api/bookmarks/1')
+    assert response.status_code == 204
