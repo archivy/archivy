@@ -22,7 +22,10 @@ class Directory:
         self.child_dirs = {}
 
 FILE_GLOB = "-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
-GET_BY_ID = lambda dataobj_id : glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)[0]
+
+def get_by_id(dataobj_id):
+    results  =glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)
+    return results[0] if results else None 
 
 def get_items(collections=[], path="", structured=True):
     datacont = Directory("root") if structured else []
@@ -71,16 +74,20 @@ def create(contents, title, path="", needs_to_open=False):
 
 
 def get_item(dataobj_id):
-    file = GET_BY_ID(dataobj_id)
+    file = get_by_id(dataobj_id)
     
-    data = frontmatter.load(file)
-    data["fullpath"] = file
-    return data
+    if file:
+        data = frontmatter.load(file)
+        data["fullpath"] = file
+        return data
+    return None
 
 
 def delete_item(dataobj_id):
-    file = GET_BY_ID(dataobj_id)
-    os.remove(file)
+    file = get_by_id(dataobj_id)
+
+    if file:
+        os.remove(file)
 
 
 def get_dirs():

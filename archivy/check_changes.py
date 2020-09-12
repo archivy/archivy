@@ -22,20 +22,17 @@ class ModifHandler(FileSystemEventHandler):
 
     def is_unformatted(self, filename):
         return (not re.match(DATAOBJ_REGEX, filename)
-                and not filename.startswith("."))
+                and not filename.startswith(".")
+                and filename.endswith(".md"))
 
     def format_file(self, filepath):
         # weird buggy errors with watchdog where event is triggered twice
         if filepath == self.last_formatted and time.time() - self.time_formatted <= 40:
             return
-        if filepath.find(".epub") != -1:
-            file_contents = pypandoc.convert_file(filepath, "md")
-        elif filepath.find(".md") != -1:
-            try:
-                file_contents = open(filepath, "r").read()
-            except FileNotFoundError:
-                return
-        else:
+
+        try:
+            file_contents = open(filepath, "r").read()
+        except FileNotFoundError:
             return
 
         # extract name of file

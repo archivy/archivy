@@ -79,6 +79,10 @@ def new_note():
 def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
 
+    if not dataobj:
+        flash("Data could not be found!")
+        return redirect("/")
+
     if request.args.get("raw") == "1":
         return frontmatter.dumps(dataobj)
 

@@ -55,20 +55,4 @@ def test_bookmark_sanitization(test_app, client, mocked_responses,
     assert bookmark_fixture.content.find("example.com/images/image1.png") != -1
     assert bookmark_fixture.content.find("example.com/testing-absolute-url") != -1
 
-def test_epub_import(test_app, client, mocked_responses):
-    mocked_responses.add(responses.GET, "https://example.com/sample.epub",
-            body=open("tests/sample.epub", "rb").read())
-
-    datapoints = {
-        "type": "bookmarks", "title": "Test Bookmark",
-        "url": "https://example.com/sample.epub"
-    }
-    with test_app.app_context():
-        bookmark = DataObj(**datapoints)
-        bookmark.insert()
-
-    assert bookmark.title == "sample.epub"
-
-    
-
 
