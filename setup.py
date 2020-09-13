@@ -5,14 +5,18 @@ with open("README.md", "r") as fh:
 
 with open('requirements.txt', encoding='utf-8') as f:
     all_reqs = f.read().split('\n')
-    install_requires = [x.strip() for x in all_reqs if not x.startswith('#') and not x.startswith("-e git")]
+    install_requires = [x.strip() for x in all_reqs if not x.startswith('#')
+                        and not x.startswith("-e git")]
 
 setuptools.setup(
     name="archivy",
     version="0.1.0",
     author="Uzay-G",
     author_email="uzgirit@gmail.com",
-    description="Minimalist knowledge base focused on digital preservation and building your second brain.",
+    description=(
+        "Minimalist knowledge base focused on digital preservation"
+        " and building your second brain."
+    ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Uzay-G/archivy",
