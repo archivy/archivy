@@ -57,3 +57,8 @@ def test_get_bookmarks(test_app, client: FlaskClient, bookmark_fixture):
     assert bookmark['title'] == 'Example'
     assert bookmark['bookmark_id'] == 1
     assert bookmark['content'].startswith('Lorem ipsum')
+
+
+def test_put_bookmark(test_app, client: FlaskClient):
+    response: Flask.response_class = client.put('/api/bookmarks/1')
+    assert response.status_code == 501

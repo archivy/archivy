@@ -1,4 +1,4 @@
-from flask import Response, jsonify, request, Blueprint
+from flask import Response, jsonify, request, Blueprint, current_app
 
 from archivy import data
 from archivy.data import get_items
@@ -60,3 +60,8 @@ def create_bookmark():
         )
     return Response(status=400)
 
+
+@api_bp.route("/bookmarks/<int:bookmark_id>", methods=["PUT"])
+def change_bookmark(bookmark_id):
+    current_app.logger.debug(f'Attempting to delete bookmark <{bookmark_id}>')
+    return Response(status=501)
