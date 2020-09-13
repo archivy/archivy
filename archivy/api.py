@@ -1,6 +1,7 @@
 from flask import Response, jsonify, request, Blueprint
 
 from archivy import data
+from archivy.data import get_items
 from archivy.models import DataObj
 
 api_bp = Blueprint('api', __name__)
@@ -24,6 +25,21 @@ def delete_bookmark(bookmark_id):
         return Response(status=404)
     data.delete_item(bookmark_id)
     return Response(status=204)
+
+
+@api_bp.route("/bookmarks", methods=["GET"])
+def get_bookmarks():
+    # FIXME: only root directory because I'm lazy
+    root_dir = get_items(collections=['bookmarks', 'pocket_bookmarks'])
+    bookmarks = list()
+    for bookmark_post in root_dir.child_files:
+        bookmarks.append(dict(
+            bookmark_id=bookmark_post['id'],
+            title=bookmark_post["title"],
+            content=bookmark_post.content,
+            md_path=bookmark_post["path"],
+        ))
+    return jsonify({'bookmarks': bookmarks})
 
 
 @api_bp.route("/bookmarks", methods=["POST"])
