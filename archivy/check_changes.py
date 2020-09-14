@@ -14,6 +14,7 @@ DATAOBJ_REGEX = re.compile(r"^\d+-\d{2}-\d{2}-\d{2}-.*\.md$")
 class ModifHandler(FileSystemEventHandler):
     def __init__(self, app: flask.Flask):
         self.app = app
+        self.app.logger.info("Running watcher")
         self.ELASTIC = app.config["ELASTICSEARCH_ENABLED"]
         self.data_dir = os.path.join(app.config["APP_PATH"], "data/")
         self.last_formatted = ""
