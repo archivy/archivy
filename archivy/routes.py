@@ -25,6 +25,7 @@ def index():
             title="Home",
             search_enabled=Config.ELASTICSEARCH_ENABLED)
 
+
 @app.context_processor
 def pass_dataobjs():
     dataobjs = data.get_items()
