@@ -20,12 +20,16 @@ from archivy.config import Config
 @app.route("/")
 @app.route("/index")
 def index():
-    dataobjs = data.get_items()
     return render_template(
             "home.html",
             title="Home",
-            dataobjs=dataobjs,
             search_enabled=Config.ELASTICSEARCH_ENABLED)
+
+
+@app.context_processor
+def pass_dataobjs():
+    dataobjs = data.get_items()
+    return dict(dataobjs=dataobjs)
 
 # TODO: refactor two following methods
 
