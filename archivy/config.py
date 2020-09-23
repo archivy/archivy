@@ -35,8 +35,11 @@ class Config(object):
         },
         "mappings": {
             "properties": {
-                "title": {"type": "text", "analyzer": "rebuilt_standard",
-                                    "term_vector": "with_positions_offsets"},
+                "title": {
+                    "type": "text",
+                    "analyzer": "rebuilt_standard",
+                    "term_vector": "with_positions_offsets"
+                },
                 "tags": {"type": "text", "analyzer": "rebuilt_standard"},
                 "body": {"type": "text", "analyzer": "rebuilt_standard"},
                 "desc": {"type": "text", "analyzer": "rebuilt_standard"}

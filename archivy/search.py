@@ -34,9 +34,9 @@ def query_index(index, query):
                     "analyzer": "rebuilt_standard"
                 }
             },
-            "highlight" : {
-                "fields" : {
-                    "content" : {
+            "highlight": {
+                "fields": {
+                    "content": {
                         "pre_tags": "<span style='background-color: #f6efa6'>",
                         "post_tags": "</span>",
                         "boundary_max_scan": 200,
@@ -44,22 +44,24 @@ def query_index(index, query):
                     }
                 }
             }
-        }           
+        } 
     )
 
     hits = []
     for hit in search["hits"]["hits"]:
         formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"], "highlight": []}
         if "highlight" in hit:
-            # FIXME: find a way to make this less hacky and yet still conserve logical separations
+            # FIXME: find a way to make this less hacky and
+            # yet still conserve logical separations
             # hack to make pandoc faster by converting highlights in one go
             # join highlights into string with symbolic separator
             SEPARATOR = "~~~~~~~~~~~~~~~~~~|~~~~~~~~~~~~~~~~~~"
             concatenated_highlight = SEPARATOR.join(
                     [highlight for highlight in hit["highlight"]["content"]])
             # re split highlights
-            formatted_hit["highlight"] = convert_text(concatenated_highlight, "html", format="md")
-                                            .split(SEPARATOR)
+            formatted_hit["highlight"] = convert_text(concatenated_highlight,
+                                                      "html",
+                                                      format="md").split(SEPARATOR)
 
         hits.append(formatted_hit)
 
