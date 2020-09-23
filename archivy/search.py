@@ -50,10 +50,16 @@ def query_index(index, query):
     hits = []
     for hit in search["hits"]["hits"]:
         formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"], "highlight": []}
-
         if "highlight" in hit:
-            for highlight in hit["highlight"]["content"]:
-                formatted_hit["highlight"].append(convert_text(highlight, "html", format="md"))
+            # FIXME: find a way to make this less hacky and yet still conserve logical separations
+            # hack to make pandoc faster by converting highlights in one go
+            # join highlights into string with symbolic separator
+            SEPARATOR = "~~~~~~~~~~~~~~~~~~|~~~~~~~~~~~~~~~~~~"
+            concatenated_highlight = SEPARATOR.join(
+                    [highlight for highlight in hit["highlight"]["content"]])
+            # re split highlights
+            formatted_hit["highlight"] = convert_text(concatenated_highlight, "html", format="md")
+                                            .split(SEPARATOR)
 
         hits.append(formatted_hit)
 
