@@ -44,7 +44,7 @@ def query_index(index, query):
                     }
                 }
             }
-        } 
+        }
     )
 
     hits = []
