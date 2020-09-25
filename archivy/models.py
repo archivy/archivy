@@ -23,6 +23,13 @@ from archivy.search import add_to_index
 #     NOTE = 'note'
 #     PROCESSED_DATAOBJ = 'bookmark that has been processed'
 
+# TODO: use this as 'type' field
+# class DataobjType(Enum):
+#     BOOKMARK = 'bookmark'
+#     POCKET_BOOKMARK = 'bookmark imported from pocket'
+#     NOTE = 'note'
+#     PROCESSED_DATAOBJ = 'bookmark that has been processed'
+
 @attrs(kw_only=True)
 class DataObj:
     __searchable__ = ["title", "content", "desc", "tags"]

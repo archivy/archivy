@@ -31,7 +31,7 @@ def get_by_id(dataobj_id):
     return results[0] if results else None
 
 
-def get_items(collections=[], path="", structured=True):
+def get_items(collections=[], path="", structured=True, json_format=False):
     datacont = Directory("root") if structured else []
     if structured:
         for filename in glob.glob(get_data_dir() + path + "**/*",
@@ -61,8 +61,13 @@ def get_items(collections=[], path="", structured=True):
             if len(collections) == 0 or \
                     any([collection == data["type"]
                         for collection in collections]):
-                datacont.append(data)
-
+                if json_format:
+                    dict_dataobj = data.__dict__
+                    # remove unnecessary yaml handler
+                    dict_dataobj.pop("handler")
+                    datacont.append(dict_dataobj)
+                else:
+                    datacont.append(data)
     return datacont
 
 
