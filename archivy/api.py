@@ -29,7 +29,6 @@ def delete_bookmark(bookmark_id):
 
 @api_bp.route("/dataobjs", methods=["GET"])
 def get_dataobjs():
-    bookmarks = list()
     cur_dir = get_items(structured=False, json_format=True)
     return jsonify(cur_dir)
 

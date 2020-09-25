@@ -66,7 +66,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
                     # remove unnecessary yaml handler
                     dict_dataobj.pop("handler")
                     datacont.append(dict_dataobj)
-                else: 
+                else:
                     datacont.append(data)
     return datacont
 

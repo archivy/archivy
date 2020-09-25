@@ -1,7 +1,8 @@
 import responses
 from flask import Flask
 from flask.testing import FlaskClient
-
+from archivy.data import create_dir, get_items
+from archivy.models import DataObj
 
 def test_bookmark_not_found(test_app, client: FlaskClient):
     response: Flask.response_class = client.get('/api/bookmarks/1')
@@ -44,18 +45,32 @@ def test_delete_bookmark(test_app, client: FlaskClient, bookmark_fixture):
 
 
 def test_get_bookmarks_with_empty_db(test_app, client: FlaskClient):
-    response: Flask.response_class = client.get('/api/bookmarks')
+    response: Flask.response_class = client.get('/api/dataobjs')
     assert response.status_code == 200
-    assert response.json == {'bookmarks': []}
+    assert response.json == []
 
 
-def test_get_bookmarks(test_app, client: FlaskClient, bookmark_fixture):
-    response: Flask.response_class = client.get('/api/bookmarks')
+def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
+
+    note_dict = {
+        "type": "note", "title": "Nested Test Note",
+        "desc": "A note to test nested paths",
+        "tags": ["testing", "archivy"], "path": "t"
+    }
+
+    create_dir("t")
+    note = DataObj(**note_dict)
+    note.insert()
+    response: Flask.response_class = client.get('/api/dataobjs')
+    print(response.data)
     assert response.status_code == 200
-    assert isinstance(response.json['bookmarks'], list)
-    bookmark = response.json['bookmarks'][0]
-    assert bookmark['title'] == 'Example'
-    assert bookmark['bookmark_id'] == 1
+    assert isinstance(response.json, list)
+    # check it correctly gets nested note
+    assert len(response.json) == 2
+
+    bookmark = response.json[0]
+    assert bookmark["metadata"]["title"] == 'Example'
+    assert bookmark["metadata"]["id"] == 1
     assert bookmark['content'].startswith('Lorem ipsum')
 
 

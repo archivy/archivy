@@ -67,7 +67,7 @@ def mocked_responses():
         yield rsps
 
 
-@pytest.fixture()
+@pytest.fixture
 def note_fixture(test_app):
     note_dict = {
         "type": "note", "title": "Test Note",
