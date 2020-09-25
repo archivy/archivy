@@ -22,7 +22,6 @@ def test_parse_pocket(test_app, client: FlaskClient,
         </p></body></html>
     """)
 
-
     r: Flask.response_class = client.get('/parse_pocket?new=1')
     assert r.status_code == 302
 

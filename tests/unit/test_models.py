@@ -1,5 +1,4 @@
 import frontmatter
-import responses
 
 from archivy.models import DataObj
 from archivy.extensions import get_max_id
