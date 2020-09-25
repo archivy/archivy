@@ -69,9 +69,9 @@ ARG VERSION
 
 # Installing xdg-utils
 RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    apk update && apk add --no-cache \
-      xdg-utils \
-      pandoc@testing \
+    && apk update && apk add --no-cache \
+        xdg-utils \
+        pandoc@testing \
     # Creating non-root user and group for running Archivy
     && addgroup -S -g 1000 archivy \
     && adduser -h /archivy -g "User account for running Archivy" \

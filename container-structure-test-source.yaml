@@ -16,7 +16,7 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/Uzay-G/archivy/blob/master/README.md'
     - key: 'org.opencontainers.image.source'
-      value: 'https://github.com/Uzay-G/archivy/blob/docker/Dockerfile'
+      value: 'https://github.com/Uzay-G/archivy/blob/docker/Dockerfile.source'
     - key: 'org.opencontainers.image.licenses'
       value: 'MIT'
     - key: 'org.label-schema.schema-version'
