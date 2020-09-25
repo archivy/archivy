@@ -1,5 +1,8 @@
 .git
+.github
 docker-compose*
 *.md
 LICENSE
 container-structure-test*
+.hadolint.yaml
+goss.yaml

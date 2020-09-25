@@ -1,4 +1,4 @@
-# Container Structure Test for '' image
+# Container Structure Test for 'Archivy' image
 #
 schemaVersion: 2.0.0
 metadataTest:
@@ -16,13 +16,9 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/Uzay-G/archivy/blob/master/README.md'
     - key: 'org.opencontainers.image.source'
-      value: 'https://github.com/Uzay-G/archivy/blob/docker/Dockerfile'
+      value: 'https://github.com/Uzay-G/archivy/blob/docker/Dockerfile.master'
     - key: 'org.opencontainers.image.licenses'
       value: 'MIT'
-    - key: 'org.opencontainers.image.version'
-      value: '0.1.0'
-    - key: 'org.label-schema.version'
-      value: '0.1.0'
     - key: 'org.label-schema.schema-version'
       value: '1.0'
   entrypoint: ["entrypoint.sh"]
@@ -34,29 +30,31 @@ fileExistenceTests:
     path: '/usr/local/bin'
     shouldExist: true
     permissions: 'drwxr-xr-x'
-    uid: 1000
-    gid: 1000
     isExecutableBy: 'any'
   - name: 'Check if /usr/local/lib directory exists'
     path: '/usr/local/lib'
     shouldExist: true
     permissions: 'drwxr-xr-x'
-    uid: 1000
-    gid: 1000
     isExecutableBy: 'any'
   - name: 'Check if archivy executable exists'
     path: '/usr/local/bin/archivy'
     shouldExist: true
     permissions: '-rwxr-xr-x'
-    uid: 1000
-    gid: 1000
     isExecutableBy: 'any'
   - name: 'Check if /archivy/data directory exists'
     path: '/archivy/data'
     shouldExist: true
     permissions: 'dgrwxr-xr-x'
-    uid: 1000
-    gid: 1000
+    isExecutableBy: 'any'
+  - name: 'Check if /usr/local/bin/entrypoint.sh file exists'
+    path: '/usr/local/bin/entrypoint.sh'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    isExecutableBy: 'any'
+  - name: 'Check if /usr/local/bin/healthcheck.sh file exists'
+    path: '/usr/local/bin/healthcheck.sh'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
     isExecutableBy: 'any'
 commandTests:
   - name: 'Check if archivy is installed in PATH'
