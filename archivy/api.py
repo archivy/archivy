@@ -27,19 +27,11 @@ def delete_bookmark(bookmark_id):
     return Response(status=204)
 
 
-@api_bp.route("/bookmarks", methods=["GET"])
-def get_bookmarks():
-    # FIXME: only root directory because I'm lazy
-    root_dir = get_items(collections=['bookmarks', 'pocket_bookmarks'])
+@api_bp.route("/dataobjs", methods=["GET"])
+def get_dataobjs():
     bookmarks = list()
-    for bookmark_post in root_dir.child_files:
-        bookmarks.append(dict(
-            bookmark_id=bookmark_post['id'],
-            title=bookmark_post["title"],
-            content=bookmark_post.content,
-            md_path=bookmark_post["path"],
-        ))
-    return jsonify({'bookmarks': bookmarks})
+    cur_dir = get_items(structured=False, json_format=True)
+    return jsonify(cur_dir)
 
 
 @api_bp.route("/bookmarks", methods=["POST"])
