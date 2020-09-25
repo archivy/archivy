@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout files from repository
         uses: actions/checkout@v1
+        with:
+          ref: docker
 
       - name: Setting variables
         if: success()
@@ -54,6 +56,8 @@ jobs:
     steps:
       - name: Checkout files from repository
         uses: actions/checkout@v1
+        with:
+          ref: docker
 
       - name: Setting variables
         if: success()
@@ -101,6 +105,8 @@ jobs:
     steps:
       - name: Checkout files from repository
         uses: actions/checkout@v1
+        with:
+          ref: docker
 
       - name: Setting variables
         if: success()
@@ -162,9 +168,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [dockerBuildPush]
     steps:
-      - name: Checkout files from repository
-        uses: actions/checkout@v1
-
       - name: Setting variables
         if: success()
         run: |

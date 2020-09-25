@@ -1,0 +1,30 @@
+name: Update Description For Archivy Image on Docker Hub
+
+on:
+  push:
+    branches:
+      - 'docker'
+    paths:
+      - 'Docker.md'
+
+jobs:
+  UpdateDescription:
+    name: Update the description for Archivy image on Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+        with:
+          ref: docker
+        
+      - name: Update description on Docker Hub
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_USER: uzayg
+          DOCKER_PASS: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          DOCKER_IMAGE: archivy
+        with:
+          destination_container_repo: "${DOCKER_USER}/${DOCKER_IMAGE}"
+          provider: dockerhub
+          short_description: 'Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content.'
+          readme_file: 'Docker.md'
