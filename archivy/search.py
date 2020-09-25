@@ -55,7 +55,7 @@ def query_index(index, query):
             # yet still conserve logical separations
             # hack to make pandoc faster by converting highlights in one go
             # join highlights into string with symbolic separator
-            SEPARATOR = "~~~~~~~~~~~~~~~~~~|~~~~~~~~~~~~~~~~~~"
+            SEPARATOR = "SEPARATOR.m.m.m.m.m.m.m.m.m.SEPARATOR"
             concatenated_highlight = SEPARATOR.join(
                     [highlight for highlight in hit["highlight"]["content"]])
             # re split highlights

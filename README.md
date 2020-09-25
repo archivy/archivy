@@ -4,11 +4,11 @@ Archivy is a self-hosted knowledge repository that allows you to safely preserve
 
 Features:
 
-
-- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, in sync with the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
-- Allows you to sync up with Pocket to gather bookmarks from there too.
+- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
 - Extensible search with Elasticsearch and its Query DSL
+- Allows you to sync up with Pocket to gather bookmarks from there too.
 
 
 ![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
@@ -16,6 +16,7 @@ Features:
 Upcoming:
 
 - Integrations with HN, Reddit, and many more.
+- Login module
 - Add submodules for digital identity so archivy syncs to your hn upvoted posts, reddit saved, etc...
 - Option to compile data to a static site that can be deployed.
 - Dark theme
