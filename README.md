@@ -37,6 +37,7 @@ Archivy uses environment variables for its configuration:
 | Variable                | Default                     | Description                           |
 |-------------------------|-----------------------------|---------------------------------------|
 | `ARCHIVY_DATA_DIR`      | System-dependant, see below | Directory in which data will be saved |
+| `ARCHIVY_PORT`          | 5000                        | Port on which archivy will run        |
 | `ELASTICSEARCH_ENABLED` | 0                           | Enable Elasticsearch integration      |
 | `ELASTICSEARCH_URL`     | http://localhost:9200       | Url to the elasticsearch server       |
 
