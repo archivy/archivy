@@ -53,6 +53,7 @@ setup() {
   # Setting environment variables(with sensible defaults)
   env_export FLASK_DEBUG "${FLASK_DEBUG:-0}"
   env_export ELASTICSEARCH_ENABLED "${ELASTICSEARCH_ENABLED:-0}"
+  env_export ARCHIVY_PORT "5000"
   env_export ARCHIVY_DATA_DIR "/archivy"
 
   # If ELASTICSEARCH_ENABLED variable is set to 1
@@ -148,7 +149,7 @@ main() {
 
   # Printing environment variables set
   printf '%s\n' "The following environment variables were set:"
-  for varName in "FLASK_DEBUG" "ELASTICSEARCH_ENABLED" "ELASTICSEARCH_URL" ; do
+  for varName in "FLASK_DEBUG" "ELASTICSEARCH_ENABLED" "ELASTICSEARCH_URL" "ARCHIVY_PORT"; do
     varVal="$( eval echo "\$${varName}" )"
     printf '\t\t%s\n' "${varName}=${varVal}"
   done
