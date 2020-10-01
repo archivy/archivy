@@ -62,7 +62,8 @@ class ModifHandler(FileSystemEventHandler):
             if re.match(DATAOBJ_REGEX, filename) and self.ELASTIC:
                 self.app.logger.info(f"Detected changes to {event.src_path}")
                 dataobj = models.DataObj.from_file(event.src_path)
-                search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
+                if dataobj.validate():
+                    search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
             elif self.is_unformatted(filename):
                 self.format_file(event.src_path)
 
