@@ -157,7 +157,14 @@ class DataObj:
         dataobj = {}
         dataobj["content"] = data.content
         for pair in ["tags", "desc", "id", "title", "path"]:
-            dataobj[pair] = data[pair]
+            try:
+                dataobj[pair] = data[pair]
+            except KeyError:
+                # files sometimes get moved temporarily by applications while you edit
+                # this can create bugs where the data is not loaded correctly
+                # this handles that scenario as validation will simply fail and the event will
+                # be ignored
+                break
 
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
