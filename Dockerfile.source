@@ -8,26 +8,22 @@
 #                                                                   #
 #    1. Starts with a base image of Python3.8.5 built on Debian     #
 #       Buster Slim to be used as builder stage.                    #
-#    2. Pins a version of archivy.                                  #
-#    3. Installs Archivy using pip in the /install directory.       #
-#    4. Starts with Python3.8.5 based on Alpine 3.12 for the final  #
-#       stage.                                                      #
-#    5. Installs xdg-utils(needed by archivy for opening files),    #
-#       pandoc(needed by archivy for extended markdown support),    #
-#       creates a non-root user account and group which will be     #
-#       used to run run Archivy, creates the directory which        #
-#       Archivy uses to store its data, and changes ownership of    #
-#       all files in user's home directory.                         #
-#    6. Copies binaries and libraries of Archivy from the builder   #
-#       stage. Copies the entrypoint.sh and healthcheck.sh script   #
-#       from the host. The ownership of all copied files is set to  #
+#    2. Adds 'testing' repository, and installs required packages.  #
+#    3. Clones the 'archivy' repository and installs Archivy.       #
+#    4. Cleans up by deleting packages and cloned repository.       #
+#    5. Adds a non-root user and group to run Archivy, creates the  #
+#       directory which Archivy uses to store its data, and changes #
+#       ownership of all files in the non-root user's home dir.     #
+#    6. Copies the entrypoint.sh and healthcheck.sh scripts from    #
+#       the host. The ownership of all copied files is set to       #
 #       archivy user and group.                                     #
-#    7. Creates a mount point so that external volumes can be       #
+#    7. Sets the 'run as' user to 'archivy'.                        #
+#    8. Creates a mount point so that external volumes can be       #
 #       mounted/attached to it. Useful for data persistence.        #
-#    8. Exposes port 5000 on the container.                         #
-#    9. Sets a command which will be to check the health of the     #
+#    9. Exposes port 5000 on the container.                         #
+#   10. Sets a command which will be to check the health of the     #
 #       container.                                                  #
-#   10. Runs the startup script as the entrypoint command with      #
+#   11. Runs the startup script as the entrypoint command with      #
 #       the "start" argument.                                       #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
@@ -36,7 +32,7 @@
 #                                                                   #
 #        Example:                                                   #
 #        docker run --name archivy -p 5000:5000 -v \                #
-#        "$(pwd)"/testDir:/archivy/data archivy:latest              #
+#        "$(pwd)"/testDir:/archivy/data archivy:source              #
 #                                                                   #
 #        where 'testDir' is the directory on the host and           #
 #        '/archivy/data' is the path of the volume on the           #
@@ -44,17 +40,7 @@
 #                                                                   #
 #####################################################################
 
-# Starting with base image of python3.8.5 built on Debian Buster Slim
-FROM python:3.8.5-slim-buster AS builder
-
-# Archivy version
-ARG VERSION
-
-# Installing pinned version of Archivy using pip
-RUN pip3.8 install --prefix=/install archivy==$VERSION
-
-
-# Starting with a base image of python:3.8.5-alpine3.12 for the final stage
+# Start with python3.8-alpine3.12
 FROM python:3.8.5-alpine3.12
 
 # ARG values for injecting metadata during build time
@@ -64,15 +50,25 @@ FROM python:3.8.5-alpine3.12
 ARG BUILD_DATE
 ARG VCS_REF
 
-# Archivy version
-ARG VERSION
+# Setting VCS URL
+ARG ARCHIVY_VCS_URL="https://github.com/Uzay-G/archivy"
 
-# Installing xdg-utils
+# Add 'testing' repository and install dependencies
 RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
     && apk update && apk add --no-cache \
-        xdg-utils \
-        pandoc@testing \
-    # Creating non-root user and group for running Archivy
+      git \
+      xdg-utils \
+      pandoc@testing \
+    # Clone the repository
+    && git clone ${ARCHIVY_VCS_URL} \
+    && cd archivy \
+    # Install all necessary files/packages
+    && python3.8 setup.py install \
+    # Delete git package
+    && apk del git --purge \
+    && cd ../ \
+    # Remove downloaded source code
+    && rm -rf archivy \
     && addgroup -S -g 1000 archivy \
     && adduser -h /archivy -g "User account for running Archivy" \
     -s /sbin/nologin -S -D -G archivy -u 1000 archivy \
@@ -82,8 +78,6 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
     # Changing ownership of all files in user's home directory
     && chown -R archivy:archivy /archivy
 
-# Copying binaries and libraries from builder stage
-COPY --from=builder --chown=archivy:archivy /install /usr/local/
 # Copying entrypoint and healthcheck script from host
 COPY --chown=archivy:archivy entrypoint.sh healthcheck.sh /usr/local/bin/
 
@@ -107,9 +101,9 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=5 CMD health
 # the Archivy server.
 ENTRYPOINT ["entrypoint.sh"]
 
-# The 'start' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
+# The 'start' CMD is required by the 'entrypoint.sh' script to set up the Archivy server.
 # Any command given to the 'docker container run' will override the CMD below which
-# will result in the Archivy not being set up. 
+# will result in the Archivy not being set up.
 CMD ["start"]
 
 # Labels
@@ -120,15 +114,15 @@ LABEL org.opencontainers.image.vendor="Uzay G" \
       org.opencontainers.image.url="https://github.com/Uzay-G/archivy/tree/master/" \
       org.label-schema.vcs-url="https://github.com/Uzay-G/archivy/tree/master/" \
       org.opencontainers.image.documentation="https://github.com/Uzay-G/archivy/blob/master/README.md" \
-      org.opencontainers.image.source="https://github.com/Uzay-G/archivy/blob/docker/Dockerfile" \
+      org.opencontainers.image.source="https://github.com/Uzay-G/archivy/blob/docker/Dockerfile.source" \
       org.opencontainers.image.description="Archivy is a self-hosted knowledge repository that \
       allows you to safely preserve useful content that contributes to your knowledge bank." \
       org.opencontainers.image.created=$BUILD_DATE \
       org.label-schema.build-date=$BUILD_DATE \
       org.opencontainers.image.revision=$VCS_REF \
       org.label-schema.vcs-ref=$VCS_REF \
-      org.opencontainers.image.version=$VERSION \
-      org.label-schema.version=$VERSION \
+      org.opencontainers.image.version="source" \
+      org.label-schema.version="source" \
       org.label-schema.schema-version="1.0" \
       software.author.repository="https://github.com/Uzay-G/archivy" \
-      software.release.version=$VERSION
+      software.release.version="source"
