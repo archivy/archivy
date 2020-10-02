@@ -2,7 +2,7 @@
 #
 #: Title        : entrypoint.sh
 #: Date         : 19-Aug-2020
-#: Version      : 0.1
+#: Version      : 0.2
 #: Description  : This file handles the startup of the 'Archivy' server
 #                 and other functions necessary for its startup such as
 #                 setting default environment variables and overriding
@@ -33,10 +33,10 @@
 #
 env_export() {
   # Assign first argument to the 'var' variable
-  local variableName="$1"
+  variableName="$1"
 
   # Assign second argument to the 'val' variable
-  local variableValue="${2:-}"
+  variableValue="${2:-}"
 
   # Export variable with provided value
   export "${variableName}"="${variableValue}"
@@ -53,6 +53,7 @@ setup() {
   # Setting environment variables(with sensible defaults)
   env_export FLASK_DEBUG "${FLASK_DEBUG:-0}"
   env_export ELASTICSEARCH_ENABLED "${ELASTICSEARCH_ENABLED:-0}"
+  env_export ARCHIVY_PORT "5000"
   env_export ARCHIVY_DATA_DIR "/archivy"
 
   # If ELASTICSEARCH_ENABLED variable is set to 1
@@ -75,10 +76,6 @@ setup() {
 #                       Returns 1 if it is not
 # 
 check_elasticsearch() {
-  # Local variables for storing hostname and port of Elasticsearch
-  local elasticHostname
-  local elasticPort
-
   # Get hostname and port from ELASTICSEARCH_URL variable's value.
   # Required for use with netcat as the host and port will have to be passed
   # as separate arguments to it.
@@ -88,14 +85,14 @@ check_elasticsearch() {
   # If the variable pointing to elasticsearch URL is not an empty string
   if [ "$( echo "${ELASTICSEARCH_URL}" )" != "" ] ;  then
     # Use different query commands based on the tools available
-    if [ $(command -v nc) ] ; then
+    if [ $(command -v wget) ] ; then
       # Query the Elasticsearch URL
-      elasticExists="$(echo -ne 'GET / HTTP/1.0\r\n\r\n' | nc ${elasticHostname:-"elasticsearch"} ${elasticPort:-"9200"} 2>/dev/null | grep -o "version")"
+      elasticExists="$(wget -qO- "${ELASTICSEARCH_URL}" 2>/dev/null | grep -o "version" )"
     elif [ $(command -v curl) ] ; then
       # Query the Elasticsearch URL
       elasticExists="$(curl -X GET --silent "${ELASTICSEARCH_URL}" | grep -o "version")"
     else
-      printf '%s\n' "Please install either netcat or curl. Required for health checks on Elasticsearch" 1>&2
+      printf '%s\n' "Please install either wget or curl. Required for health checks on Elasticsearch." 1>&2
       exit 1
     fi
 
@@ -152,7 +149,7 @@ main() {
 
   # Printing environment variables set
   printf '%s\n' "The following environment variables were set:"
-  for varName in "FLASK_DEBUG" "ELASTICSEARCH_ENABLED" "ELASTICSEARCH_URL" ; do
+  for varName in "FLASK_DEBUG" "ELASTICSEARCH_ENABLED" "ELASTICSEARCH_URL" "ARCHIVY_PORT"; do
     varVal="$( eval echo "\$${varName}" )"
     printf '\t\t%s\n' "${varName}=${varVal}"
   done

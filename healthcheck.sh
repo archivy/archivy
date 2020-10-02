@@ -2,7 +2,7 @@
 #
 #: Title        : healthcheck.sh
 #: Date         : 02-Sep-2020
-#: Version      : 0.1
+#: Version      : 0.2
 #: Description  : The script check the running status of Archivy.
 #                 The exit status of this script decides whether
 #                 or not the container is reported as 'healthy'
@@ -27,23 +27,25 @@
 #
 checkArchivy() {
   # Local variables used to store hostname and port number of Archivy
-  local archivyHostname="localhost"
-  local archivyPort="5000"
+  archivyHostname="localhost"
+  archivyPort="5000"
 
-  # If 'netcat' command is available
-  if [ $(command -v nc) ] ; then
+  # If 'wget' command is available
+  if [ $(command -v wget) ] ; then
     # Get the home page of Archivy
-    archivyRunning="$(echo -ne 'GET / HTTP/1.0\r\n\r\n' | nc ${archivyHostname:-"localhost"} ${archivyPort:-"5000"} 2>/dev/null | grep -oE "Archivy|New Bookmark|New Note")"
+    archivyRunning="$(wget -qO- http://${archivyHostname:-"localhost"}:${archivyPort:-"5000"}/ 2>/dev/null | grep -oE "Archivy|New Bookmark|New Note")"
+  elif [ $(command -v curl) ] ; then
+    archivyRunning="$(curl -X GET http://${archivyHostname:-"localhost"}:${archivyPort:-"5000"}/ 2>/dev/null | grep -oE "Archivy|New Bookmark|New Note")"
   else
-    printf '%s\n' "Please install netcat. Required for health checks on Elasticsearch and Archivy." 1>&2
+    printf '%s\n' "Please install either wget or curl. Required for health checks on Elasticsearch." 1>&2
     exit 1
   fi
 
   # If the query result is not an empty string
   if [ "$( echo "${archivyRunning}" )" != "" ] ; then
-    return 0
+    exit 0
   else
-    return 1
+    exit 1
   fi
 }
 
