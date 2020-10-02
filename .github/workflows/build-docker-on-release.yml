@@ -158,7 +158,6 @@ jobs:
             --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
             --tag "${{ env.docker_image }}:${{ env.version }}" \
             --tag "${{ env.docker_image }}:${{ env.major_version }}.${{ env.minor_version }}" \
-#            --tag "${{ env.docker_image }}:${{ env.major_version }}" \
             --tag "${{ env.docker_image }}:${{ env.hash }}" \
             --tag "${{ env.docker_image }}:stable" \
             --tag "${{ env.docker_image }}:latest" \
