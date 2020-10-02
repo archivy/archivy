@@ -1,0 +1,186 @@
+name: Building, Testing, and Pushing Archivy Container Image On Push and PRs To Master Branch
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'archivy/**'
+      - '.github/workflows/build-on-push-master.yml'
+  pull_request:
+    branches:
+      - 'master'
+    paths:
+      - 'archivy/**'
+      - '.github/workflows/build-on-push-master.yml'
+
+jobs:
+  BuildPushUntested:
+    name: Build and push image with 'untested' tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout files from repository
+        uses: actions/checkout@v1
+        with:
+          ref: docker
+
+      - name: Setting variables
+        if: success()
+        run: |
+          echo ::set-env name=timestamp::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
+          echo ::set-env name=image_tag::source
+          echo ::set-env name=docker_username::uzayg
+          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+
+      - name: Set up Docker Buildx
+        if: success()
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          buildx_version: latest
+          qemu_version: latest
+
+      - name: Docker login
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${{ env.docker_username }}" --password-stdin docker.io
+
+      # Build and push images with the tags:
+      #   untested-source
+      #   untested-[hash]
+      - name: Run buildx to push untested image
+        if: success()
+        run: |
+          docker buildx build \
+            --output type=image,name=${{ env.docker_image }},push=true \
+            --build-arg BUILD_DATE "${{ env.timestamp }}" --build-arg VCS_REF "${{ env.hash }}" \
+            --tag "${{ env.docker_image }}:untested-${{ env.tag_name }}" \
+            --tag "${{ env.docker_image }}:untested-${{ env.hash }}" \
+            --file ./Dockerfile .
+
+  ContainerTestAndScan:
+    name: Test image with 'untested' tag using Hadolint, container-structure-test, Trivy, and Anchore
+    runs-on: ubuntu-latest
+    needs: [BuildPushUntested]
+    steps:
+      - name: Checkout files from repository
+        uses: actions/checkout@v1
+        with:
+          ref: docker
+
+      - name: Setting variables
+        if: success()
+        run: |
+          echo ::set-env name=image_tag::source
+          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+
+      - name: Lint Dockerfile with Hadolint
+        if: success()
+        uses: brpaz/hadolint-action@v1.1.0
+        with:
+          dockerfile: "Dockerfile.source"
+
+      # This is required by container-structure-test. Without this step, it fails to pull the image on its own 
+      - name: Run image
+        if: success()
+        run: docker run --rm uzayg/archivy:untested-${{ env.image_tag }} sleep 0.1
+
+      - name: Test image with container-structure-test
+        uses: plexsystems/container-structure-test-action@v0.2.0
+        with:
+          image: '${{ env.docker_image }}:untested-${{ env.image_tag }}'
+          config: './container-structure-test.yaml'
+
+      - name: Scan for OS vulnerabilities in image using Trivy
+        uses: aquasecurity/trivy-action@0.0.8
+        with:
+          image-ref: '${{ env.docker_image }}:untested-${{ env.image_tag }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+      - name: Scan image and code for vulnerabilties using Anchore
+        uses: anchore/scan-action@v1.0.8
+        with:
+          image-reference: '${{ env.docker_image }}:untested-${{ env.image_tag }}'
+          dockerfile-path: './Dockerfile.source'
+          fail-build: true
+          include-app-packages: true
+
+  dockerBuildPush:
+    name: Build and push image with release version tag
+    runs-on: ubuntu-latest
+    needs: [ContainerTestScan]
+    steps:
+      - name: Checkout files from repository
+        uses: actions/checkout@v1
+        with:
+          ref: docker
+
+      - name: Setting variables
+        if: success()
+        run: |
+          echo ::set-env name=timestamp::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
+          echo ::set-env name=image_tag::source
+          echo ::set-env name=docker_username::uzayg
+          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          echo ::set-env name=docker_platforms::linux/amd64
+          #echo ::set-env name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/s390x
+
+      - name: Set up Docker Buildx
+        if: success()
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v3.3.0
+        with:
+          buildx_version: latest
+          qemu_version: latest
+
+      - name: Print available platforms for buildx
+        if: success()
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      - name: Docker login
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${{ env.docker_username }}" --password-stdin docker.io
+
+      # Build and push images with the tags
+      #   source
+      #   hash   - Commit hash(first 8 characters)
+      - name: Build and push with Docker Buildx
+        if: success()
+        run: |
+          docker buildx build \
+            --output type=image,name=${{ env.docker_image }},push=true \
+            --platform ${{ env.docker_platforms }} \
+            --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
+            --tag "${{ env.docker_image }}:${{ env.tag_name }}" \
+            --tag "${{ env.docker_image }}:${{ env.hash }}" \
+            --file ./Dockerfile .
+
+  deleteUntestedImage:
+    name: Delete images with the 'untested' tag
+    runs-on: ubuntu-latest
+    needs: [dockerBuildPush]
+    steps:
+      - name: Setting variables
+        if: success()
+        run: |
+          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
+          echo ::set-env name=image_tag::source
+          echo ::set-env name=docker_username::uzayg
+          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+
+      - name: Delete 'untested' image
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        run: |
+          docker run --rm lumir/remove-dockerhub-tag --user "${{ env.docker_username }}" --password "${DOCKER_PASSWORD}" \
+          "${{ env.docker_image }}:untested-${{ env.image_tag }}" "${{ env.docker_image }}:untested-${{ env.hash }}"
