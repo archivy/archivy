@@ -1,10 +1,12 @@
 from flask.testing import FlaskClient
+from flask import request
+from flask_login import current_user
 
 from responses import RequestsMock, GET
 from archivy.extensions import get_max_id
 
 
-def test_get_index(test_app, client: FlaskClient):
+def test_get_index(test_app, client: FlaskClient, login_user):
     response = client.get('/')
     assert response.status_code == 200
 
@@ -89,4 +91,18 @@ def test_create_note(test_app, client: FlaskClient):
     assert resp.status_code == 200
     assert b"testing, note" in resp.data
     assert b"Testing the create route" in resp.data
+
+def test_logging_in(test_app, client: FlaskClient):
+    resp = client.post("/login", data={"username": "halcyon", "password": "password"}, follow_redirects=True)
+    assert resp.status_code == 200
+    assert request.path == "/"
+    assert current_user
+
+def test_logging_in_with_invalid_creds(test_app, client: FlaskClient):
+    resp = client.post("/login", data={"username": "invalid", "password": "dasdasd"}, follow_redirects=True)
+    assert resp.status_code == 200
+    assert request.path == "/login"
+    assert b"Invalid credentials" in resp.data
+    
+
 

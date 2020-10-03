@@ -155,6 +155,9 @@ def login():
 
             next_url = request.args.get("next")
             return redirect(next_url or "/")
+
+        flash("Invalid credentials")
+        return redirect("/login")
     return render_template("users/login.html", form=form)
 
 

@@ -62,3 +62,5 @@ def get_elastic_client():
             "Elasticsearch by setting ELASTICSEARCH_ENABLED to 0."
         )
     return es
+
+

@@ -7,7 +7,7 @@ import responses
 
 from archivy import app
 from archivy.extensions import get_db
-from archivy.models import DataObj
+from archivy.models import DataObj, User
 
 
 @pytest.fixture
@@ -25,7 +25,6 @@ def test_app():
 
     app.config['TESTING'] = True
     app.config["WTF_CSRF_ENABLED"] = False
-    app.config['LOGIN_DISABLED'] = True
     # This setups a TinyDB instance, using the `app_dir` temporary
     # directory defined above
     # Required so that `flask.current_app` can be called in data.py and
@@ -34,6 +33,12 @@ def test_app():
     # information.
     with app.app_context():
         _ = get_db()
+        user = {
+            "username": "halcyon",
+            "password": "password"
+        }
+
+        User(**user).insert()
         yield app
 
     # close and remove the temporary database
@@ -46,6 +51,9 @@ def client(test_app):
     with test_app.test_client() as client:
         yield client
 
+@pytest.fixture
+def login_user(client):
+    client.post("/login", data={"username": "halcyon", "password": "password"})
 
 @pytest.fixture
 def mocked_responses():
