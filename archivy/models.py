@@ -3,7 +3,7 @@ from typing import List, Optional
 from urllib.parse import urljoin
 
 import frontmatter
-import html2text
+from pypandoc import convert_text
 import requests
 import validators
 from attr import attrs, attrib
@@ -53,11 +53,10 @@ class DataObj:
                                      default=None)
 
     def process_bookmark_url(self):
-        if self.type not in ("bookmarks", "pocket_bookmarks"):
+        """Process url to get content for bookmark"""
+        if self.type not in ("bookmarks", "pocket_bookmarks") or not validators.url(self.url):
             return None
 
-        if not validators.url(self.url):
-            return None
         try:
             url_request = requests.get(self.url)
         except Exception:
@@ -84,11 +83,14 @@ class DataObj:
                       else self.url)
 
     def wipe(self):
+        """Resets and invalidates dataobj"""
         self.title = ""
         self.desc = None
         self.content = ""
 
     def extract_content(self, beautsoup):
+        """converts html bookmark url to optimized markdown"""
+
         stripped_tags = ["footer", "nav"]
         url = self.url.rstrip("/")
 
@@ -106,15 +108,12 @@ class DataObj:
                     external["src"].startswith("/"):
                 external["src"] = urljoin(url, external["src"])
 
-        return html2text.html2text(str(beautsoup))
+        return convert_text(str(beautsoup), "md", format="html")
 
     def validate(self):
-        valid_url = (
-            self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
-            isinstance(
-                self.url,
-                str) and validators.url(
-                self.url))
+        valid_url = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
+                    isinstance(self.url, str) and validators.url(self.url))
+
         valid_title = isinstance(self.title, str) and self.title != ""
         valid_content = (self.type not in ("bookmark", "pocket_bookmarks")
                          or isinstance(self.content, str))
@@ -137,7 +136,7 @@ class DataObj:
             if self.type == "bookmarks" or self.type == "pocket_bookmarks":
                 data["url"] = self.url
 
-            # convert to markdown
+            # convert to markdown file
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
             self.fullpath = create(
