@@ -16,12 +16,12 @@ def get_dataobj(dataobj_id):
         title=dataobj["title"],
         content=dataobj.content,
         md_path=dataobj["fullpath"],
-    ) if dataobj is not None else Response(status=404)
+    ) if dataobj else Response(status=404)
 
 
 @api_bp.route("/dataobjs/<int:dataobj_id>", methods=["DELETE"])
 def delete_bookmark(dataobj_id):
-    if data.get_item(dataobj_id) is None:
+    if not data.get_item(dataobj_id):
         return Response(status=404)
     data.delete_item(dataobj_id)
     return Response(status=204)

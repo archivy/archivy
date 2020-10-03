@@ -100,8 +100,12 @@ def delete_item(dataobj_id):
 
 def get_dirs():
     dirnames = glob.glob(get_data_dir() + "**/*", recursive=True)
+
+    # parse dirnames into relative paths
     dirnames = [name.split("/data/")[1]
                 for name in dirnames if not name.endswith(".md")]
+
+    # append name for root dir
     dirnames.append("not classified")
     return dirnames
 
