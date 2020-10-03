@@ -1,6 +1,6 @@
 import re
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, SelectField, PasswordField
 from wtforms.validators import DataRequired, URL, ValidationError
 
 
@@ -32,3 +32,8 @@ class PocketForm(FlaskForm):
 
 class DeleteDataForm(FlaskForm):
     submit = SubmitField("Delete")
+
+class LoginForm(FlaskForm):
+    username = StringField("username")
+    password = PasswordField("password")
+    submit = SubmitField("Login")

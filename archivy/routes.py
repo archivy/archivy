@@ -5,12 +5,11 @@ import frontmatter
 import pypandoc
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
+from werkzeug.security import check_password_hash
+from flask_login import login_user, login_required
 
-from archivy.models import DataObj
-from archivy.forms import NewBookmarkForm
-from archivy.forms import NewNoteForm
-from archivy.forms import DeleteDataForm
-from archivy.forms import PocketForm
+from archivy.models import DataObj, User
+from archivy.forms import *
 from archivy.search import query_index
 from archivy import data, app
 from archivy.extensions import get_db
@@ -19,6 +18,7 @@ from archivy.config import Config
 
 @app.route("/")
 @app.route("/index")
+@login_required
 def index():
     return render_template(
             "home.html",
@@ -141,6 +141,22 @@ def search_elastic():
     search_results = query_index(Config.INDEX_NAME, query)
     return jsonify(search_results)
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db = get_db()
+        user = db.search((Query().username == form.username.data) & (Query().type == "user"))
+
+        if user and check_password_hash(user[0]["hashed_password"], form.password.data):
+            user = User.from_db(user[0])
+            login_user(user, remember=True)
+            flash("Login successful!")
+
+            next_url = request.args.get("next")
+            return redirect(next_url or "/")
+    return render_template("users/login.html", form=form)
+
 
 @app.route("/pocket", methods=["POST", "GET"])
 def pocket_settings():
@@ -241,3 +257,4 @@ def parse_pocket():
 
             print(bookmark.insert())
     return redirect("/")
+

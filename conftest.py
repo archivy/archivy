@@ -25,6 +25,7 @@ def test_app():
 
     app.config['TESTING'] = True
     app.config["WTF_CSRF_ENABLED"] = False
+    app.config['LOGIN_DISABLED'] = True
     # This setups a TinyDB instance, using the `app_dir` temporary
     # directory defined above
     # Required so that `flask.current_app` can be called in data.py and

@@ -1,5 +1,6 @@
 import os
 import sys
+import secrets
 
 import elasticsearch
 from elasticsearch import Elasticsearch
