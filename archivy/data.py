@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 
 SEP = os.path.sep
 
+
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
     return os.path.join(current_app.config['APP_PATH'], "data" + SEP)

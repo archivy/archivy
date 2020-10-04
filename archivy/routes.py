@@ -25,13 +25,13 @@ def index():
             "home.html",
             title="Home",
             search_enabled=Config.ELASTICSEARCH_ENABLED,
-            SEP=os.path.sep)
+            )
 
 
 @app.context_processor
-def pass_dataobjs():
+def pass_defaults():
     dataobjs = data.get_items()
-    return dict(dataobjs=dataobjs)
+    return dict(dataobjs=dataobjs, SEP=os.path.sep)
 
 # TODO: refactor two following methods
 
