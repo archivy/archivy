@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import requests
@@ -23,7 +24,8 @@ def index():
     return render_template(
             "home.html",
             title="Home",
-            search_enabled=Config.ELASTICSEARCH_ENABLED)
+            search_enabled=Config.ELASTICSEARCH_ENABLED,
+            SEP=os.path.sep)
 
 
 @app.context_processor

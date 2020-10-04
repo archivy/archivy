@@ -39,7 +39,7 @@ class ModifHandler(FileSystemEventHandler):
         # extract name of file
         split_path = filepath.replace(self.data_dir, "").split(SEP)
         file_title = split_path[-1].split(".")[0]
-        directory = SEP.join(split_path[0:-1])
+        directory = "/".join(split_path[0:-1])
         note_dataobj = {
                 "title": file_title,
                 "content": file_contents,
@@ -70,7 +70,7 @@ class ModifHandler(FileSystemEventHandler):
 
     def on_deleted(self, event):
         with self.app.app_context():
-            filename = event.src_path.split("/")[-1]
+            filename = event.src_path.split(SEP)[-1]
             if (re.match(DATAOBJ_REGEX, filename)
                     and self.ELASTIC):
                 id = event.src_path.split(SEP)[-1].split("-")[0]
