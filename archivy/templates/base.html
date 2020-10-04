@@ -17,7 +17,7 @@
 				<h3>
 					{{ dir.name }} 
 				</h3>
-				<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{"/".join(path)}}', {{ extra }});">Expand</button>
+				<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{SEP.join(path)}}', {{ extra }});">Expand</button>
 
 				<ul class="items-{{i.value}}">
 					{% for dataobj in dir.child_files %}
@@ -120,7 +120,7 @@
 				max_folder_id++;
 				let input = document.getElementById(`form-input-${id}`);
 				let basePath = document.getElementById(`form-path-${id}`).textContent; 
-				let totalPath = basePath === "" ? [] : basePath.split("/");
+				let totalPath = basePath === "" ? [] : basePath.split("{{SEP}}");
 				totalPath.push(input.value);
 				let result = await fetch(`${SCRIPT_ROOT}/folders/new`, {
 					method: "POST",
@@ -137,7 +137,7 @@
 				else {
 					totalPath = await result.text();
 					// get last element of totalPath
-					let sanitizedDirname = totalPath.split("/").slice(-1).pop();
+					let sanitizedDirname = totalPath.split("{{SEP}}").slice(-1).pop();
 					let currentFolderDiv = document.getElementById("cont-" + id);
 					currentFolderDiv.insertAdjacentHTML("beforeend", 
 						`

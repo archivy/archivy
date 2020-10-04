@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import requests
@@ -23,13 +24,14 @@ def index():
     return render_template(
             "home.html",
             title="Home",
-            search_enabled=Config.ELASTICSEARCH_ENABLED)
+            search_enabled=Config.ELASTICSEARCH_ENABLED,
+            )
 
 
 @app.context_processor
-def pass_dataobjs():
+def pass_defaults():
     dataobjs = data.get_items()
-    return dict(dataobjs=dataobjs)
+    return dict(dataobjs=dataobjs, SEP=os.path.sep)
 
 # TODO: refactor two following methods
 

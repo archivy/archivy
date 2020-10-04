@@ -10,9 +10,12 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 
 
+SEP = os.path.sep
+
+
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
-    return os.path.join(current_app.config['APP_PATH'], "data/")
+    return os.path.join(current_app.config['APP_PATH'], "data" + SEP)
 
 
 # struct to create tree like file-structure
@@ -27,16 +30,16 @@ FILE_GLOB = "-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
 
 
 def get_by_id(dataobj_id):
-    results = glob.glob(f"{get_data_dir()}**/{dataobj_id}{FILE_GLOB}", recursive=True)
+    results = glob.glob(f"{get_data_dir()}**{SEP}{dataobj_id}{FILE_GLOB}", recursive=True)
     return results[0] if results else None
 
 
 def get_items(collections=[], path="", structured=True, json_format=False):
     datacont = Directory("root") if structured else []
     if structured:
-        for filename in glob.glob(get_data_dir() + path + "**/*",
+        for filename in glob.glob(get_data_dir() + path + f"**{SEP}*",
                                   recursive=True):
-            paths = filename.split("/data/")[1].split("/")
+            paths = filename.split(f"{SEP}data{SEP}")[1].split(SEP)
 
             if filename.endswith(".md"):
                 data = frontmatter.load(filename)
@@ -55,7 +58,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
                         current_dir.child_dirs[segment] = Directory(segment)
                     current_dir = current_dir.child_dirs[segment]
     else:
-        for filename in glob.glob(f"{get_data_dir()}{path}**/[0-9]*{FILE_GLOB}",
+        for filename in glob.glob(f"{get_data_dir()}{path}**{SEP}[0-9]*{FILE_GLOB}",
                                   recursive=True):
             data = frontmatter.load(filename)
             if len(collections) == 0 or \
@@ -99,10 +102,10 @@ def delete_item(dataobj_id):
 
 
 def get_dirs():
-    dirnames = glob.glob(get_data_dir() + "**/*", recursive=True)
+    dirnames = glob.glob(get_data_dir() + f"**{SEP}*", recursive=True)
 
     # parse dirnames into relative paths
-    dirnames = [name.split("/data/")[1]
+    dirnames = [name.split("{SEP}data{SEP}")[1]
                 for name in dirnames if not name.endswith(".md")]
 
     # append name for root dir
@@ -111,7 +114,7 @@ def get_dirs():
 
 
 def create_dir(name):
-    sanitized_name = "/".join([secure_filename(pathname)
+    sanitized_name = SEP.join([secure_filename(pathname)
                                for pathname in name])
     Path(get_data_dir() + sanitized_name).mkdir(parents=True)
     return sanitized_name
