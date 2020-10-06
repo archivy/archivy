@@ -210,6 +210,7 @@ Multiple such environment variables can be specified during run time. For now, A
 > The environment variable `ARCHIVY_DATA_DIR` is already set to `/archivy/data` by the container image. This cannot be changed by the user unless they build the image from scratch.
 >
 > The environment variable `ARCHIVY_PORT` is already set to `5000` by the container image. This cannot be changed by the user unless they build the image from scratch, in which case they will also need to change the port in the `Dockerfile`.
+> The environment variable `ARCHIVY_DATA_DIR` is already set to `/archivy/data` by the container image. **DO NOT** set this value. This will result in the container not working.
 
 If the values are not set by the user, they are assigned default values during run time.
 
