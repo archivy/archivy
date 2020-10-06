@@ -68,6 +68,9 @@
 # Supported Tags And Respective `Dockerfile` Links
 
 - [`stable`, `latest`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.4.1`, `0.4`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.4.0`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.3.0`, `0.3`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.2.0`, `0.2`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.1.0`, `0.1`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`source`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile.master)
@@ -79,6 +82,10 @@ The images are also tagged with their respective git commit hash. All tags are l
 
 
 ## Supported Architectures
+
+> **NOTE:**
+> Versions of Archivy from `0.2.0` and higher require `pandoc` to function. As `pandoc` is not avaiable for most of the aforementioned architectures, it will be built only for `amd64` architecture.
+> If you wish to use Archivy for other architectures, you will have to use version < `0.2.0`.
 
 Archivy has been built for the following architectures with the help of `buildx`. This **does not** guarantee that the image will work as it should on all these architectures.
 
@@ -194,11 +201,15 @@ Multiple such environment variables can be specified during run time. For now, A
 | `ELASTICSEARCH_ENABLED` | `0` | Enables Elasticsearch support if value is `1`. |
 | `ELASTICSEARCH_URL` | `http://localhost:9200/` | Sets the URL at which Elasticsearch listens. |
 | `ARCHIVY_DATA_DIR` | On Linux systems, it follows the [XDG specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html): `~/.local/share/archivy` | Directory in which data will be saved |
+| `ARCHIVY_PORT` | `5000` | Port number on which Archivy listens. |
+
 ---
 
 > **NOTE**:
 >
-> The environment variable `ARCHIVY_DATA_DIR` is already set to `/archivy/data` by the container image. **DO NOT** set this value. This will result in the container not working.
+> The environment variable `ARCHIVY_DATA_DIR` is already set to `/archivy/data` by the container image. This cannot be changed by the user unless they build the image from scratch.
+>
+> The environment variable `ARCHIVY_PORT` is already set to `5000` by the container image. This cannot be changed by the user unless they build the image from scratch, in which case they will also need to change the port in the `Dockerfile`.
 
 If the values are not set by the user, they are assigned default values during run time.
 
@@ -500,7 +511,6 @@ Some suggestions have also been listed regarding usage of this image.
 Each time the container is built, it is tested using
 * [Hadolint](https://github.com/hadolint/hadolint)
 * [Container Structure Test](https://github.com/GoogleContainerTools/container-structure-test)
-* [dgoss](https://github.com/aelsabbahy/goss/tree/master/extras/dgoss) *(Not yet implemented. Will be added soon)*
 
 and scanned for vulnerabilities using
 * [Aqua Security's Trivy](https://github.com/aquasecurity/trivy)
@@ -674,7 +684,6 @@ For a list of all packages installed in the image, refer to the [Packages Instal
 * `attrs == 20.2.0`
 * `beautifulsoup4 == 4.6.0`
 * `elasticsearch == 7.7.1`
-* `html2text == 2020.1.16`
 * `pypandoc == 1.5`
 * `python_dotenv == 0.13.0`
 * `python_frontmatter == 0.5.0`
