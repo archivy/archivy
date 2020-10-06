@@ -3,7 +3,8 @@ from flask import request
 from flask_login import current_user
 
 from responses import RequestsMock, GET
-from archivy.extensions import get_max_id
+from werkzeug.security import generate_password_hash
+from archivy.extensions import get_max_id, get_db
 
 
 def test_get_index(test_app, client: FlaskClient, login_user):
@@ -104,5 +105,26 @@ def test_logging_in_with_invalid_creds(test_app, client: FlaskClient):
     assert request.path == "/login"
     assert b"Invalid credentials" in resp.data
     
+def test_edit_user(test_app, client: FlaskClient, login_user):
+    """Tests editing a user's info, logging out and then logging in with new info."""
+
+    new_user = "new_halcyon"
+    new_pass = "password2"
+    resp = client.post("/user/edit",
+                data={"username": new_user, "password": new_pass},
+                follow_redirects=True)
+    
+    assert request.path == "/"
+
+    client.delete("/logout")
+
+    resp = client.post("/login",
+                        data={"username": new_user, "password": new_pass},
+                        follow_redirects=True)
+    assert resp.status_code == 200
+    assert request.path == "/"
+    # check information has updated.
+
+
 
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>Login</h1>
+	<h1>{{ title }}</h1>
 	<form action="" method="post">
 		{{ form.hidden_tag() }}
 		{% for error in form.username.errors %}

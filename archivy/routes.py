@@ -5,8 +5,8 @@ import frontmatter
 import pypandoc
 from tinydb import Query, operations
 from flask import render_template, flash, redirect, request, jsonify
-from werkzeug.security import check_password_hash
-from flask_login import login_user, login_required
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import login_user, login_required, current_user, logout_user
 
 from archivy.models import DataObj, User
 from archivy.forms import *
@@ -143,7 +143,7 @@ def search_elastic():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginForm()
+    form = UserForm()
     if form.validate_on_submit():
         db = get_db()
         user = db.search((Query().username == form.username.data) & (Query().type == "user"))
@@ -158,7 +158,33 @@ def login():
 
         flash("Invalid credentials")
         return redirect("/login")
-    return render_template("users/login.html", form=form)
+    return render_template("users/form.html", form=form, title="Login")
+
+@app.route("/logout", methods=["DELETE"])
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully")
+    return redirect("/")
+
+@app.route("/user/edit", methods=["GET", "POST"])
+@login_required
+def edit_user():
+    form = UserForm()
+    if form.validate_on_submit():
+        db = get_db()
+        db.update(
+            {
+                "username": form.username.data,
+                "hashed_password": generate_password_hash(form.password.data)
+            },
+            doc_ids=[current_user.id]
+        )
+        flash("Information saved!")
+        return redirect("/")
+    form.username.data = current_user.username
+    return render_template("users/form.html", title="Edit", form=form)
+
 
 
 @app.route("/pocket", methods=["POST", "GET"])
