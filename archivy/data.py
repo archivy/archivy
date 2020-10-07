@@ -74,14 +74,12 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     return datacont
 
 
-def create(contents, title, path="", needs_to_open=False):
+def create(contents, title, path=""):
     path_to_md_file = os.path.join(
         get_data_dir(), path, "{}.md".format(secure_filename(title)))
     with open(path_to_md_file, "w") as file:
         file.write(contents)
 
-    if needs_to_open and not current_app.config["TESTING"]:
-        open_file(path_to_md_file)
     return path_to_md_file
 
 

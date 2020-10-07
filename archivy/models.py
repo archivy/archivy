@@ -144,7 +144,7 @@ class DataObj:
                                 str(self.id) + "-" +
                                 dataobj["date"] + "-" + dataobj["title"],
                                 path=self.path,
-                                needs_to_open=self.type == "note")
+                                )
 
             add_to_index(current_app.config['INDEX_NAME'], self)
             return self.id
