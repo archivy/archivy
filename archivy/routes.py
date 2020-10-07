@@ -116,7 +116,6 @@ def delete_data(dataobj_id):
     flash("Data deleted!")
     return redirect("/")
 
-        
 
 @app.route("/folders/new", methods=["POST"])
 def create_folder():

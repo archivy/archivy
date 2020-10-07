@@ -74,7 +74,7 @@ def change_bookmark(bookmark_id):
     current_app.logger.debug(f'Attempting to delete bookmark <{bookmark_id}>')
     return Response(status=501)
 
-        
+
 @api_bp.route("/dataobj/local_edit/<dataobj_id>", methods=["GET"])
 def local_edit(dataobj_id):
     dataobj = data.get_item(int(dataobj_id))
