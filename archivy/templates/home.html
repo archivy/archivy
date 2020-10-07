@@ -18,12 +18,10 @@
 {% set i = namespace(value=0) %}
 {{ draw_dir(dataobjs, 0, 1) }}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/11.0.0/markdown-it.min.js">
 </script>
 <script>
 	// search functionality
 	{% if search_enabled %}	
-		var md = window.markdownit();
 		function appendHit(hit,  query) {
 			let hitsDiv = document.getElementById("searchHits");
 			let hitLi = document.createElement("li");
