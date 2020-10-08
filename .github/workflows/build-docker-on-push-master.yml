@@ -7,12 +7,6 @@ on:
     paths:
       - 'archivy/**'
       - '.github/workflows/build-on-push-master.yml'
-  pull_request:
-    branches:
-      - 'master'
-    paths:
-      - 'archivy/**'
-      - '.github/workflows/build-on-push-master.yml'
 
 jobs:
   BuildPushUntested:
@@ -20,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout files from repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           ref: docker
 
@@ -66,7 +60,7 @@ jobs:
     needs: [BuildPushUntested]
     steps:
       - name: Checkout files from repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           ref: docker
 
@@ -116,7 +110,7 @@ jobs:
     needs: [ContainerTestAndScan]
     steps:
       - name: Checkout files from repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           ref: docker
 
