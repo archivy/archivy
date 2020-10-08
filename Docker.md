@@ -68,6 +68,7 @@
 # Supported Tags And Respective `Dockerfile` Links
 
 - [`stable`, `latest`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.5.0`, `0.5`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.4.1`, `0.4`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.4.0`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.3.0`, `0.3`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
