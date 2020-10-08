@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout files from repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           ref: docker
 
@@ -55,7 +55,7 @@ jobs:
     needs: [BuildPushUntested]
     steps:
       - name: Checkout files from repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           ref: docker
 
@@ -101,10 +101,10 @@ jobs:
   dockerBuildPush:
     name: Build and push image with release version tag
     runs-on: ubuntu-latest
-    needs: [ContainerTestScan]
+    needs: [ContainerTestAndScan]
     steps:
       - name: Checkout files from repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           ref: docker
 
