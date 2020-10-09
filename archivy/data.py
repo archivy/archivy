@@ -90,7 +90,7 @@ def delete_item(dataobj_id):
 
 def get_dirs():
     # join glob matchers
-    dirnames = [str(dir_path.relative_to(get_data_dir())) for dir_path 
+    dirnames = [str(dir_path.relative_to(get_data_dir())) for dir_path
                 in get_data_dir().rglob("*") if dir_path.is_dir()]
 
     # append name for root dir
