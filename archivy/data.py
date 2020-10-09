@@ -1,5 +1,6 @@
 import platform
 import subprocess
+import os
 from pathlib import Path
 from shutil import rmtree
 
@@ -57,7 +58,6 @@ def get_items(collections=[], path="", structured=True, json_format=False):
                         dict_dataobj = data.__dict__
                         # remove unnecessary yaml handler
                         dict_dataobj.pop("handler")
-                        print(dict_dataobj)
                         datacont.append(dict_dataobj)
                     else:
                         datacont.append(data)
@@ -85,11 +85,13 @@ def delete_item(dataobj_id):
     file = get_by_id(dataobj_id)
 
     if file:
-        Path(file).unlink() 
+        Path(file).unlink()
+
 
 def get_dirs():
     # join glob matchers
-    dirnames = [str(dir_path.relative_to(get_data_dir())) for dir_path in get_data_dir().rglob("*") if dir_path.is_dir()]
+    dirnames = [str(dir_path.relative_to(get_data_dir())) for dir_path 
+                in get_data_dir().rglob("*") if dir_path.is_dir()]
 
     # append name for root dir
     dirnames.append("not classified")
@@ -113,7 +115,7 @@ def delete_dir(name):
 
 def open_file(path):
     if platform.system() == "Windows":
-        startfile(path)
+        os.startfile(path)
     elif platform.system() == "Darwin":
         subprocess.Popen(["open", path])
     else:
