@@ -63,6 +63,8 @@ def new_bookmark():
 def new_note():
     form = NewNoteForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
+    print(form.path.choices)
+    print(form.validate_on_submit())
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
         note = DataObj(
