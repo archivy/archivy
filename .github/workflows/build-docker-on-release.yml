@@ -44,8 +44,8 @@ jobs:
         if: success()
         run: |
           docker buildx build \
-            --output type=image,name=${{ env.docker_image }},push=true --build-arg VERSION "${{ env.version }}" \
-            --build-arg BUILD_DATE "${{ env.timestamp }}" --build-arg VCS_REF "${{ env.hash }}" \
+            --output type=image,name=${{ env.docker_image }},push=true --build-arg VERSION=${{ env.version }} \
+            --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
             --tag "${{ env.docker_image }}:untested-${{ env.version }}" \
             --tag "${{ env.docker_image }}:untested-${{ env.hash }}" --file ./Dockerfile .
 
@@ -154,7 +154,7 @@ jobs:
         run: |
           docker buildx build \
             --output type=image,name=${{ env.docker_image }},push=true \
-            --platform ${{ env.docker_platforms }} --build-arg VERSION "${{ env.version }}" \
+            --platform ${{ env.docker_platforms }} --build-arg VERSION=${{ env.version }} \
             --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
             --tag "${{ env.docker_image }}:${{ env.version }}" \
             --tag "${{ env.docker_image }}:${{ env.major_version }}.${{ env.minor_version }}" \
