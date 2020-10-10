@@ -189,7 +189,6 @@ class User(UserMixin):
 
         if db.search((Query().type == "user") & (Query().username == self.username)):
             return False
-       
         db_user = {
             "username": self.username,
             "hashed_password": hashed_password,

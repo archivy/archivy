@@ -198,7 +198,7 @@ def edit_user():
 @app.route("/pocket", methods=["POST", "GET"])
 def pocket_settings():
     db = get_db()
-    form = PocketForm()
+    form = forms.PocketForm()
     pocket = Query()
     if form.validate_on_submit():
         request_data = {

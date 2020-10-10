@@ -33,6 +33,7 @@ class PocketForm(FlaskForm):
 class DeleteDataForm(FlaskForm):
     submit = SubmitField("Delete")
 
+
 class UserForm(FlaskForm):
     username = StringField("username")
     password = PasswordField("password")
