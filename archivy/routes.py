@@ -240,6 +240,6 @@ def parse_pocket():
                 date=datetime.now(),
                 type="pocket_bookmarks")
             bookmark.process_bookmark_url()
+            bookmark.insert()
 
-            print(bookmark.insert())
     return redirect("/")
