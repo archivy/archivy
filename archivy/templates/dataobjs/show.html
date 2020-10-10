@@ -17,6 +17,26 @@
 	<form action="/dataobj/delete/{{ dataobj['id'] }}" method="delete" novalidate>
         {{ form.hidden_tag() }}
         <p>{{ form.submit() }}</p>
+		<input type="button" value="Edit locally" onclick="open_data({{ dataobj['id'] }}, this)">
     </form>
+			</input>
 
+	<script>
+
+		async function open_data(id, btn)
+		{
+			let res = await fetch(`${SCRIPT_ROOT}/api/dataobj/local_edit/${id}`, {
+						method: "GET"
+					});
+			if (res.ok)
+			{
+				btn.value = "Loading editor...";
+				// impossible to know load time of editor, but hide the button after some time
+				setTimeout(function() {
+					btn.style.display = "none";
+				}, 2000);
+
+			}
+		}
+	</script>
 {% endblock %}

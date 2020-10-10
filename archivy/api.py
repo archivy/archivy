@@ -1,7 +1,6 @@
 from flask import Response, jsonify, request, Blueprint, current_app
 
 from archivy import data
-from archivy.data import get_items
 from archivy.models import DataObj
 
 api_bp = Blueprint('api', __name__)
@@ -16,12 +15,12 @@ def get_dataobj(dataobj_id):
         title=dataobj["title"],
         content=dataobj.content,
         md_path=dataobj["fullpath"],
-    ) if dataobj is not None else Response(status=404)
+    ) if dataobj else Response(status=404)
 
 
 @api_bp.route("/dataobjs/<int:dataobj_id>", methods=["DELETE"])
 def delete_bookmark(dataobj_id):
-    if data.get_item(dataobj_id) is None:
+    if not data.get_item(dataobj_id):
         return Response(status=404)
     data.delete_item(dataobj_id)
     return Response(status=204)
@@ -29,7 +28,7 @@ def delete_bookmark(dataobj_id):
 
 @api_bp.route("/dataobjs", methods=["GET"])
 def get_dataobjs():
-    cur_dir = get_items(structured=False, json_format=True)
+    cur_dir = data.get_items(structured=False, json_format=True)
     return jsonify(cur_dir)
 
 
@@ -74,3 +73,12 @@ def create_note():
 def change_bookmark(bookmark_id):
     current_app.logger.debug(f'Attempting to delete bookmark <{bookmark_id}>')
     return Response(status=501)
+
+
+@api_bp.route("/dataobj/local_edit/<dataobj_id>", methods=["GET"])
+def local_edit(dataobj_id):
+    dataobj = data.get_item(int(dataobj_id))
+    if dataobj:
+        data.open_file(dataobj["fullpath"])
+        return Response(status=200)
+    return Response(status=404)

@@ -31,8 +31,6 @@ beautifulsoup4 == 4.6.0
 # archivy/extensions.py: 4,5
 elasticsearch == 7.7.1
 
-# archivy/models.py: 6
-html2text == 2020.1.16
 
 # archivy/__init__.py: 8
 # archivy/check_changes.py: 6
