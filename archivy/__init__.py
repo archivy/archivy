@@ -67,8 +67,8 @@ with app.app_context():
     if not db.search((user_query.type == "user") & (user_query.is_admin == True)): 
         password = token_hex(12)
         user = User(username="admin", password=password, is_admin=True)
-        user.insert()
-        app.logger.info(f"""Archivy has created an admin user as it did not exist.
+        if user.insert():
+            app.logger.info(f"""Archivy has created an admin user as it did not exist.
                             Username: 'admin', password: '{password}'
                         """)
 

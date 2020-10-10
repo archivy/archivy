@@ -185,7 +185,7 @@ def edit_user():
         flash("Information saved!")
         return redirect("/")
     form.username.data = current_user.username
-    return render_template("users/form.html", title="Edit", form=form)
+    return render_template("users/form.html", title="Edit Profile", form=form)
 
 
 
