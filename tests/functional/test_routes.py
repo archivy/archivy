@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 from archivy.extensions import get_max_id, get_db
 
 
-def test_get_index(test_app, client: FlaskClient, login_user):
+def test_get_index(test_app, client: FlaskClient):
     response = client.get('/')
     assert response.status_code == 200
 
@@ -105,7 +105,7 @@ def test_logging_in_with_invalid_creds(test_app, client: FlaskClient):
     assert request.path == "/login"
     assert b"Invalid credentials" in resp.data
     
-def test_edit_user(test_app, client: FlaskClient, login_user):
+def test_edit_user(test_app, client: FlaskClient):
     """Tests editing a user's info, logging out and then logging in with new info."""
 
     new_user = "new_halcyon"
@@ -125,6 +125,10 @@ def test_edit_user(test_app, client: FlaskClient, login_user):
     assert request.path == "/"
     # check information has updated.
 
+def test_logging_out(test_app, client: FlaskClient):
+    """Tests logging out and then accessing restricted views"""
 
+    client.delete("/logout")
 
-
+    resp = client.get("/", follow_redirects=True)
+    assert request.path == "/login"

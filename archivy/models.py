@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from flask import current_app, flash
 from flask_login import UserMixin
 from tinydb import Query
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 from archivy import extensions
 from archivy.data import create
@@ -171,6 +171,7 @@ class DataObj:
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
 
+
 @attrs(kw_only=True)
 class User(UserMixin):
     username: str = attrib(validator=instance_of(str))
@@ -196,7 +197,6 @@ class User(UserMixin):
             "type": "user"
         }
 
-
         return db.insert(db_user)
 
     @classmethod
@@ -206,4 +206,3 @@ class User(UserMixin):
         id = db_object.doc_id
 
         return cls(username=username, id=id)
-       

@@ -10,9 +10,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 
 from archivy.models import DataObj, User
-from archivy.forms import *
 from archivy.search import query_index
-from archivy import data, app
+from archivy import data, app, forms
 from archivy.extensions import get_db
 from archivy.config import Config
 
@@ -21,6 +20,7 @@ from archivy.config import Config
 def pass_defaults():
     dataobjs = data.get_items()
     return dict(dataobjs=dataobjs, SEP=os.path.sep)
+
 
 @app.before_request
 def check_perms():
@@ -42,7 +42,7 @@ def index():
 # TODO: refactor two following methods
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
-    form = NewBookmarkForm()
+    form = forms.NewBookmarkForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
@@ -65,7 +65,7 @@ def new_bookmark():
 
 @app.route("/notes/new", methods=["GET", "POST"])
 def new_note():
-    form = NewNoteForm()
+    form = forms.NewNoteForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
@@ -107,7 +107,7 @@ def show_dataobj(dataobj_id):
         title=dataobj["title"],
         dataobj=dataobj,
         content=content,
-        form=DeleteDataForm())
+        form=forms.DeleteDataForm())
 
 
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
@@ -147,9 +147,10 @@ def search_elastic():
     search_results = query_index(Config.INDEX_NAME, query)
     return jsonify(search_results)
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = UserForm()
+    form = forms.UserForm()
     if form.validate_on_submit():
         db = get_db()
         user = db.search((Query().username == form.username.data) & (Query().type == "user"))
@@ -166,6 +167,7 @@ def login():
         return redirect("/login")
     return render_template("users/form.html", form=form, title="Login")
 
+
 @app.route("/logout", methods=["DELETE"])
 @login_required
 def logout():
@@ -173,10 +175,11 @@ def logout():
     flash("Logged out successfully")
     return redirect("/")
 
+
 @app.route("/user/edit", methods=["GET", "POST"])
 @login_required
 def edit_user():
-    form = UserForm()
+    form = forms.UserForm()
     if form.validate_on_submit():
         db = get_db()
         db.update(
@@ -190,7 +193,6 @@ def edit_user():
         return redirect("/")
     form.username.data = current_user.username
     return render_template("users/form.html", title="Edit Profile", form=form)
-
 
 
 @app.route("/pocket", methods=["POST", "GET"])
@@ -292,4 +294,3 @@ def parse_pocket():
             bookmark.insert()
 
     return redirect("/")
-

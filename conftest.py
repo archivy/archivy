@@ -49,11 +49,9 @@ def test_app():
 def client(test_app):
     """ HTTP client for calling a test instance of the app"""
     with test_app.test_client() as client:
+        client.post("/login", data={"username": "halcyon", "password": "password"})
         yield client
 
-@pytest.fixture
-def login_user(client):
-    client.post("/login", data={"username": "halcyon", "password": "password"})
 
 @pytest.fixture
 def mocked_responses():

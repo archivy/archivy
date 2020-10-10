@@ -11,6 +11,7 @@ from secrets import token_hex
 from tinydb import Query
 
 from archivy import extensions
+from archivy.models import User
 from archivy.api import api_bp
 from archivy.check_changes import run_watcher
 from archivy.config import Config
@@ -42,10 +43,11 @@ if app.config["ELASTICSEARCH_ENABLED"]:
             app.logger.info("Elasticsearch index already created")
 
 # login routes / setup
-from archivy.models import User
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     db = extensions.get_db()
@@ -53,6 +55,7 @@ def load_user(user_id):
     if res and res["type"] == "user":
         return User.from_db(res)
     return None
+
 
 # prevent pytest from hanging because of running thread
 if 'pytest' not in sys.argv[0]:
@@ -64,7 +67,8 @@ app.jinja_options["extensions"].append("jinja2.ext.do")
 with app.app_context():
     db = extensions.get_db()
     user_query = Query()
-    if not db.search((user_query.type == "user") & (user_query.is_admin == True)): 
+    # noqa here because tinydb requires us to explicitly specify is_admin == True
+    if not db.search((user_query.type == "user") & (user_query.is_admin == True)): # noqa:
         password = token_hex(12)
         user = User(username="admin", password=password, is_admin=True)
         if user.insert():

@@ -1,6 +1,5 @@
 import os
 import sys
-import secrets
 
 import elasticsearch
 from elasticsearch import Elasticsearch
@@ -62,5 +61,3 @@ def get_elastic_client():
             "Elasticsearch by setting ELASTICSEARCH_ENABLED to 0."
         )
     return es
-
-
