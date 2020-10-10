@@ -33,10 +33,9 @@ if app.config["ELASTICSEARCH_ENABLED"]:
     with app.app_context():
         es = extensions.get_elastic_client()
         try:
-            print(
-                es.indices.create(
-                    index=app.config["INDEX_NAME"],
-                    body=app.config["ELASTIC_CONF"]))
+            es.indices.create(
+                index=app.config["INDEX_NAME"],
+                body=app.config["ELASTIC_CONF"])
         except elasticsearch.ElasticsearchException:
             app.logger.info("Elasticsearch index already created")
 
