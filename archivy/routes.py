@@ -5,7 +5,7 @@ import requests
 import frontmatter
 import pypandoc
 from tinydb import Query, operations
-from flask import render_template, flash, redirect, request, jsonify
+from flask import render_template, flash, redirect, request, jsonify, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 
@@ -17,9 +17,20 @@ from archivy.extensions import get_db
 from archivy.config import Config
 
 
+@app.context_processor
+def pass_defaults():
+    dataobjs = data.get_items()
+    return dict(dataobjs=dataobjs, SEP=os.path.sep)
+
+@app.before_request
+def check_perms():
+    if not current_user.is_authenticated and request.endpoint != "login":
+        return redirect(url_for("login", next=request.path))
+    return
+
+
 @app.route("/")
 @app.route("/index")
-@login_required
 def index():
     return render_template(
             "home.html",
@@ -28,14 +39,7 @@ def index():
             )
 
 
-@app.context_processor
-def pass_defaults():
-    dataobjs = data.get_items()
-    return dict(dataobjs=dataobjs, SEP=os.path.sep)
-
 # TODO: refactor two following methods
-
-
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
     form = NewBookmarkForm()

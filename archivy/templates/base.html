@@ -38,9 +38,11 @@
 		{%- endmacro %}
 
 		<div class="sidebar">
-			<a href="/user/edit">
-				<img src="{{ url_for('static', filename='profile.svg') }}" alt="edit profile" id="pfp">
-			</a>
+			{% if current_user.is_authenticated %}
+				<a href="/user/edit">
+					<img src="{{ url_for('static', filename='profile.svg') }}" alt="edit profile" id="pfp">
+				</a>
+			{% endif %}
 			{{ draw_dir(dataobjs, 0, 0) }}
 		</div>
         <main class="content">
