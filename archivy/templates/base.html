@@ -42,8 +42,8 @@
 				<a href="/user/edit">
 					<img src="{{ url_for('static', filename='profile.svg') }}" alt="edit profile" id="pfp">
 				</a>
+				{{ draw_dir(dataobjs, 0, 0) }}
 			{% endif %}
-			{{ draw_dir(dataobjs, 0, 0) }}
 		</div>
         <main class="content">
             <div><a href="/index">Home</a></div>
