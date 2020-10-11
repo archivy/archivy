@@ -7,7 +7,7 @@ import elasticsearch
 import pypandoc
 from flask import Flask
 from flask_login import LoginManager
-from secrets import token_hex
+from secrets import token_urlsafe
 from tinydb import Query
 
 from archivy import extensions
@@ -69,7 +69,7 @@ with app.app_context():
     user_query = Query()
     # noqa here because tinydb requires us to explicitly specify is_admin == True
     if not db.search((user_query.type == "user") & (user_query.is_admin == True)): # noqa:
-        password = token_hex(12)
+        password = token_urlsafe(32)
         user = User(username="admin", password=password, is_admin=True)
         if user.insert():
             app.logger.info(f"""Archivy has created an admin user as it did not exist.
