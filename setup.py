@@ -27,7 +27,7 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "archivy = archivy.run:main"
+            "archivy = archivy.cli:cli",
         ]
     },
     include_package_data=True,
