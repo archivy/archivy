@@ -1,16 +1,18 @@
 import os
+from pkg_resources import iter_entry_points
+from threading import Thread
 
 import click
+from click_plugins import with_plugins
 from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
 
 from archivy import app
 from archivy.check_changes import Watcher
 
-
 def create_app():
     return app
 
-
+@with_plugins(iter_entry_points('archivy.plugins'))
 @click.group(cls=FlaskGroup, create_app=create_app)
 def cli():
     pass
@@ -25,7 +27,6 @@ cli.add_command(shell_command)
 def run():
     click.echo('Running archivy...')
     load_dotenv()
-    # prevent pytest from hanging because of running thread
     watcher = Watcher(app)
     watcher.start()
     port = int(os.environ.get("ARCHIVY_PORT", 5000))
