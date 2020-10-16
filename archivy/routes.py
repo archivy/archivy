@@ -5,17 +5,29 @@ import requests
 import frontmatter
 import pypandoc
 from tinydb import Query, operations
-from flask import render_template, flash, redirect, request, jsonify
+from flask import render_template, flash, redirect, request, jsonify, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import login_user, login_required, current_user, logout_user
 
-from archivy.models import DataObj
-from archivy.forms import NewBookmarkForm
-from archivy.forms import NewNoteForm
-from archivy.forms import DeleteDataForm
-from archivy.forms import PocketForm
+from archivy.models import DataObj, User
 from archivy.search import query_index
-from archivy import data, app
+from archivy import data, app, forms
 from archivy.extensions import get_db
 from archivy.config import Config
+
+
+@app.context_processor
+def pass_defaults():
+    dataobjs = data.get_items()
+    return dict(dataobjs=dataobjs, SEP=os.path.sep)
+
+
+@app.before_request
+def check_perms():
+    allowed_path = request.path == "/login" or request.path.startswith("/static")
+    if not current_user.is_authenticated and not allowed_path:
+        return redirect(url_for("login", next=request.path))
+    return
 
 
 @app.route("/")
@@ -28,17 +40,10 @@ def index():
             )
 
 
-@app.context_processor
-def pass_defaults():
-    dataobjs = data.get_items()
-    return dict(dataobjs=dataobjs, SEP=os.path.sep)
-
 # TODO: refactor two following methods
-
-
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
-    form = NewBookmarkForm()
+    form = forms.NewBookmarkForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
@@ -61,7 +66,7 @@ def new_bookmark():
 
 @app.route("/notes/new", methods=["GET", "POST"])
 def new_note():
-    form = NewNoteForm()
+    form = forms.NewNoteForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
@@ -103,7 +108,7 @@ def show_dataobj(dataobj_id):
         title=dataobj["title"],
         dataobj=dataobj,
         content=content,
-        form=DeleteDataForm())
+        form=forms.DeleteDataForm())
 
 
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
@@ -144,10 +149,57 @@ def search_elastic():
     return jsonify(search_results)
 
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = forms.UserForm()
+    if form.validate_on_submit():
+        db = get_db()
+        user = db.search((Query().username == form.username.data) & (Query().type == "user"))
+
+        if user and check_password_hash(user[0]["hashed_password"], form.password.data):
+            user = User.from_db(user[0])
+            login_user(user, remember=True)
+            flash("Login successful!")
+
+            next_url = request.args.get("next")
+            return redirect(next_url or "/")
+
+        flash("Invalid credentials")
+        return redirect("/login")
+    return render_template("users/form.html", form=form, title="Login")
+
+
+@app.route("/logout", methods=["DELETE"])
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully")
+    return redirect("/")
+
+
+@app.route("/user/edit", methods=["GET", "POST"])
+@login_required
+def edit_user():
+    form = forms.UserForm()
+    if form.validate_on_submit():
+        db = get_db()
+        db.update(
+            {
+                "username": form.username.data,
+                "hashed_password": generate_password_hash(form.password.data)
+            },
+            doc_ids=[current_user.id]
+        )
+        flash("Information saved!")
+        return redirect("/")
+    form.username.data = current_user.username
+    return render_template("users/form.html", title="Edit Profile", form=form)
+
+
 @app.route("/pocket", methods=["POST", "GET"])
 def pocket_settings():
     db = get_db()
-    form = PocketForm()
+    form = forms.PocketForm()
     pocket = Query()
     if form.validate_on_submit():
         request_data = {

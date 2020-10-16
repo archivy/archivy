@@ -7,7 +7,7 @@ import responses
 
 from archivy import app
 from archivy.extensions import get_db
-from archivy.models import DataObj
+from archivy.models import DataObj, User
 
 
 @pytest.fixture
@@ -33,6 +33,12 @@ def test_app():
     # information.
     with app.app_context():
         _ = get_db()
+        user = {
+            "username": "halcyon",
+            "password": "password"
+        }
+
+        User(**user).insert()
         yield app
 
     # close and remove the temporary database
@@ -43,6 +49,7 @@ def test_app():
 def client(test_app):
     """ HTTP client for calling a test instance of the app"""
     with test_app.test_client() as client:
+        client.post("/login", data={"username": "halcyon", "password": "password"})
         yield client
 
 
