@@ -12,7 +12,7 @@ class Config(object):
         os.getenv('ARCHIVY_DATA_DIR') or appdirs.user_data_dir('archivy')
     os.makedirs(APP_PATH, exist_ok=True)
 
-    PANDOC_HIGHLIGHT_THEME = os.environ.get("PANDOC_THEME") or "kate"
+    PANDOC_HIGHLIGHT_THEME = os.environ.get("PANDOC_THEME") or "pygments"
     ELASTIC_CONF = {
         "settings": {
             "highlight": {

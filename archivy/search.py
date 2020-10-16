@@ -37,7 +37,7 @@ def query_index(index, query):
             "highlight": {
                 "fields": {
                     "content": {
-                        "pre_tags": "<span style='background-color: #f6efa6'>",
+                        "pre_tags": "<span class='matches'>",
                         "post_tags": "</span>",
                         "boundary_max_scan": 200,
                         "fragment_size": 0
