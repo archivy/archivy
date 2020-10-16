@@ -4,10 +4,14 @@ from pathlib import Path
 from threading import Thread
 
 import elasticsearch
-from flask import Flask
 import pypandoc
+from flask import Flask
+from flask_login import LoginManager
+from secrets import token_urlsafe
+from tinydb import Query
 
 from archivy import extensions
+from archivy.models import User
 from archivy.api import api_bp
 from archivy.check_changes import run_watcher
 from archivy.config import Config
@@ -16,7 +20,6 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.logger.setLevel(logging.INFO)
 app.register_blueprint(api_bp, url_prefix='/api')
-
 
 # check if pandoc is installed, otherwise install
 try:
@@ -39,10 +42,38 @@ if app.config["ELASTICSEARCH_ENABLED"]:
         except elasticsearch.ElasticsearchException:
             app.logger.info("Elasticsearch index already created")
 
+# login routes / setup
+login_manager = LoginManager()
+login_manager.login_view = "login"
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db = extensions.get_db()
+    res = db.get(doc_id=int(user_id))
+    if res and res["type"] == "user":
+        return User.from_db(res)
+    return None
+
+
 # prevent pytest from hanging because of running thread
 if 'pytest' not in sys.argv[0]:
     Thread(target=run_watcher, args=[app]).start()
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
+
+# create admin user if it does not exist
+with app.app_context():
+    db = extensions.get_db()
+    user_query = Query()
+    # noqa here because tinydb requires us to explicitly specify is_admin == True
+    if not db.search((user_query.type == "user") & (user_query.is_admin == True)): # noqa:
+        password = token_urlsafe(32)
+        user = User(username="admin", password=password, is_admin=True)
+        if user.insert():
+            app.logger.info(f"""Archivy has created an admin user as it did not exist.
+                            Username: 'admin', password: '{password}'
+                        """)
 
 from archivy import routes  # noqa:

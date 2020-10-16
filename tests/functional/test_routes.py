@@ -1,7 +1,10 @@
 from flask.testing import FlaskClient
+from flask import request
+from flask_login import current_user
 
 from responses import RequestsMock, GET
-from archivy.extensions import get_max_id
+from werkzeug.security import generate_password_hash
+from archivy.extensions import get_max_id, get_db
 
 
 def test_get_index(test_app, client: FlaskClient):
@@ -90,3 +93,42 @@ def test_create_note(test_app, client: FlaskClient):
     assert b"testing, note" in resp.data
     assert b"Testing the create route" in resp.data
 
+def test_logging_in(test_app, client: FlaskClient):
+    resp = client.post("/login", data={"username": "halcyon", "password": "password"}, follow_redirects=True)
+    assert resp.status_code == 200
+    assert request.path == "/"
+    assert current_user
+
+def test_logging_in_with_invalid_creds(test_app, client: FlaskClient):
+    resp = client.post("/login", data={"username": "invalid", "password": "dasdasd"}, follow_redirects=True)
+    assert resp.status_code == 200
+    assert request.path == "/login"
+    assert b"Invalid credentials" in resp.data
+    
+def test_edit_user(test_app, client: FlaskClient):
+    """Tests editing a user's info, logging out and then logging in with new info."""
+
+    new_user = "new_halcyon"
+    new_pass = "password2"
+    resp = client.post("/user/edit",
+                data={"username": new_user, "password": new_pass},
+                follow_redirects=True)
+    
+    assert request.path == "/"
+
+    client.delete("/logout")
+
+    resp = client.post("/login",
+                        data={"username": new_user, "password": new_pass},
+                        follow_redirects=True)
+    assert resp.status_code == 200
+    assert request.path == "/"
+    # check information has updated.
+
+def test_logging_out(test_app, client: FlaskClient):
+    """Tests logging out and then accessing restricted views"""
+
+    client.delete("/logout")
+
+    resp = client.get("/", follow_redirects=True)
+    assert request.path == "/login"
