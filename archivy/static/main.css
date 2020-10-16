@@ -107,6 +107,10 @@ body form {
 	background-color: #f6efa6;
 }
 
+#pfp {
+	margin: 15px;
+}
+
 /**
  * dark theme
  */
