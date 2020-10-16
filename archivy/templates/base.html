@@ -3,9 +3,18 @@
       <title>{{ title }} - Archivy</title>
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-      <link rel="stylesheet" href="{{ url_for('static', filename='mvp.css') }}">
+	  <link rel="stylesheet" href="{{ url_for('static', filename='mvp.css') }}">
+	  <style>
+
+	  </style>
     </head>
     <body>
+		<span class="toggle" style="font-size: 40px;
+		position: absolute;
+		right: 25px;
+		top: 10px;">
+		🌓</span>
+
 		{% set path = [] %}
 		{% set i = namespace(value=0) %}
 		{% macro draw_dir(dir, depth, extra) -%}
@@ -54,6 +63,19 @@
             {% endwith %}
             {% block content %}{% endblock %}
         </main>
+
+		<script>
+			/*-----------------------------------------------------*/
+			/* Different color themes toggle
+			------------------------------------------------------ */
+
+			const tog = document.querySelector(".toggle");
+
+				tog.addEventListener("click", function () {
+				document.body.classList.toggle("dark-theme");
+			});
+			
+		</script>
 
 		<script>
 			const SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
