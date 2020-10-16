@@ -52,7 +52,7 @@ jobs:
             --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
             --tag "${{ env.docker_image }}:untested-${{ env.tag_name }}" \
             --tag "${{ env.docker_image }}:untested-${{ env.hash }}" \
-            --file ./Dockerfile .
+            --file ./Dockerfile.source .
 
   ContainerTestAndScan:
     name: Test image with 'untested' tag using Hadolint, container-structure-test, Trivy, and Anchore
@@ -148,7 +148,7 @@ jobs:
             --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
             --tag "${{ env.docker_image }}:${{ env.tag_name }}" \
             --tag "${{ env.docker_image }}:${{ env.hash }}" \
-            --file ./Dockerfile .
+            --file ./Dockerfile.source .
 
   deleteUntestedImage:
     name: Delete images with the 'untested' tag
