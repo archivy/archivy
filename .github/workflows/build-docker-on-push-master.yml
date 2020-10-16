@@ -1,6 +1,7 @@
 name: Building, Testing, and Pushing Archivy Container Image On Push and PRs To Master Branch
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'master'
