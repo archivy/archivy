@@ -13,6 +13,9 @@
   display: flex !important;
 }
 
+body form {
+	box-shadow: none;
+}
 .new-folder {
   align-items: center;
   flex-wrap: wrap;
@@ -26,7 +29,6 @@
 }
 .new-folder input[type="submit"] {
   padding: 5px;
-  margin: 0px 10px;
 }
 
 .delete-btn {
@@ -59,8 +61,8 @@
   padding: 10px;
 }
 .folder-cont li {
-	list-style: none;
-	padding: 5px;
+  list-style: none;
+  padding: 5px;
 }
 .folder-cont form {
   display: none;
@@ -69,19 +71,18 @@
 .sidebar {
   margin: 0;
   padding: 0;
-  width: 22%; 
+  width: 22%;
   position: fixed;
   height: 100%;
   overflow: auto;
 }
 
 .sidebar form {
-	box-shadow: none;
-	padding: 10px;
+  padding: 10px;
 }
 
 .sidebar form span {
-	display: none;
+  display: none;
 }
 
 .sidebar input[type="text"] {
@@ -89,24 +90,77 @@
   margin: 10px 0px;
 }
 .sidebar li {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 }
 .sidebar li a {
-	margin: 0;
+  margin: 0;
 }
 
 /* Active/current link */
 .sidebar a.active {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
+}
+
+.matches {
+	background-color: #f6efa6;
+}
+
+#pfp {
+	margin: 15px;
+}
+
+/**
+ * dark theme
+ */
+
+.toggle {
+  font-size: 50px;
+  /* color: #ffffff; */
+  position: absolute;
+  right: 90px;
+  top: 10px;
+}
+
+.dark-theme {
+  color: white;
+  background: #151515;
+}
+
+.dark-theme button{
+	color: #ed6663;
+}
+.dark-theme  a, .dark-theme code {
+  color: #ffffff;
+}
+
+.dark-theme blockquote {
+	color: #d1cebd;
+}
+.dark-theme input, .dark-theme select, .dark-theme textarea {
+	border: none;
+	background: #1f1f1f;
+	color: white;
+
+}
+.dark-theme a:hover, .dark-theme a:visited {
+  color: #ed6663;
+}
+
+.dark-theme .matches {
+	background: #ed6663;
+}
+
+#pfp {
+	margin: 15px;
 }
 @media only screen and (max-width: 500px) {
   .content {
     width: 90%;
-	margin: auto;
+    margin: auto;
   }
   .sidebar {
-	  display: none;
+    display: none;
   }
 }

@@ -59,3 +59,8 @@ validators == 0.15.0
 
 # archivy/check_changes.py: 7,8
 watchdog == 0.10.3
+
+# archivy/__init__.py: 9
+# archivy/models.py: 13
+# archivy/routes.py: 10
+flask-login == 0.5.0

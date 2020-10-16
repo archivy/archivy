@@ -10,6 +10,9 @@ from attr import attrs, attrib
 from attr.validators import instance_of, optional
 from bs4 import BeautifulSoup
 from flask import current_app, flash
+from flask_login import UserMixin
+from tinydb import Query
+from werkzeug.security import generate_password_hash
 
 from archivy import extensions
 from archivy.data import create
@@ -167,3 +170,38 @@ class DataObj:
 
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
+
+
+@attrs(kw_only=True)
+class User(UserMixin):
+    username: str = attrib(validator=instance_of(str))
+    password: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
+    is_admin: Optional[bool] = attrib(validator=optional(instance_of(bool)), default=None)
+    id: Optional[int] = attrib(validator=optional(instance_of(int)), default=False)
+
+    def insert(self):
+
+        if not self.password:
+            return False
+
+        hashed_password = generate_password_hash(self.password)
+        db = extensions.get_db()
+
+        if db.search((Query().type == "user") & (Query().username == self.username)):
+            return False
+        db_user = {
+            "username": self.username,
+            "hashed_password": hashed_password,
+            "is_admin": self.is_admin,
+            "type": "user"
+        }
+
+        return db.insert(db_user)
+
+    @classmethod
+    def from_db(cls, db_object):
+
+        username = db_object["username"]
+        id = db_object.doc_id
+
+        return cls(username=username, id=id)
