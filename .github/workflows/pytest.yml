@@ -25,7 +25,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-tests.txt
-    - uses: docker://pandoc/latex:2.9
+    - uses:  r-lib/actions/setup-pandoc@v1    
     - name: Run tests
       run: |
         pytest tests/
