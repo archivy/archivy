@@ -10,7 +10,7 @@ with open('requirements.txt', encoding='utf-8') as f:
 
 setuptools.setup(
     name="archivy",
-    version="0.5.0",
+    version="0.6.0",
     author="Uzay-G",
     author_email="uzgirit@gmail.com",
     description=(
