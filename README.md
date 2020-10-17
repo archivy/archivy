@@ -84,7 +84,8 @@ These credentials will be printed to the log when you launch like this:
                             Username: 'admin', password: '5a512991c605ea51038ce2a0'
 ```
 
-Login with these credentials and then you can change your password/username by clicking the profile button.
+Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+
 You can then use archivy to create notes, organize it and store information.
 
 ## Community and Development
