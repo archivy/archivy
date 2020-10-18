@@ -93,7 +93,7 @@
 		</script>
 
 		<script>
-			const SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+			const SCRIPT_ROOT = {{ request.script_root|tojson|safe }} + "/api";
 			let max_folder_id = document.querySelectorAll(".folder-cont").length;
 			function createInteractive(prevElem, id, path, extra_funct) 
 			{

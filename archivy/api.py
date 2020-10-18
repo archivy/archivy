@@ -2,6 +2,8 @@ from flask import Response, jsonify, request, Blueprint, current_app
 
 from archivy import data
 from archivy.models import DataObj
+from archivy.search import query_index
+from archivy.config import Config
 
 api_bp = Blueprint('api', __name__)
 
@@ -82,3 +84,30 @@ def local_edit(dataobj_id):
         data.open_file(dataobj["fullpath"])
         return Response(status=200)
     return Response(status=404)
+
+
+@api_bp.route("/folders/new", methods=["POST"])
+def create_folder():
+    directory = request.json.get("paths")
+    try:
+        sanitized_name = data.create_dir(directory)
+    except FileExistsError:
+        return "Directory already exists", 401
+    return sanitized_name, 200
+
+
+@api_bp.route("/folders/delete", methods=["DELETE"])
+def delete_folder():
+    directory = request.json.get("name")
+    if directory == "":
+        return "Cannot delete root dir", 401
+    if data.delete_dir(directory):
+        return "Successfully deleted", 200
+    return "Not found", 404
+
+
+@api_bp.route("/search", methods=["GET"])
+def search_elastic():
+    query = request.args.get("query")
+    search_results = query_index(Config.INDEX_NAME, query)
+    return jsonify(search_results)
