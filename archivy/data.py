@@ -66,7 +66,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
 
 def create(contents, title, path=""):
     path_to_md_file = get_data_dir() / path / f"{secure_filename(title)}.md"
-    with open(path_to_md_file, "w") as file:
+    with open(path_to_md_file, "w", encoding="utf-8") as file:
         file.write(contents)
 
     return path_to_md_file
