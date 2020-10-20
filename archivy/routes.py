@@ -19,6 +19,10 @@ from archivy.config import Config
 @app.context_processor
 def pass_defaults():
     dataobjs = data.get_items()
+    SEP = os.path.sep
+    # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
+    if SEP == "\\":
+        SEP += "\\"
     return dict(dataobjs=dataobjs, SEP=os.path.sep)
 
 
