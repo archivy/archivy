@@ -16,10 +16,7 @@ Features:
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
 - Extensible search with Elasticsearch and its Query DSL
 - Allows you to sync up with Pocket to gather bookmarks from there too.
-<<<<<<< HEAD
 - Dark Theme
-=======
-- dark theme
 >>>>>>> move api routes to api.py and add some docs
 
 
@@ -115,12 +112,7 @@ You can then use archivy to create notes, organize it and store information.
 
 ## Scripting
 
-<<<<<<< HEAD
 You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the [api system](https://github.com/Uzay-G/archivy/blob/master/API.md) and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
-=======
-You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the api system and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
-
->>>>>>> move api routes to api.py and add some docs
 
 
 ## Community and Development
