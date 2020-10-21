@@ -157,12 +157,12 @@
 				max_folder_id++;
 				let input = document.getElementById(`form-input-${id}`);
 				let basePath = document.getElementById(`form-path-${id}`).textContent; 
-				let totalPath = basePath === "" ? [] : basePath.split("{{SEP}}");
-				totalPath.push(input.value);
+				let totalPath = basePath;
+				totalPath += "{{SEP}}" + input.value;
 				let result = await fetch(`${SCRIPT_ROOT}/folders/new`, {
 					method: "POST",
 					body: JSON.stringify({
-						"paths": totalPath
+						"path": totalPath
 					}),
 					headers: {"content-type": "application/json"}
 				})

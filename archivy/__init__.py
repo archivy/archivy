@@ -19,7 +19,6 @@ from archivy.config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 app.logger.setLevel(logging.INFO)
-app.register_blueprint(api_bp, url_prefix='/api')
 
 # check if pandoc is installed, otherwise install
 try:
@@ -46,6 +45,7 @@ if app.config["ELASTICSEARCH_ENABLED"]:
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
+app.register_blueprint(api_bp, url_prefix='/api')
 
 
 @login_manager.user_loader

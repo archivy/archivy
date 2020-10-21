@@ -23,7 +23,7 @@ def pass_defaults():
 
 @app.before_request
 def check_perms():
-    allowed_path = request.path == "/login" or request.path.startswith("/static")
+    allowed_path = request.path == "/login" or request.path.startswith("/static") or request.path == "/api/login"
     if not current_user.is_authenticated and not allowed_path:
         return redirect(url_for("login", next=request.path))
     return
