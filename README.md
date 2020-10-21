@@ -89,8 +89,7 @@ You can then use archivy to create notes, organize it and store information.
 
 ## Scripting
 
-You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the api system and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
-
+You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the [api system](https://github.com/Uzay-G/archivy/blob/master/API.md) and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
 
 
 ## Community and Development
