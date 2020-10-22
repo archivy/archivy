@@ -50,7 +50,7 @@ jobs:
           docker build \
             --output type=image,name=${{ env.docker_image }},push=true \
             --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
-            --tag "${{ env.docker_image }}:untested-${{ env.tag_name }}" \
+            --tag "${{ env.docker_image }}:untested-${{ env.image_tag }}" \
             --tag "${{ env.docker_image }}:untested-${{ env.hash }}" \
             --file ./Dockerfile.source .
 
@@ -146,7 +146,7 @@ jobs:
           docker build \
             --output type=image,name=${{ env.docker_image }},push=true \
             --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
-            --tag "${{ env.docker_image }}:${{ env.tag_name }}" \
+            --tag "${{ env.docker_image }}:${{ env.image_tag }}" \
             --tag "${{ env.docker_image }}:${{ env.hash }}" \
             --file ./Dockerfile.source .
 

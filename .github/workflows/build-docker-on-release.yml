@@ -1,6 +1,8 @@
 name: Building, Testing, and Pushing Archivy Container Image On Version Release
 
 on:
+  push:
+    tags: v[0-9]+.[0-9]+.[0-9]+
   release:
     types:
       - published
