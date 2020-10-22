@@ -78,7 +78,6 @@ def change_bookmark(bookmark_id):
 @api_bp.route("/dataobj/local_edit/<dataobj_id>", methods=["GET"])
 def local_edit(dataobj_id):
     dataobj = data.get_item(int(dataobj_id))
-    print(dataobj, dataobj["fullpath"])
     if dataobj:
         data.open_file(dataobj["fullpath"])
         return Response(status=200)

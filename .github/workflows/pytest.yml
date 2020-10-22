@@ -25,6 +25,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-tests.txt
+    - uses:  r-lib/actions/setup-pandoc@v1    
     - name: Run tests
       run: |
         pytest tests/
