@@ -1,8 +1,10 @@
 import os
+from pkg_resources import iter_entry_points
 from threading import Thread
 
 import click
-from flask.cli import FlaskGroup, load_dotenv
+from click_plugins import with_plugins
+from flask.cli import FlaskGroup, load_dotenv, with_appcontext
 
 from archivy import app
 from archivy.check_changes import run_watcher
@@ -11,7 +13,7 @@ from archivy.check_changes import run_watcher
 def create_app():
     return app
 
-
+@with_plugins(iter_entry_points('archivy.plugins'))
 @click.group(cls=FlaskGroup, create_app=create_app)
 def cli():
     pass
