@@ -17,9 +17,8 @@ api_bp = Blueprint('api', __name__)
 def login():
     db = get_db()
     user = db.search(Query().username == request.authorization["username"])
-    if (user and 
-        check_password_hash(user[0]["hashed_password"], request.authorization["password"])):
-        # user is verified so we can log him in from the db
+    if (user and
+            check_password_hash(user[0]["hashed_password"], request.authorization["password"])):
         user = User.from_db(user[0])
         login_user(user, remember=True)
         return Response(status=200)
