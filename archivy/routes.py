@@ -5,7 +5,7 @@ import requests
 import frontmatter
 import pypandoc
 from tinydb import Query, operations
-from flask import render_template, flash, redirect, request, jsonify, url_for
+from flask import render_template, flash, redirect, request, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 
@@ -23,7 +23,9 @@ def pass_defaults():
 
 @app.before_request
 def check_perms():
-    allowed_path = request.path == "/login" or request.path.startswith("/static") or request.path == "/api/login"
+    allowed_path = (request.path.startswith("/login") or
+                    request.path.startswith("/static") or 
+                    request.path.startswith("/api/login"))
     if not current_user.is_authenticated and not allowed_path:
         return redirect(url_for("login", next=request.path))
     return
@@ -119,8 +121,6 @@ def delete_data(dataobj_id):
         return redirect("/")
     flash("Data deleted!")
     return redirect("/")
-
-
 
 
 @app.route("/login", methods=["GET", "POST"])
