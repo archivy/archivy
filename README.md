@@ -1,3 +1,7 @@
+
+![logo](https://github.com/Uzay-G/archivy/raw/master/logo.png)
+
+
 # Archivy
 
 Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content that contributes to your knowledge bank.
