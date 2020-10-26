@@ -5,7 +5,7 @@ import click
 from flask.cli import FlaskGroup, load_dotenv
 
 from archivy import app
-from archivy.check_changes import run_watcher
+from archivy.check_changes import Watcher
 
 
 def create_app():
@@ -22,10 +22,14 @@ def run():
     click.echo('Running archivy...')
     load_dotenv()
     # prevent pytest from hanging because of running thread
-    Thread(target=run_watcher, args=[app]).start()
+    watcher = Watcher(app)
+    watcher.start()
     port = int(os.environ.get("ARCHIVY_PORT", 5000))
     os.environ["FLASK_RUN_FROM_CLI"] = "false"
     app.run(host='0.0.0.0', port=port)
+    # this code will be reached when the user stops running the server by doing CTRL+C
+    watcher.stop()
+    watcher.join()
 
 
 @cli.command()
