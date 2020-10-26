@@ -1,5 +1,4 @@
 import os
-from threading import Thread
 
 import click
 from flask.cli import FlaskGroup, load_dotenv
