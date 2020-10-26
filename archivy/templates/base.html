@@ -158,7 +158,8 @@
 				let input = document.getElementById(`form-input-${id}`);
 				let basePath = document.getElementById(`form-path-${id}`).textContent; 
 				let totalPath = basePath;
-				totalPath += "{{SEP}}" + input.value;
+				totalPath += (totalPath === "") ? "" : "{{SEP}}";
+				totalPath += input.value;
 				let result = await fetch(`${SCRIPT_ROOT}/folders/new`, {
 					method: "POST",
 					body: JSON.stringify({
