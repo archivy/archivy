@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from threading import Thread
 
 import flask
 from watchdog.observers import Observer
@@ -85,21 +86,29 @@ class ModifHandler(FileSystemEventHandler):
                 self.format_file(event.src_path)
 
 
-def run_watcher(app):
-    event_handler = ModifHandler(app)
-    observer = Observer()
-    observer.schedule(
-        event_handler,
-        path=os.path.join(
-            app.config['APP_PATH'],
-            'data' + SEP
-        ),
-        recursive=True)
-    observer.start()
+class Watcher(Thread):
 
-    try:
-        while True:
+    def __init__(self, app):
+        self.running = True
+        self.app = app
+        Thread.__init__(self)
+
+    def run(self):
+        event_handler = ModifHandler(self.app)
+        observer = Observer()
+        observer.schedule(
+            event_handler,
+            path=os.path.join(
+                self.app.config['APP_PATH'],
+                'data' + SEP
+            ),
+            recursive=True)
+        observer.start()
+
+        while self.running:
             time.sleep(1)
-    except KeyboardInterrupt:
         observer.stop()
-    observer.join()
+        observer.join()
+
+    def stop(self):
+        self.running = False
