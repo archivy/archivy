@@ -18,10 +18,11 @@ def show_license(ctx, param, value):  # noqa:
     click.echo(__doc__)
     ctx.exit()
 
+
 @click.group(cls=FlaskGroup, create_app=create_app)
 @click.option('--license', '--lic', is_flag=True,
-    callback=show_license,
-    expose_value=False, is_eager=True)
+              callback=show_license,
+              expose_value=False, is_eager=True)
 def cli():
     pass
 
