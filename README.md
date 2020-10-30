@@ -1,6 +1,7 @@
 
 ![logo](https://github.com/Uzay-G/archivy/raw/master/logo.png)
 
+Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
 
 # Archivy
 
