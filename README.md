@@ -1,15 +1,21 @@
+
+![logo](https://github.com/Uzay-G/archivy/raw/master/logo.png)
+
+
 # Archivy
 
 Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content that contributes to your knowledge bank.
 
 Features:
 
+- CLI that provides a nice backend interface to the app
+- Login module that allows you to host the service on a server
 - If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
 - Extensible search with Elasticsearch and its Query DSL
 - Allows you to sync up with Pocket to gather bookmarks from there too.
-- dark theme
+- Dark Theme
 
 
 ![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
@@ -70,10 +76,25 @@ http.cors.allow-origin: "http://localhost:5000"
 Run archivy like this:
 
 ```bash
-ELASTICSEARCH_ENABLED=1 archivy
+ELASTICSEARCH_ENABLED=1 archivy run
 ```
 
 ## Usage
+
+The cli allows you to manage and run archivy:
+
+```
+Usage: archivy [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --version  Show the flask version
+  --help     Show this message and exit.
+
+Commands:
+  routes  Show the routes for the app.
+  run     Runs archivy web application
+  shell   Run a shell in the app context.
+```
 
 The first time you run archivy, an admin user will automatically be created with a random password.
 These credentials will be printed to the log when you launch like this:

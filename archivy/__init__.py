@@ -1,7 +1,5 @@
 import logging
-import sys
 from pathlib import Path
-from threading import Thread
 
 import elasticsearch
 import pypandoc
@@ -13,7 +11,6 @@ from tinydb import Query
 from archivy import extensions
 from archivy.models import User
 from archivy.api import api_bp
-from archivy.check_changes import run_watcher
 from archivy.config import Config
 
 app = Flask(__name__)
@@ -41,6 +38,7 @@ if app.config["ELASTICSEARCH_ENABLED"]:
         except elasticsearch.ElasticsearchException:
             app.logger.info("Elasticsearch index already created")
 
+
 # login routes / setup
 login_manager = LoginManager()
 login_manager.login_view = "login"
@@ -56,10 +54,6 @@ def load_user(user_id):
         return User.from_db(res)
     return None
 
-
-# prevent pytest from hanging because of running thread
-if 'pytest' not in sys.argv[0]:
-    Thread(target=run_watcher, args=[app]).start()
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
 
