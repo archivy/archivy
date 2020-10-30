@@ -11,7 +11,17 @@ def create_app():
     return app
 
 
+def show_license(ctx, param, value):  # noqa:
+    """Prints the license of the utility"""
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(__doc__)
+    ctx.exit()
+
 @click.group(cls=FlaskGroup, create_app=create_app)
+@click.option('--license', '--lic', is_flag=True,
+    callback=show_license,
+    expose_value=False, is_eager=True)
 def cli():
     pass
 
