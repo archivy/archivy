@@ -54,5 +54,5 @@ def query_index(index, query):
             for highlight in hit["highlight"]["content"]:
                 text += f"{highlight}"
         text += "</li>"
-    
+
     return convert_text(text, "html", format="md")
