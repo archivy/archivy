@@ -49,7 +49,7 @@ def query_index(index, query):
 
     text = ""
     for hit in search["hits"]["hits"]:
-        text += f"<li>[{hit['_source']['title']}](/dataobjs/{hit['_id']})<br><br>    "
+        text += f"<li>[{hit['_source']['title']}](/dataobj/{hit['_id']})<br><br>    "
         if "highlight" in hit:
             for highlight in hit["highlight"]["content"]:
                 text += f"{highlight}"
