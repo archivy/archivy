@@ -1,3 +1,5 @@
+from base64 import b64encode
+
 import responses
 from flask import Flask
 from flask.testing import FlaskClient
@@ -93,3 +95,20 @@ def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
 def test_put_bookmark(test_app, client: FlaskClient):
     response: Flask.response_class = client.put("/api/bookmarks/1")
     assert response.status_code == 501
+
+def test_api_login(test_app, client: FlaskClient):
+    # logout
+    client.delete("/logout")
+    # requires converting to base64 for http basic auth
+    authorization = "Basic " + b64encode('halcyon:password'.encode('ascii')).decode('ascii')
+    resp = client.post("/api/login", headers={"Authorization": authorization})
+    
+    assert resp.status_code == 200
+    resp = client.get("/api/dataobjs")
+    assert resp.status_code == 200
+
+def test_unlogged_in_api_fails(test_app, client: FlaskClient):
+    client.delete("/logout")
+    resp = client.get("/api/dataobjs")
+    assert resp.status_code == 302
+

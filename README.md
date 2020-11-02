@@ -21,10 +21,10 @@ Features:
 
 ![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
 
+
 Upcoming:
 
-- Integrations with HN, Reddit, and many more.
-- Add submodules for digital identity so archivy syncs to your hn upvoted posts, reddit saved, etc...
+- Plugin system to allow people to publish and write extensions to archivy
 - Option to compile data to a static site that can be deployed.
 - UI for grouping by tag and use NLP to automatically generate connections between posts
 
@@ -108,6 +108,11 @@ These credentials will be printed to the log when you launch like this:
 Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
 
 You can then use archivy to create notes, organize it and store information.
+
+## Scripting
+
+You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the [api system](https://github.com/Uzay-G/archivy/blob/master/API.md) and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
+
 
 ## Community and Development
 

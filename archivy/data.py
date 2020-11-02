@@ -100,9 +100,9 @@ def get_dirs():
 
 def create_dir(name):
     home_dir = get_data_dir()
-    sanitized_name = home_dir.joinpath(*[secure_filename(pathname) for pathname in name])
-    sanitized_name.mkdir(parents=True, exist_ok=True)
-    return str(sanitized_name.relative_to(home_dir))
+    new_path = home_dir / name
+    new_path.mkdir(parents=True, exist_ok=True)
+    return str(new_path.relative_to(home_dir))
 
 
 def delete_dir(name):
