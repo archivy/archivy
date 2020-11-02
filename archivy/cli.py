@@ -4,11 +4,10 @@ from threading import Thread
 
 import click
 from click_plugins import with_plugins
-from flask.cli import FlaskGroup, load_dotenv, with_appcontext
+from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
 
 from archivy import app
-from archivy.check_changes import run_watcher
-
+from archivy.check_changes import Watcher
 
 def create_app():
     return app
@@ -19,17 +18,25 @@ def cli():
     pass
 
 
-@cli.command()
+# add built in commands:
+cli.add_command(routes_command)
+cli.add_command(shell_command)
+
+
+@cli.command("run", short_help="Runs archivy web application")
 def run():
     click.echo('Running archivy...')
     load_dotenv()
-    # prevent pytest from hanging because of running thread
-    Thread(target=run_watcher, args=[app]).start()
+    watcher = Watcher(app)
+    watcher.start()
     port = int(os.environ.get("ARCHIVY_PORT", 5000))
     os.environ["FLASK_RUN_FROM_CLI"] = "false"
     app.run(host='0.0.0.0', port=port)
+    click.echo("Stopping archivy watcher")
+    watcher.stop()
+    watcher.join()
 
 
-@cli.command()
-def setup():
-    click.echo("Setting up archivy...")
+# @cli.command()
+# def setup():
+    # click.echo("Setting up archivy...")
