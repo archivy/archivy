@@ -93,9 +93,6 @@ class BaseInput:
 
         field['name'] = self._build_name(name)
         field['required'] = param.required
-
-        # if param.nargs < 0:
-        #     raise exceptions.ClickWebException("Parameters with unlimited nargs not supportet at the moment.")
         field['nargs'] = param.nargs
         field['human_readable_name'] = param.human_readable_name.replace('_', ' ')
         field.update(self.type_attrs)
@@ -273,9 +270,10 @@ class DefaultInput(BaseInput):
 
 
 '''
-The types of inputs we support form inputs listed in priority order (first that matches will be selected).
-To add new Input handling for html forms for custom Parameter types just Subclass BaseInput and insert
-the class in the list.
+The types of inputs we support form inputs listed in priority order
+(first that matches will be selected).
+To add new Input handling for html forms for custom Parameter types
+just Subclass BaseInput and insert the class in the list.
 '''
 INPUT_TYPES = [ChoiceInput,
                FlagInput,
@@ -288,7 +286,9 @@ INPUT_TYPES = [ChoiceInput,
 _DEFAULT_INPUT = [DefaultInput]
 
 
-def get_input_field(ctx: click.Context, param: click.Parameter, command_index, param_index) -> dict:
+def get_input_field(ctx: click.Context,
+                    param: click.Parameter,
+                    command_index, param_index) -> dict:
     """
     Convert a click.Parameter into a dict structure describing a html form option
     """

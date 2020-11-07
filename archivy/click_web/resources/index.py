@@ -7,8 +7,11 @@ from archivy import click_web
 
 
 def index():
-    with click.Context(click_web.click_root_cmd, info_name=click_web.click_root_cmd.name, parent=None) as ctx:
-        return render_template('click_web/show_tree.html', ctx=ctx, tree=_click_to_tree(ctx, click_web.click_root_cmd), title="Plugins")
+    with click.Context(click_web.click_root_cmd,
+                       info_name=click_web.click_root_cmd.name, parent=None) as ctx:
+        return render_template('click_web/show_tree.html',
+                               ctx=ctx, tree=_click_to_tree(ctx, click_web.click_root_cmd),
+                               title="Plugins")
 
 
 def _click_to_tree(ctx: click.Context, node: click.BaseCommand, ancestors=[]):
@@ -22,7 +25,8 @@ def _click_to_tree(ctx: click.Context, node: click.BaseCommand, ancestors=[]):
     omitted = ["shell", "run", "routes"]
     if res['is_group']:
         # a group, recurse for e    very child
-        children = [node.get_command(ctx, key) for key in node.list_commands(ctx) if not key in omitted]
+        children = [node.get_command(ctx, key) for key in node.list_commands(ctx)
+                    if key not in omitted]
         # Sort so commands comes before groups
         children = sorted(children, key=lambda c: isinstance(c, click.core.MultiCommand))
         for child in children:

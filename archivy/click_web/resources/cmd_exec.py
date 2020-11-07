@@ -4,11 +4,10 @@ import subprocess
 import sys
 import tempfile
 import traceback
-from html import escape
 from pathlib import Path
 from typing import List
 
-from flask import Response, request, url_for
+from flask import Response, request
 from werkzeug.utils import secure_filename
 
 from archivy import click_web
@@ -38,7 +37,6 @@ def exec(command_path):
             return Response(status=400)
         cmd.append(command)
         cmd.extend(req_to_args.command_args(i + 1))
-    
 
     def _generate_output():
         yield _create_cmd_header(commands)
@@ -49,7 +47,6 @@ def exec(command_path):
             yield f"\nERROR: Got exception when reading output from script: {type(e)}\n"
             yield traceback.format_exc()
             raise
-
 
     return Response(_generate_output(),
                     mimetype='text/plain')
@@ -107,7 +104,8 @@ def _create_result_footer(req_to_args: 'RequestToCommandArgs'):
         here we always allow to generate HTML as long as we have it between CLICK-WEB comments.
         This way the JS frontend can insert it in the correct place in the DOM.
     """
-    to_download = [fi for fi in req_to_args.field_infos if fi.generate_download_link and fi.link_name]
+    to_download = [fi for fi in req_to_args.field_infos
+                   if fi.generate_download_link and fi.link_name]
     # important yield this block as one string so it pushed to client in one go.
     # This is so the whole block can be treated as html if JS frontend.
     lines = []
@@ -137,7 +135,8 @@ def _get_download_link(field_info):
 class RequestToCommandArgs:
 
     def __init__(self):
-        field_infos = [FieldInfo.factory(key) for key in list(request.form.keys()) + list(request.files.keys())]
+        field_infos = [FieldInfo.factory(key) for key in
+                       list(request.form.keys()) + list(request.files.keys())]
         # important to sort them so they will be in expected order on command line
         self.field_infos = list(sorted(field_infos))
 
@@ -151,7 +150,8 @@ class RequestToCommandArgs:
         args = []
 
         # only include relevant fields for this command index
-        commands_field_infos = [fi for fi in self.field_infos if fi.param.command_index == command_index]
+        commands_field_infos = [fi for fi in self.field_infos
+                                if fi.param.command_index == command_index]
         commands_field_infos = sorted(commands_field_infos)
 
         for fi in commands_field_infos:
@@ -172,10 +172,10 @@ class RequestToCommandArgs:
                 else:
                     arg_values = request.form.getlist(fi.key)
                     has_values = bool(''.join(arg_values))
-                    # If arg value is empty the field was not filled, and thus optional argument
                     if has_values:
                         if fi.param.nargs == -1:
-                            # Variadic argument, in html form each argument is a separate line in a textarea.
+                            # Variadic argument, in html form each argument
+                            # is a separate line in a textarea.
                             # treat each line we get from text area as a separate argument.
                             for value in arg_values:
                                 values = value.splitlines()
@@ -194,9 +194,10 @@ class RequestToCommandArgs:
                 yield field_info.cmd_opt
                 yield field_info.file_path
         elif field_info.param.param_type == 'flag':
-            # To work with flag that is default True a hidden field with same name is also sent by form.
-            # This is to detect if checkbox was not checked as then we will get the field anyway with the "off flag"
-            # as value.
+            # To work with flag that is default True
+            # a hidden field with same name is also sent by form.
+            # This is to detect if checkbox was not checked as then
+            # we will get the field anyway with the "off flag" as value.
             if len(vals) == 1:
                 off_flag = vals[0]
                 flag_on_cmd_line = off_flag
@@ -351,7 +352,7 @@ class FieldOutFileInfo(FieldFileInfo):
     def save(self):
         name = secure_filename(self.key)
 
-        fd, filename = tempfile.mkstemp(dir=self.temp_dir(), prefix=name, suffix=self.file_suffix)
+        filename = tempfile.mkstemp(dir=self.temp_dir(), prefix=name, suffix=self.file_suffix)
         logger.info(f'Creating empty file for {self.key} as {filename}')
         self.file_path = filename
 

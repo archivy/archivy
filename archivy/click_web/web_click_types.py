@@ -1,7 +1,8 @@
 """
-Extra click types that could be useful in a web context as they have corresponding HTML form input type.
-
-The custom web click types need only be imported into the main script, not the app.py that flask runs.
+Extra click types that could be useful in a web context as
+they have corresponding HTML form input type.
+The custom web click types need only be imported
+into the main script, not the app.py that flask runs.
 
 Example usage in your click command:
 \b
