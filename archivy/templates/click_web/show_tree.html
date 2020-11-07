@@ -5,8 +5,7 @@
 <script src="{{ url_for('static', filename='post_and_read.js') }}"></script>
 <div id="left-pane">
     <div class="command-tree" id="command-tree">
-        <h3>{{ tree.help }}</h3>
-
+		<h2>Plugins</h2>
         <ul>
             {%- for command in tree.childs recursive %}
                 <li title="{{ command.help|replace('\b', '')|escape }}">

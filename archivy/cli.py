@@ -3,6 +3,7 @@ from pkg_resources import iter_entry_points
 
 import click
 from click_plugins import with_plugins
+from archivy.click_web import create_click_web_app
 from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
 
 from archivy import app
@@ -32,15 +33,8 @@ def run():
     watcher.start()
     port = int(os.environ.get("ARCHIVY_PORT", 5000))
     os.environ["FLASK_RUN_FROM_CLI"] = "false"
-    app.run(host='0.0.0.0', port=port)
+    app_with_cli = create_click_web_app(click, cli, app)
+    app_with_cli.run(host='0.0.0.0', port=port)
     click.echo("Stopping archivy watcher")
     watcher.stop()
     watcher.join()
-
-@cli.command()
-def printer():
-    click.echo("aaaa")
-
-# @cli.command()
-# def setup():
-    # click.echo("Setting up archivy...")

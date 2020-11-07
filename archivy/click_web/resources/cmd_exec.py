@@ -27,17 +27,18 @@ def exec(command_path):
     global logger
     logger = click_web.logger
 
+    omitted = ["shell", "run", "routes"]
     root_command, *commands = command_path.split('/')
     cmd = ["archivy"]
     req_to_args = RequestToCommandArgs()
     # root command_index should not add a command
     cmd.extend(req_to_args.command_args(0))
     for i, command in enumerate(commands):
+        if command in omitted:
+            return Response(status=400)
         cmd.append(command)
         cmd.extend(req_to_args.command_args(i + 1))
-
-    index_location = url_for('.index')
-    current_location = request.path
+    
 
     def _generate_output():
         yield _create_cmd_header(commands)
