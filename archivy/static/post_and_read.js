@@ -102,7 +102,6 @@ class ExecuteAndProcessOutput {
         while (true) {
             const result = await reader.read();
             let chunk = this.decoder.decode(result.value);
-            console.log(chunk);
             let insert_func = this.output_div.insertAdjacentText;
             let elem = this.output_div;
 
@@ -111,6 +110,7 @@ class ExecuteAndProcessOutput {
             // complete and not in separate chunks. However it seems to work fine
             // as long as the generating server yields the CLICK_WEB section in one string as they should be
             // quite small.
+			chunk = chunk.replace("<br>", "\n")
             if (chunk.includes('<!-- CLICK_WEB')) {
                 // there are one or more click web special sections, use regexp split chunk into parts
                 // and process them individually

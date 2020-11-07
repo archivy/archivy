@@ -8,7 +8,7 @@ from archivy import click_web
 
 def index():
     with click.Context(click_web.click_root_cmd, info_name=click_web.click_root_cmd.name, parent=None) as ctx:
-        return render_template('click_web/show_tree.html', ctx=ctx, tree=_click_to_tree(ctx, click_web.click_root_cmd))
+        return render_template('click_web/show_tree.html', ctx=ctx, tree=_click_to_tree(ctx, click_web.click_root_cmd), title="Plugins")
 
 
 def _click_to_tree(ctx: click.Context, node: click.BaseCommand, ancestors=[]):

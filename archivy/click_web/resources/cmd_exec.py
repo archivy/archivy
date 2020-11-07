@@ -17,17 +17,6 @@ from .input_fields import FieldId
 
 logger = None
 
-HTML_HEAD = '''<!doctype html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="{pure_css_location}"/>
-    <link rel="stylesheet" href="{click_web_css_location}"/>
-</head>
-<body>'''
-HTML_TAIL = '''
-</body>
-'''
-
 
 def exec(command_path):
     """
@@ -39,8 +28,7 @@ def exec(command_path):
     logger = click_web.logger
 
     root_command, *commands = command_path.split('/')
-    cmd = [sys.executable,  # run with same python executable we are running with.
-           click_web.script_file]
+    cmd = ["archivy"]
     req_to_args = RequestToCommandArgs()
     # root command_index should not add a command
     cmd.extend(req_to_args.command_args(0))
@@ -50,37 +38,20 @@ def exec(command_path):
 
     index_location = url_for('.index')
     current_location = request.path
-    pure_css_location = url_for('static', filename='pure.css')
-    click_web_css_location = url_for('static', filename='click_web.css')
-    text_only = 'text/plain' in request.accept_mimetypes.values()
 
-    def _generate_output(use_html: bool):
-        if use_html:
-            yield HTML_HEAD.format(pure_css_location=pure_css_location, click_web_css_location=click_web_css_location)
-            yield (f'<div class="back-links">Back to <a href="{index_location}">[index]</a>&nbsp;&nbsp;'
-                   f'<a href="{current_location}">[{current_location}]</a></div>')
+    def _generate_output():
         yield _create_cmd_header(commands)
-        if use_html:
-            yield '<pre class="script-output">'
         try:
-            if use_html:
-                yield from (escape(l) for l in _run_script_and_generate_stream(req_to_args, cmd))
-            else:
-                yield from _run_script_and_generate_stream(req_to_args, cmd)
+            yield from _run_script_and_generate_stream(req_to_args, cmd)
         except Exception as e:
             # exited prematurely, show the error to user
             yield f"\nERROR: Got exception when reading output from script: {type(e)}\n"
             yield traceback.format_exc()
             raise
 
-        if use_html:
-            yield '</pre>'
-        yield from _create_result_footer(req_to_args)
-        if use_html:
-            yield HTML_TAIL
 
-    return Response(_generate_output(use_html=not text_only),
-                    mimetype='text/plain' if text_only else 'text/html')
+    return Response(_generate_output(),
+                    mimetype='text/plain')
 
 
 def _run_script_and_generate_stream(req_to_args: 'RequestToCommandArgs', cmd: List[str]):

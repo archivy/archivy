@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="split content split-horizontal" id="left-pane">
+<script src="{{ url_for('static', filename='open_form.js') }}"></script>
+<script src="{{ url_for('static', filename='post_and_read.js') }}"></script>
+<div id="left-pane">
     <div class="command-tree" id="command-tree">
         <h3>{{ tree.help }}</h3>
 
@@ -16,7 +18,7 @@
                            href="#" onclick="openCommand('{{ command.path }}', true, this);">{{ command.name }}</a>
                     {% endif %}
                     {%- if command.childs -%}
-                        <ul class="submenu">{{ loop(command.childs) }}</ul>
+                        <ul>{{ loop(command.childs) }}</ul>
                     {%- endif %}</li>
             {%- endfor %}
         </ul>
@@ -31,6 +33,4 @@
     </div>
 </div>
 
-</body>
-</html>
 {% endblock %}

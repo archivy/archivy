@@ -37,6 +37,9 @@ def run():
     watcher.stop()
     watcher.join()
 
+@cli.command()
+def printer():
+    click.echo("aaaa")
 
 # @cli.command()
 # def setup():
