@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="split content split-horizontal" id="left-pane">
+    <div class="command-tree" id="command-tree">
+        <h3>{{ tree.help }}</h3>
+
+        <ul>
+            {%- for command in tree.childs recursive %}
+                <li title="{{ command.help|replace('\b', '')|escape }}">
+                    {% if command.is_group %}
+                        {{ command.name|title }}
+                        <div class="help">{{ command.short_help }}</div>
+                    {% else %}
+                        <a title="{{ command.help|replace('\b', '')|escape }}"
+                           href="#" onclick="openCommand('{{ command.path }}', true, this);">{{ command.name }}</a>
+                    {% endif %}
+                    {%- if command.childs -%}
+                        <ul class="submenu">{{ loop(command.childs) }}</ul>
+                    {%- endif %}</li>
+            {%- endfor %}
+        </ul>
+
+    </div>
+</div>
+
+<div class="split content split-horizontal" id="right-pane">
+
+    <div id="form-div">
+        <p>Select a command in left pane.</p>
+    </div>
+</div>
+
+</body>
+</html>
+{% endblock %}
