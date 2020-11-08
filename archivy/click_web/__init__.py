@@ -49,7 +49,7 @@ def create_click_web_app(module, command: click.BaseCommand, flask_app):
     # add the "do" extension needed by our jinja templates
     _flask_app.jinja_env.add_extension('jinja2.ext.do')
 
-    _flask_app.add_url_rule('/cli', 'cli_index', index.index)
+    _flask_app.add_url_rule('/plugins', 'cli_index', index.index)
     _flask_app.add_url_rule('/cli/<path:command_path>', 'command', cmd_form.get_form_for)
     _flask_app.add_url_rule('/cli/<path:command_path>', 'command_execute', cmd_exec.exec,
                             methods=['POST'])
