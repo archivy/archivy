@@ -1,11 +1,13 @@
 import os
 import shutil
 import tempfile
-from archivy.click_web import create_click_web_app, _flask_app
+
+import click
 import pytest
 import responses
 
 from archivy import app, cli
+from archivy.click_web import create_click_web_app, _flask_app
 from archivy.extensions import get_db
 from archivy.models import DataObj, User
 
@@ -152,3 +154,13 @@ def pocket_fixture(test_app, mocked_responses):
     }
     db.insert(pocket_key)
     return pocket_key
+
+@pytest.fixture()
+def click_cli():
+    yield cli.cli
+
+@pytest.fixture()
+def ctx(click_cli):
+    with click.Context(click_cli, info_name=click_cli, parent=None) as ctx:
+        yield ctx
+

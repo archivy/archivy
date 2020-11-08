@@ -65,3 +65,5 @@ watchdog == 0.10.3
 # archivy/routes.py: 10
 flask-login == 0.5.0
 
+click_plugins
+
