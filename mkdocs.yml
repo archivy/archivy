@@ -1,1 +1,3 @@
-site_name: My Docs
+site_name: Archivy
+theme:
+  name: gitbook
