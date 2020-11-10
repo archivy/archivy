@@ -33,7 +33,7 @@ def get_by_id(dataobj_id):
 def get_items(collections=[], path="", structured=True, json_format=False):
     datacont = Directory("root") if structured else []
     home_dir = get_data_dir()
-    for filename in home_dir.glob(f"{path}**/*"):
+    for filename in home_dir.rglob(path + "*"):
         if structured:
             paths = filename.relative_to(home_dir)
             current_dir = datacont
