@@ -109,9 +109,15 @@ Login with these credentials and then you can change your password/username by c
 
 You can then use archivy to create notes, organize it and store information.
 
-## Scripting
+## Scripting and Customization
 
-You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the [extensible plugin interface](https://github.com/Uzay-G/archivy/blob/master/plugins.md), or the [api](https://github.com/Uzay-G/archivy/blob/master/API.md).
+Archivy is built to encourage scripting and customization at its core because it allows people to extend the app to their liking **and** provide new extensions that can also help others.
+
+There are two ways you can extend archivy:
+
+- Plugins, which provide a framework for adding commands to the archivy cli that can interact with the app / database. These extensions are then also accessible through the web interface. This approach should be preferred in contexts where you want to build a project that other people can easily install and collaborate with you on. See [plugins.md](https://github.com/Uzay-G/archivy/blob/master/plugins.md) for docs on this essential feature.
+
+- The Archivy API, that allows an HTTP interface to certain features of archivy. This is not recommended for larger scale projects but can be suitable for smaller one-time scripts. See [API.md](https://github.com/Uzay-G/archivy/blob/master/API.md).
 
 
 ## Community and Development
