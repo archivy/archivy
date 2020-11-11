@@ -1,2 +1,4 @@
-mkdocs-gitbook
+mkdocs-material
+mkdocstrings
 mkdocs
+pymdown-extensions

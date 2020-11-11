@@ -1,3 +1,15 @@
 site_name: Archivy
 theme:
-  name: gitbook
+  name: material
+
+plugins:
+  - mkdocstrings
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+nav:
+  - Home: "index.md"
+  - "API Reference":
+    - "Web API": "reference/web_api.md"
