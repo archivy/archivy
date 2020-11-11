@@ -1,4 +1,4 @@
 mkdocs-material
 mkdocstrings
-mkdocs
+mkdocs>=1.1
 pymdown-extensions

@@ -5,6 +5,7 @@ theme:
 plugins:
   - mkdocstrings
 
+
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
@@ -13,3 +14,4 @@ nav:
   - Home: "index.md"
   - "API Reference":
     - "Web API": "reference/web_api.md"
+    - "Models for User and DataObj": "reference/models.md"

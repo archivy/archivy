@@ -35,6 +35,40 @@ from archivy.search import add_to_index
 
 @attrs(kw_only=True)
 class DataObj:
+    """
+    Class that holds a data object (either a note or a bookmark).
+
+    Attrbutes:
+
+    [Required to pass when creating a new object]
+
+    - **type** -> "note" or "bookmark"
+
+     **Note**:
+    - title
+
+    **Bookmark**:
+
+    - url
+
+    [Optional attrs that if passed, will be set by the class]
+
+    - desc
+    - tags
+    - content
+    - path
+
+    [Handled by the code]
+
+    - id
+    - date
+
+    For bookmarks,
+    Run `process_bookmark_url()` once you've created it.
+
+    For both types, run `insert()` if you want to create a new file in the db with their contents.
+    """
+
     __searchable__ = ["title", "content", "desc", "tags"]
 
     id: Optional[int] = attrib(validator=optional(instance_of(int)),
@@ -114,6 +148,7 @@ class DataObj:
         return convert_text(str(beautsoup), "md", format="html")
 
     def validate(self):
+        """Verifies that the content matches required validation constraints"""
         valid_url = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
                     isinstance(self.url, str) and validators.url(self.url))
 
@@ -123,6 +158,7 @@ class DataObj:
         return valid_url and valid_title and valid_content
 
     def insert(self):
+        """Creates a new file with the object's attributes"""
         if self.validate():
             extensions.set_max_id(extensions.get_max_id() + 1)
             self.id = extensions.get_max_id()
@@ -155,6 +191,16 @@ class DataObj:
 
     @classmethod
     def from_file(cls, filename):
+        """
+        Class method to generate new dataobj from a filename
+
+        Call like this:
+
+        ```python
+        Dataobj.from_file(filename)
+
+        ```
+        """
         data = frontmatter.load(filename)
         dataobj = {}
         dataobj["content"] = data.content
@@ -174,13 +220,23 @@ class DataObj:
 
 @attrs(kw_only=True)
 class User(UserMixin):
+    """
+    Model we use for User that inherits from [flask_login.UserMixin](https://flask-login.readthedocs.io/en/latest/#flask_login.UserMixin)
+
+    Attributes:
+
+    - **username**
+    - **password**
+    - **is_admin**
+    """
+
     username: str = attrib(validator=instance_of(str))
     password: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     is_admin: Optional[bool] = attrib(validator=optional(instance_of(bool)), default=None)
     id: Optional[int] = attrib(validator=optional(instance_of(int)), default=False)
 
     def insert(self):
-
+        """Inserts the model from the database"""
         if not self.password:
             return False
 
@@ -200,7 +256,7 @@ class User(UserMixin):
 
     @classmethod
     def from_db(cls, db_object):
-
+        """Takes a database object and turns it into a user"""
         username = db_object["username"]
         id = db_object.doc_id
 
