@@ -2,3 +2,4 @@ mkdocs-material
 mkdocstrings
 mkdocs>=1.1
 pymdown-extensions
+beautifulsoup4>=4.8.2
