@@ -57,7 +57,7 @@ class DataObj:
 
     def process_bookmark_url(self):
         """Process url to get content for bookmark"""
-        if self.type not in ("bookmarks", "pocket_bookmarks") or not validators.url(self.url):
+        if self.type not in ("bookmark", "pocket_bookmark") or not validators.url(self.url):
             return None
 
         try:
@@ -114,11 +114,11 @@ class DataObj:
         return convert_text(str(beautsoup), "md", format="html")
 
     def validate(self):
-        valid_url = (self.type != "bookmarks" or self.type != "pocket_bookmarks") or (
+        valid_url = (self.type != "bookmark" or self.type != "pocket_bookmark") or (
                     isinstance(self.url, str) and validators.url(self.url))
 
         valid_title = isinstance(self.title, str) and self.title != ""
-        valid_content = (self.type not in ("bookmark", "pocket_bookmarks")
+        valid_content = (self.type not in ("bookmark", "pocket_bookmark")
                          or isinstance(self.content, str))
         return valid_url and valid_title and valid_content
 
@@ -136,7 +136,7 @@ class DataObj:
                 "id": self.id,
                 "path": self.path
             }
-            if self.type == "bookmarks" or self.type == "pocket_bookmarks":
+            if self.type == "bookmark" or self.type == "pocket_bookmark":
                 data["url"] = self.url
 
             # convert to markdown file
