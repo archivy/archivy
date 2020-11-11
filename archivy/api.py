@@ -36,7 +36,7 @@ def create_bookmark():
         desc=json_data.get('desc'),
         tags=json_data.get('tags'),
         path=json_data.get("path", ""),
-        type="bookmarks",
+        type="bookmark",
     )
     bookmark.process_bookmark_url()
     bookmark_id = bookmark.insert()

@@ -9,7 +9,7 @@ attributes = ["type", "title", "desc", "tags", "path", "id"]
 
 def test_new_bookmark(test_app):
     bookmark = DataObj(
-        type="bookmarks",
+        type="bookmark",
         desc="example description",
         tags=["example"],
         url="http://example.org",
