@@ -55,7 +55,7 @@ def load_user(user_id):
     return None
 
 
-app.jinja_options["helpers"].append("jinja2.ext.do")
+app.jinja_options["extensions"].append("jinja2.ext.do")
 
 # create admin user if it does not exist
 with app.app_context():
