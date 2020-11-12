@@ -36,6 +36,19 @@ Upcoming:
 - Install the python package with `pip install archivy`
 - There you go! You should be able to start the app by running `archivy` in your terminal.
 
+
+The first time you run archivy, an admin user will automatically be created with a random password.
+These credentials will be printed to the log when you launch like this:
+
+```
+[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
+                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
+```
+
+Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+
+You can then use archivy to create notes, organize it and store information.
+
 ### Configuration
 
 Archivy uses environment variables for its configuration:
@@ -96,18 +109,6 @@ Commands:
   run     Runs archivy web application
   shell   Run a shell in the app context.
 ```
-
-The first time you run archivy, an admin user will automatically be created with a random password.
-These credentials will be printed to the log when you launch like this:
-
-```
-[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
-                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
-```
-
-Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
-
-You can then use archivy to create notes, organize it and store information.
 
 ## Scripting
 

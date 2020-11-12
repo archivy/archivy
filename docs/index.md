@@ -1,17 +1,55 @@
-# Welcome to MkDocs
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+![logo](img/logo.png)
 
-## Commands
+Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+# Archivy
 
-## Project layout
+Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content that contributes to your knowledge bank.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+Features:
+
+- Plugin system to allow people to publish and write extensions to archivy
+- CLI that provides a nice backend interface to the app
+- Login module that allows you to host the service on a server
+- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- Backend API for flexibility and user enhancements
+- Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
+- Extensible search with Elasticsearch and its Query DSL
+- Allows you to sync up with Pocket to gather bookmarks from there too.
+- Dark Theme
+
+
+![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
+
+
+Upcoming:
+
+- Links between different knowledge base items
+- Multi User System.
+- Option to compile data to a static site.
+
+## Quickstart
+
+Install with `pip install archivy` and then do `archivy run` to serve the app. You can open it at https://localhost:5000.
+
+The first time you run archivy, an admin user will automatically be created with a random password.
+These credentials will be printed to the log when you launch like this:
+
+```
+[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
+                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
+```
+
+Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+
+You can then use archivy to create notes, bookmarks and then organize and store information.
+
+See the [official docs](https://archivy.github.io) for information on other install 
+
+
+## Scripting
+
+You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the [api system](https://github.com/Uzay-G/archivy/blob/master/API.md) and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
+
+
