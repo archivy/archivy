@@ -10,6 +10,11 @@ from archivy.config import Config
 
 
 def get_db():
+    """
+    Returns the database object that you can use to
+    store data persistently
+    """
+
     if 'db' not in g:
         g.db = TinyDB(
             os.path.join(
@@ -22,6 +27,7 @@ def get_db():
 
 
 def get_max_id():
+    """Returns the current maximum id of dataobjs in the database."""
     db = get_db()
     max_id = db.search(Query().name == "max_id")
     if not max_id:
@@ -31,11 +37,13 @@ def get_max_id():
 
 
 def set_max_id(val):
+    """Sets a new max_id"""
     db = get_db()
     db.update(operations.set("val", val), Query().name == "max_id")
 
 
 def get_elastic_client():
+    """Returns the elasticsearch client you can use to search and insert / delete data"""
     if not current_app.config['ELASTICSEARCH_ENABLED']:
         return None
 

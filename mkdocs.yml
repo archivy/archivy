@@ -20,6 +20,7 @@ nav:
   - API Reference:
     - Web API: "reference/web_api.md"
     - Models for User and DataObj: "reference/models.md"
+    - Helpers: "reference/helpers.md"
   - Getting Started:
       - Installing Archivy: "install.md"
       - Usage: "usage.md"
