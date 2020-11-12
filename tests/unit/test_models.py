@@ -1,7 +1,7 @@
 import frontmatter
 
 from archivy.models import DataObj
-from archivy.extensions import get_max_id
+from archivy.helpers import get_max_id
 from archivy.models import DataObj
 
 attributes = ["type", "title", "desc", "tags", "path", "id"]

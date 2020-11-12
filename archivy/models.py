@@ -14,7 +14,7 @@ from flask_login import UserMixin
 from tinydb import Query
 from werkzeug.security import generate_password_hash
 
-from archivy import extensions
+from archivy import helpers
 from archivy.data import create
 from archivy.search import add_to_index
 
@@ -160,8 +160,8 @@ class DataObj:
     def insert(self):
         """Creates a new file with the object's attributes"""
         if self.validate():
-            extensions.set_max_id(extensions.get_max_id() + 1)
-            self.id = extensions.get_max_id()
+            helpers.set_max_id(helpers.get_max_id() + 1)
+            self.id = helpers.get_max_id()
             self.date = datetime.now()
             data = {
                 "type": self.type,
@@ -241,7 +241,7 @@ class User(UserMixin):
             return False
 
         hashed_password = generate_password_hash(self.password)
-        db = extensions.get_db()
+        db = helpers.get_db()
 
         if db.search((Query().type == "user") & (Query().username == self.username)):
             return False

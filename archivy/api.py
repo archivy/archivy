@@ -7,7 +7,7 @@ from archivy import data
 from archivy.search import query_index
 from archivy.config import Config
 from archivy.models import DataObj, User
-from archivy.extensions import get_db
+from archivy.helpers import get_db
 
 
 api_bp = Blueprint('api', __name__)

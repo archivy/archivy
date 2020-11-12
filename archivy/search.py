@@ -1,6 +1,6 @@
 from pypandoc import convert_text
 
-from archivy.extensions import get_elastic_client
+from archivy.helpers import get_elastic_client
 
 
 def add_to_index(index, model):
