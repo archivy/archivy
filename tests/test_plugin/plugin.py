@@ -4,7 +4,7 @@ from random import randint
 import click
 
 from archivy import app
-from archivy.extensions import get_max_id
+from archivy.helpers import get_max_id
 from archivy.data import get_items
 
 @click.group()
