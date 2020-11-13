@@ -9,7 +9,7 @@
     <br>
 	
     {{ dataobj['date'] }}
-	{% if dataobj['type'] == 'bookmarks' or dataobj['type'] == 'pocket_bookmarks' %}
+	{% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
 		<a href="{{ dataobj['url'] }}" rel="noopener">
 			Link
 		</a>

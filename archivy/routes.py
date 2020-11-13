@@ -11,7 +11,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 
 from archivy.models import DataObj, User
 from archivy import data, app, forms
-from archivy.extensions import get_db
+from archivy.helpers import get_db
 from archivy.config import Config
 
 
@@ -57,7 +57,7 @@ def new_bookmark():
             desc=form.desc.data,
             tags=form.tags.data.split(","),
             path=path,
-            type="bookmarks")
+            type="bookmark")
         bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
         if bookmark_id:
@@ -268,7 +268,7 @@ def parse_pocket():
                 desc=desc,
                 url=pocket_bookmark["resolved_url"],
                 date=datetime.now(),
-                type="pocket_bookmarks")
+                type="pocket_bookmark")
             bookmark.process_bookmark_url()
             bookmark.insert()
 

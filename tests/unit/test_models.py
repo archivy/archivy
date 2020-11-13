@@ -1,7 +1,7 @@
 import frontmatter
 
 from archivy.models import DataObj
-from archivy.extensions import get_max_id
+from archivy.helpers import get_max_id
 from archivy.models import DataObj
 
 attributes = ["type", "title", "desc", "tags", "path", "id"]
@@ -9,7 +9,7 @@ attributes = ["type", "title", "desc", "tags", "path", "id"]
 
 def test_new_bookmark(test_app):
     bookmark = DataObj(
-        type="bookmarks",
+        type="bookmark",
         desc="example description",
         tags=["example"],
         url="http://example.org",

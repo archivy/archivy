@@ -24,7 +24,7 @@ appdirs == 1.4.4
 attrs == 20.2.0
 
 # archivy/models.py: 11
-beautifulsoup4 == 4.6.0
+beautifulsoup4 >= 4.8.2
 
 
 # archivy/__init__.py: 6

@@ -8,7 +8,7 @@ import responses
 
 from archivy import app, cli
 from archivy.click_web import create_click_web_app, _flask_app
-from archivy.extensions import get_db
+from archivy.helpers import get_db
 from archivy.models import DataObj, User
 
 _app = None
@@ -106,7 +106,7 @@ def bookmark_fixture(test_app, mocked_responses):
     """)
 
     datapoints = {
-        "type": "bookmarks", "title": "Test Bookmark",
+        "type": "bookmark", "title": "Test Bookmark",
         "desc": "",
         "tags": ["testing", "archivy"], "path": "",
         "url": "https://example.com/"

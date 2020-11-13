@@ -1,5 +1,5 @@
 
-![logo](https://github.com/Uzay-G/archivy/raw/master/logo.png)
+![logo](docs/img/logo.png)
 
 Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
 
@@ -9,14 +9,13 @@ Archivy is a self-hosted knowledge repository that allows you to safely preserve
 
 Features:
 
-- CLI that provides a nice backend interface to the app
-- Login module that allows you to host the service on a server
-- Very extensible plugin system for users' to write extensions of archivy
 - If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- Login module that allows you to host the service on a server
+- Plugin system to allow people to publish and write extensions to archivy
+- CLI that provides a nice backend interface to the app
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
 - Extensible search with Elasticsearch and its Query DSL
-- Allows you to sync up with Pocket to gather bookmarks from there too.
 - Dark Theme
 
 
@@ -25,77 +24,13 @@ Features:
 
 Upcoming:
 
-- Option to compile data to a static site that can be deployed.
-- UI for grouping by tag and use NLP to automatically generate connections between posts
+- Links between different knowledge base items
+- Multi User System.
+- Option to compile data to a static site.
 
-## Setup
+## Quickstart
 
-### Local Setup
-
-- Make sure your system has Python and pip installed.
-- Install the python package with `pip install archivy`
-- There you go! You should be able to start the app by running `archivy` in your terminal.
-
-### Configuration
-
-Archivy uses environment variables for its configuration:
-
-| Variable                | Default                     | Description                           |
-|-------------------------|-----------------------------|---------------------------------------|
-| `ARCHIVY_DATA_DIR`      | System-dependant, see below | Directory in which data will be saved |
-| `ARCHIVY_PORT`          | 5000                        | Port on which archivy will run        |
-| `ELASTICSEARCH_ENABLED` | 0                           | Enable Elasticsearch integration      |
-| `ELASTICSEARCH_URL`     | http://localhost:9200       | Url to the elasticsearch server       |
-
-
-`ARCHIVY_DATA_DIR` by default will be set by the
-[appdirs](https://pypi.org/project/appdirs/) python library:
-
-On Linux systems, it follows the [XDG
-specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html):
-`~/.local/share/archivy`
-
-
-### With Docker
-
-See the `docker` branch for details on setting things up with docker.
-
-### Setting up Search
-
-Archivy uses [ElasticSearch](https://www.elastic.co) to provide efficient full-text search.
-
-Instructions to install and run the service are provided [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html).
-
-
-Append these two lines to your [elasticsearch.yml config file](https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html):
-
-```yaml
-http.cors.enabled: true
-http.cors.allow-origin: "http://localhost:5000"
-```
-
-Run archivy like this:
-
-```bash
-ELASTICSEARCH_ENABLED=1 archivy run
-```
-
-## Usage
-
-The cli allows you to manage and run archivy:
-
-```
-Usage: archivy [OPTIONS] COMMAND [ARGS]...
-
-Options:
-  --version  Show the flask version
-  --help     Show this message and exit.
-
-Commands:
-  routes  Show the routes for the app.
-  run     Runs archivy web application
-  shell   Run a shell in the app context.
-```
+Install with `pip install archivy` and then do `archivy run` to serve the app. You can open it at https://localhost:5000.
 
 The first time you run archivy, an admin user will automatically be created with a random password.
 These credentials will be printed to the log when you launch like this:
@@ -107,21 +42,58 @@ These credentials will be printed to the log when you launch like this:
 
 Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
 
-You can then use archivy to create notes, organize it and store information.
+You can then use archivy to create notes, bookmarks and then organize and store information.
 
-## Scripting and Customization
+See the [official docs](https://archivy.github.io) for information on other install 
 
-Archivy is built to encourage scripting and customization at its core because it allows people to extend the app to their liking **and** provide new extensions that can also help others.
+Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
 
-There are two ways you can extend archivy:
-
-- Plugins, which provide a framework for adding commands to the archivy cli that can interact with the app / database. These extensions are then also accessible through the web interface. This approach should be preferred in contexts where you want to build a project that other people can easily install and collaborate with you on. See [plugins.md](https://github.com/Uzay-G/archivy/blob/master/plugins.md) for docs on this essential feature.
-
-- The Archivy API, that allows an HTTP interface to certain features of archivy. This is not recommended for larger scale projects but can be suitable for smaller one-time scripts. See [API.md](https://github.com/Uzay-G/archivy/blob/master/API.md).
+# Archivy
 
 
-## Community and Development
+![logo](img/logo.png)
 
-If you're interested in developing and improving Archivy, please join our [community discord server](https://discord.gg/uQsqyxB).
+Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
 
-Feel free to [open issues](https://github.com/Uzay-G/archivy/issues/new) if you encounter bugs, have any ideas / feature requests and use the discord server for more casual discussion.
+# Archivy
+
+Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content that contributes to your knowledge bank.
+
+Features:
+
+- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- Login module that allows you to host the service on a server
+- Plugin system to allow people to publish and write extensions to archivy
+- CLI that provides a nice backend interface to the app
+- Backend API for flexibility and user enhancements
+- Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
+- Extensible search with Elasticsearch and its Query DSL
+- Dark Theme
+
+
+![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
+
+
+Upcoming:
+
+- Links between different knowledge base items
+- Multi User System.
+- Option to compile data to a static site.
+
+## Quickstart
+
+Install with `pip install archivy` and then do `archivy run` to serve the app. You can open it at https://localhost:5000.
+
+The first time you run archivy, an admin user will automatically be created with a random password.
+These credentials will be printed to the log when you launch like this:
+
+```
+[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
+                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
+```
+
+Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+
+You can then use archivy to create notes, bookmarks and then organize and store information.
+
+See the [official docs](https://archivy.github.io) for information on other installation methods.
