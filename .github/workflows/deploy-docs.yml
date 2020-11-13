@@ -18,9 +18,11 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-verion: 3.7
-      - name: Install deps
+      - name: Install doc deps
         run: >-
           python -m pip install -r main/docs/requirements.txt
+      - name: Install archivy
+        run: >-
           python -m pip install main/
       - name: Clone archivy docs website
         uses: actions/checkout@v2
