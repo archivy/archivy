@@ -13,7 +13,7 @@ You use the cli to run the app, and you'll probably be using the web application
 
 ## Data Storage
 
-- `DataObjs` is the term used to denote a note or bookmark that is stored in your knowledge base (abbreviation for Data Object). These are stored in a directory on your filesystem of which you can [configure the location](config.md). They are organized in markdown files with `yaml` front matter like this:
+- `DataObjs` is the term used to denote a note or bookmark that is stored in your knowledge base (abbreviation for Data Object). These are stored in a directory on your filesystem of which you can [configure the location](../config.md). They are organized in markdown files with `yaml` front matter like this:
 
 ```yaml
 ---
@@ -29,7 +29,7 @@ type: note
 ...
 ```
 
-Archivy uses the [python-frontmatter](https://python-frontmatter.readthedocs.io/en/latest/) package to handle the parsing of these files. They can be organized into user-specified sub-directories. Check out [the reference](reference/filesystem_layer.md) to see the methods archivy uses for this. We also use [pandoc](https://pandoc.org) for the conversion of different formats, and plan on using this onwards to support many more formats (PDF, EPUB, etc...)
+Archivy uses the [python-frontmatter](https://python-frontmatter.readthedocs.io/en/latest/) package to handle the parsing of these files. They can be organized into user-specified sub-directories. Check out [the reference](filesystem_layer.md) to see the methods archivy uses for this. We also use [pandoc](https://pandoc.org) for the conversion of different formats, and plan on using this onwards to support many more formats (PDF, EPUB, etc...)
 
 - Another storage method Archivy uses is [TinyDB](https://tinydb.readthedocs.io/en/stable/). This is a small, simple document-oriented database archivy gives you access to for persistent data you might want to store in archivy plugins. Use [`helpers.get_db`](/reference/helpers/#archivy.helpers.get_db) to call the database.
 
@@ -39,7 +39,7 @@ Archivy uses [Elasticsearch](https://www.elastic.co/) to index and allow users t
 
 Elasticsearch requires configuration to have higher quality search results. You can check out the top-notch config archivy already uses by default [here](https://github.com/archivy/archivy/blob/master/archivy/config.py).
 
-Check out the [helper methods](reference/search.md) archivy exposes for ES.
+Check out the [helper methods](search.md) archivy exposes for ES.
 
 ## Daemon
 
@@ -63,7 +63,7 @@ In our roadmap we plan to extend our permission framework to have a multi-user s
 
 One of the core features of archivy is being able to save webpages locally. The way this works is the conversion of the html of the page you specify to a simple, markdown file.
 
-We might want to extend this to also be able to save PDF, EPUB and other formats. You can find the reference for this part [here](reference/models.md).
+We might want to extend this to also be able to save PDF, EPUB and other formats. You can find the reference for this part [here](models.md).
 
 Further down the road, it'd be nice to add background processing and not only download the webpage, but also save the essential assets it loads for a more complete process. This feature of preserving web content aligns with the mission against [link rot](https://en.wikipedia.org/wiki/Link_rot) [^1].
 
