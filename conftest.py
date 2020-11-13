@@ -100,7 +100,7 @@ def bookmark_fixture(test_app, mocked_responses):
     """)
 
     datapoints = {
-        "type": "bookmarks", "title": "Test Bookmark",
+        "type": "bookmark", "title": "Test Bookmark",
         "desc": "",
         "tags": ["testing", "archivy"], "path": "",
         "url": "https://example.com/"
