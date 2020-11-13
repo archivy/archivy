@@ -155,6 +155,24 @@ body form {
 #pfp {
 	margin: 15px;
 }
+
+#right-pane {
+	width: 100%;
+	margin: 0px;
+}
+
+.script-output {
+	border: 3px;
+	border-style: dashed;
+	display: block;
+	width: fit-content;
+	min-width: 95%;
+	unicode-bidi: embed;
+	font-family: monospace;
+	white-space: pre;
+	margin-bottom: 1em;
+	padding: 7px;
+}
 @media only screen and (max-width: 500px) {
   .content {
     width: 90%;

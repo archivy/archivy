@@ -2,13 +2,16 @@ import os
 import shutil
 import tempfile
 
+import click
 import pytest
 import responses
 
-from archivy import app
+from archivy import app, cli
+from archivy.click_web import create_click_web_app, _flask_app
 from archivy.helpers import get_db
 from archivy.models import DataObj, User
 
+_app = None
 
 @pytest.fixture
 def test_app():
@@ -18,20 +21,23 @@ def test_app():
     directory, and then delete them.
     """
     # create a temporary file to isolate the database for each test
+    global _app
+    if _app is None:
+        _app = create_click_web_app(cli, cli.cli, app) 
     app_dir = tempfile.mkdtemp()
-    app.config['APP_PATH'] = app_dir
+    _app.config['APP_PATH'] = app_dir
     data_dir = os.path.join(app_dir, "data")
     os.mkdir(data_dir)
 
-    app.config['TESTING'] = True
-    app.config["WTF_CSRF_ENABLED"] = False
+    _app.config['TESTING'] = True
+    _app.config["WTF_CSRF_ENABLED"] = False
     # This setups a TinyDB instance, using the `app_dir` temporary
     # directory defined above
     # Required so that `flask.current_app` can be called in data.py and
     # models.py
     # See https://flask.palletsprojects.com/en/1.1.x/appcontext/ for more
     # information.
-    with app.app_context():
+    with _app.app_context():
         _ = get_db()
         user = {
             "username": "halcyon",
@@ -39,7 +45,7 @@ def test_app():
         }
 
         User(**user).insert()
-        yield app
+        yield _app
 
     # close and remove the temporary database
     shutil.rmtree(app_dir)
@@ -148,3 +154,13 @@ def pocket_fixture(test_app, mocked_responses):
     }
     db.insert(pocket_key)
     return pocket_key
+
+@pytest.fixture()
+def click_cli():
+    yield cli.cli
+
+@pytest.fixture()
+def ctx(click_cli):
+    with click.Context(click_cli, info_name=click_cli, parent=None) as ctx:
+        yield ctx
+
