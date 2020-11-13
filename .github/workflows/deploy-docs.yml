@@ -15,10 +15,10 @@ jobs:
         with:
           path: main
       - name: Set up Python 3.7 and Pandoc
-        uses: actions/setup-python@v1
+      - uses: actions/setup-python@v1
         with:
           python-verion: 3.7
-        uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v1
       - name: Install doc deps
         run: >-
           python -m pip install -r main/docs/requirements.txt
