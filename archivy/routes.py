@@ -11,7 +11,7 @@ from flask_login import login_user, login_required, current_user, logout_user
 
 from archivy.models import DataObj, User
 from archivy import data, app, forms
-from archivy.extensions import get_db
+from archivy.helpers import get_db
 from archivy.config import Config
 
 

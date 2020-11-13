@@ -43,5 +43,3 @@ These credentials will be printed to the log when you launch like this:
 Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
 
 You can then use archivy to create notes, bookmarks and then organize and store information.
-
-See the [official docs](https://archivy.github.io) for information on other install 

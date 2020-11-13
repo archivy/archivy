@@ -8,7 +8,7 @@ from flask_login import LoginManager
 from secrets import token_urlsafe
 from tinydb import Query
 
-from archivy import extensions
+from archivy import helpers
 from archivy.models import User
 from archivy.api import api_bp
 from archivy.config import Config
@@ -30,7 +30,7 @@ Path(DIRNAME).mkdir(parents=True, exist_ok=True)
 
 if app.config["ELASTICSEARCH_ENABLED"]:
     with app.app_context():
-        es = extensions.get_elastic_client()
+        es = helpers.get_elastic_client()
         try:
             es.indices.create(
                 index=app.config["INDEX_NAME"],
@@ -48,7 +48,7 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 @login_manager.user_loader
 def load_user(user_id):
-    db = extensions.get_db()
+    db = helpers.get_db()
     res = db.get(doc_id=int(user_id))
     if res and res["type"] == "user":
         return User.from_db(res)
@@ -59,7 +59,7 @@ app.jinja_options["extensions"].append("jinja2.ext.do")
 
 # create admin user if it does not exist
 with app.app_context():
-    db = extensions.get_db()
+    db = helpers.get_db()
     user_query = Query()
     # noqa here because tinydb requires us to explicitly specify is_admin == True
     if not db.search((user_query.type == "user") & (user_query.is_admin == True)): # noqa:

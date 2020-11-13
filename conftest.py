@@ -6,7 +6,7 @@ import pytest
 import responses
 
 from archivy import app
-from archivy.extensions import get_db
+from archivy.helpers import get_db
 from archivy.models import DataObj, User
 
 
