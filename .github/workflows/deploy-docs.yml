@@ -20,7 +20,7 @@ jobs:
           python-verion: 3.7
       - name: Install deps
         run: >-
-          python -m pip install main/docs/requirements.txt
+          python -m pip install -r main/docs/requirements.txt
       - name: Clone archivy docs website
         uses: actions/checkout@v2
         with:
