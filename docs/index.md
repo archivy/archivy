@@ -9,14 +9,13 @@ Archivy is a self-hosted knowledge repository that allows you to safely preserve
 
 Features:
 
+- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- Login module that allows you to host the service on a server
 - Plugin system to allow people to publish and write extensions to archivy
 - CLI that provides a nice backend interface to the app
-- Login module that allows you to host the service on a server
-- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
 - Extensible search with Elasticsearch and its Query DSL
-- Allows you to sync up with Pocket to gather bookmarks from there too.
 - Dark Theme
 
 
@@ -44,12 +43,3 @@ These credentials will be printed to the log when you launch like this:
 Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
 
 You can then use archivy to create notes, bookmarks and then organize and store information.
-
-See the [official docs](https://archivy.github.io) for information on other install 
-
-
-## Scripting
-
-You might be interested in extending archivy by for example building scripts that allow you to regularly fetch data or other functionalities. In that case you can use the [api system](https://github.com/Uzay-G/archivy/blob/master/API.md) and soon a [powerful plugin system](https://github.com/Uzay-G/archivy/issues/86).
-
-

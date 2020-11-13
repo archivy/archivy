@@ -2,11 +2,13 @@ site_name: Archivy
 theme:
   name: material
   logo: img/logo-2.png
+  favicon: img/logo-2.png
   features:
     - navigation.tabs
 
 plugins:
   - mkdocstrings
+  - search
 
 
 markdown_extensions:
@@ -14,17 +16,27 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tasklist:
       clickable_checkbox: true
+  - footnotes
 
 nav:
-  - Home: "index.md"
+  - Home: 
+    - "index.md"
+    - What makes Archivy different: "difference.md"
   - API Reference:
+    - Architecture: "reference/architecture.md"
     - Web API: "reference/web_api.md"
     - Models for User and DataObj: "reference/models.md"
+    - Dataobj Filesystem Layer: "reference/filesystem_layer.md"
     - Helpers: "reference/helpers.md"
   - Getting Started:
       - Installing Archivy: "install.md"
+      - Installing with Docker: "docker.md"
       - Usage: "usage.md"
-      - Search: "search.md"
+      - Search: "setup-search.md"
+      - Config: "config.md"
       - What's Next: "whats_next.md"
   - Plugins:
-      - "plugins.md"
+      - Index: "plugins.md"
+
+repo_url: https://github.com/archivy/archivy
+repo_name: archivy
