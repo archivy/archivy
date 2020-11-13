@@ -3,6 +3,7 @@ import appdirs
 
 
 class Config(object):
+    """Configuration object for the application"""
     ELASTICSEARCH_ENABLED = int(os.environ.get("ELASTICSEARCH_ENABLED") or 0)
     ELASTICSEARCH_URL = os.environ.get(
         "ELASTICSEARCH_URL") or "http://localhost:9200"
