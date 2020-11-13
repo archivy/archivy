@@ -1,0 +1,31 @@
+name: Deploy Docs to archivy.github.io
+on:
+  - push:
+      branches:
+        - master
+
+
+jobs:
+  deploy:
+    name: Deploy website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: main
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          - python-verion: 3.7
+      - name: Install deps
+        run: >-
+          python -m pip install main/docs/requirements.txt
+      - name: Clone archivy docs website
+        uses: actions/checkout@v2
+        with:
+          repository: archivy/archivy.github.io
+          ssh-key: ${{ secrets.DOCS_ACCESS_KEY }}
+          path: docs-website
+      - name: Deploy docs
+        run: >-
+          cd docs-website && mkdocs deploy --config-file ../main/mkdocs.yml --remote-branch master
