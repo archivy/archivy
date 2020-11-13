@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          - python-verion: 3.7
+          python-verion: 3.7
       - name: Install deps
         run: >-
           python -m pip install main/docs/requirements.txt
