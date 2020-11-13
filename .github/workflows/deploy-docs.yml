@@ -1,9 +1,9 @@
 name: Deploy Docs to archivy.github.io
 on:
-  - push:
-      branches:
-        - master
-        - documentation
+  push:
+    branches:
+      - master
+      - documentation
 
 
 jobs:
