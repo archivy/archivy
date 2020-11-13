@@ -37,7 +37,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     Gets all dataobjs.
 
     Parameters:
-    
+
     - **collections** - filter dataobj by type, eg. bookmark / note
     - **path** - filter by path
     - **structured: if set to True, will return a Directory object, otherwise

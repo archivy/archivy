@@ -66,7 +66,8 @@ class DataObj:
     For bookmarks,
     Run `process_bookmark_url()` once you've created it.
 
-    For both types, run `insert()` if you want to create a new file in the db with their contents.
+    For both types, run `insert()` if you want to create a new file in
+    the db with their contents.
     """
 
     __searchable__ = ["title", "content", "desc", "tags"]
@@ -221,7 +222,8 @@ class DataObj:
 @attrs(kw_only=True)
 class User(UserMixin):
     """
-    Model we use for User that inherits from [flask_login.UserMixin](https://flask-login.readthedocs.io/en/latest/#flask_login.UserMixin)
+    Model we use for User that inherits from flask login's
+    [`UserMixin`](https://flask-login.readthedocs.io/en/latest/#flask_login.UserMixin)
 
     Attributes:
 

@@ -16,7 +16,8 @@ api_bp = Blueprint('api', __name__)
 @api_bp.route("/login", methods=["POST"])
 def login():
     """
-    Logs in the API client using [HTTP Basic Auth](https://en.wikipedia.org/wiki/Basic_access_authentication).
+    Logs in the API client using
+    [HTTP Basic Auth](https://en.wikipedia.org/wiki/Basic_access_authentication).
     Pass in the username and password of your account.
     """
     db = get_db()
@@ -38,7 +39,7 @@ def create_bookmark():
     Creates a new bookmark
 
     **Parameters:**
-    
+
     All parameters are sent through the JSON body.
     - **url** (required)
     - **desc**
@@ -68,7 +69,7 @@ def create_note():
     Creates a new note.
 
     **Parameters:**
-    
+
     All parameters are sent through the JSON body.
     - **title** (required)
     - **content** (required)
@@ -140,7 +141,7 @@ def local_edit(dataobj_id):
 def create_folder():
     """
     Creates new directory
-    
+
     Parameter in JSON body:
     - **path** (required) - path of newdir
     """
