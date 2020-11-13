@@ -5,6 +5,7 @@ Plugins are a newly introduced method to add extensions to the archivy cli and w
 
 To help you understand the way the plugin system works, we're going to build our own plugin that allows users to sync content from `pocket`. We'll even deploy it to Pypi so that other people can install it.
 
+We also recommend you to read [the overview of the reference](reference/architecture.md) so you can better use the wrapper methods archivy exposes.
 
 Prerequisites: A python and pip installation with archivy.
 
@@ -146,3 +147,8 @@ And you can finally upload your code! The username you should enter is `__token_
 python3 -m twine upload dist/*
 ```
 
+## You're done!
+
+Now that you've finished your package, you can share it if you'd like, publish it on a public git repository so other people can collaborate, and you can add it to the [`awesome_archivy` github repo](https://github.com/archivy/awesome-archivy) which is an official list of plugins built around Archivy.
+
+We'd also love to hear about it on our [discord server](https://discord.gg/uQsqyxB)!

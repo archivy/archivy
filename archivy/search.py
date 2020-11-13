@@ -4,6 +4,14 @@ from archivy.helpers import get_elastic_client
 
 
 def add_to_index(index, model):
+    """
+    Adds dataobj to given index. If object of given id already exists, it will be updated.
+
+    Params:
+
+    - **index** - String of the ES Index. Archivy uses `dataobj` by default.
+    - **model** - Instance of `archivy.models.Dataobj`, the object you want to index.
+    """
     es = get_elastic_client()
     if not es:
         return
@@ -14,6 +22,7 @@ def add_to_index(index, model):
 
 
 def remove_from_index(index, dataobj_id):
+    """Removes object of given id"""
     es = get_elastic_client()
     if not es:
         return
@@ -21,6 +30,7 @@ def remove_from_index(index, dataobj_id):
 
 
 def query_index(index, query):
+    """Returns search results for your given query"""
     es = get_elastic_client()
     if not es:
         return []
