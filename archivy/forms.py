@@ -20,16 +20,6 @@ class NewNoteForm(FlaskForm):
     submit = SubmitField("Save")
 
 
-class PocketForm(FlaskForm):
-    api_key = StringField("Pocket API key")
-    submit = SubmitField("Save")
-
-    def validate_api_key(self, api_key):
-        key_regex = r"\d{5}-\w{24}"
-        if not re.match(key_regex, api_key.data):
-            raise ValidationError("Invalid API key.")
-
-
 class DeleteDataForm(FlaskForm):
     submit = SubmitField("Delete")
 
