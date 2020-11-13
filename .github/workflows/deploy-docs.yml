@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: archivy/archivy.github.io
-          ssh-key: ${{ secrets.DOCS_ACCESS_KEY }}
+          ssh-key: ${{ secrets.ARCHIVY_ACCESS_KEY }}
           path: docs-website
       - name: Deploy docs
         run: >-
