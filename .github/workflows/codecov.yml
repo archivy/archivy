@@ -1,4 +1,4 @@
-name: Automated code coverage
+name: Testing and automated code coverage
 
 on:
   push:
@@ -29,6 +29,8 @@ jobs:
     - name: Generate coverage report
       run: |
         pip install -r requirements-tests.txt
+        pip install .
+        pip install tests/test_plugin
         pytest --cov=./ --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1

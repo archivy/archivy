@@ -1,0 +1,54 @@
+{% macro add_field_input(field) -%}
+    {% if field.type == 'option' %}
+        {{ add_option_field(field) }}
+    {% else %}
+        {% if field.type == "checkbox" and field.checked %}
+            {#
+            Hack to work with flags that are default on.
+            As checkbox is only sent down when checked we duplicate
+            hidden field that is always sent but with empty value.
+            https://stackoverflow.com/a/1992745/1306577 #}
+            <input name="{{ field.name }}" type='hidden' value='{{ field.off_flag }}'>
+        {% endif %}
+        <input name="{{ field.name }}"
+               id="{{ field.name }}"
+               type="{{ field.type }}"
+                {% if field.step %} step="{{ field.step }}"{% endif %}
+                {% if field.accept %} accept="{{ field.accept }}"{% endif %}
+               value="{{ field.value|default('', true) }}"
+                {{ field.checked }}
+                {{ 'required' if field.required else '' }}
+
+
+        >
+    {% endif %}
+
+{%- endmacro %}
+
+{% macro add_option_field(field) -%}
+    <select name="{{ field.name }}">
+        {% for option in field.options %}
+            <option value="{{ option }}"
+                    {{ 'selected' if field.default == option else '' }}>
+                {{ option }}
+            </option>
+        {% endfor %}
+    </select>
+{%- endmacro %}
+
+
+{% macro add_variadic_field_input(field) -%}
+    <label for="{{ field.name }}">
+        {{ field.human_readable_name|capitalize }}
+    </label>
+    {% if field.type == 'option' or field.type == "checkbox" %}
+        VARIARDIC OPTIONS OR CHECKBOXES ARE NOT SUPPORTED
+    {% else %}
+        <textarea name="{{ field.name }}" id="{{ field.name }}" cols="40" rows="5"></textarea>
+    {% endif %}
+    <div class="help" style="display: inline-block">
+        (Each line will be passed as separate argument)
+        {{ field.desc|default('', true)|capitalize }}
+    </div>
+
+{%- endmacro %}
