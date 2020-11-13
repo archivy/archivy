@@ -29,4 +29,4 @@ jobs:
           path: docs-website
       - name: Deploy docs
         run: >-
-          cd docs-website && mkdocs deploy --config-file ../main/mkdocs.yml --remote-branch master
+          cd docs-website && mkdocs gh-deploy --config-file ../main/mkdocs.yml --remote-branch main
