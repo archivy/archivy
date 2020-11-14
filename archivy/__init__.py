@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 
 import elasticsearch
@@ -21,8 +22,11 @@ app.logger.setLevel(logging.INFO)
 try:
     pypandoc.get_pandoc_version()
 except OSError:
-    app.logger.info("Installing pandoc")
-    pypandoc.download_pandoc()
+    app.logger.error("""
+                    Pandoc installation not found. 
+                    Please install it at https://pandoc.org/installing.html
+                    """)
+    sys.exit(1)
 
 # create dir that will hold data if it doesn't already exist
 DIRNAME = app.config["APP_PATH"] + "/data/"
