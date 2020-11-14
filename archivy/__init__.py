@@ -22,10 +22,8 @@ app.logger.setLevel(logging.INFO)
 try:
     pypandoc.get_pandoc_version()
 except OSError:
-    app.logger.error("""
-                    Pandoc installation not found. 
-                    Please install it at https://pandoc.org/installing.html
-                    """)
+    app.logger.error("Pandoc installation not found.\n"
+                     + "Please install it at https://pandoc.org/installing.html")
     sys.exit(1)
 
 # create dir that will hold data if it doesn't already exist

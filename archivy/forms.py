@@ -1,7 +1,6 @@
-import re
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, PasswordField
-from wtforms.validators import DataRequired, URL, ValidationError
+from wtforms.validators import DataRequired, URL
 
 
 class NewBookmarkForm(FlaskForm):
