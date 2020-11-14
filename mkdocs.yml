@@ -5,6 +5,8 @@ theme:
   favicon: img/logo-2.png
   features:
     - navigation.tabs
+  custom_dir: docs/overrides
+
 
 plugins:
   - mkdocstrings
