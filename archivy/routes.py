@@ -1,10 +1,8 @@
 import os
-from datetime import datetime
 
-import requests
 import frontmatter
 import pypandoc
-from tinydb import Query, operations
+from tinydb import Query
 from flask import render_template, flash, redirect, request, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
