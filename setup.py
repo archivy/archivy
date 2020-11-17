@@ -10,7 +10,7 @@ with open('requirements.txt', encoding='utf-8') as f:
 
 setuptools.setup(
     name="archivy",
-    version="0.5.0",
+    version="0.8.2",
     author="Uzay-G",
     author_email="uzgirit@gmail.com",
     description=(
@@ -27,7 +27,7 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "archivy = archivy.run:main"
+            "archivy = archivy.cli:cli",
         ]
     },
     include_package_data=True,

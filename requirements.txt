@@ -24,7 +24,7 @@ appdirs == 1.4.4
 attrs == 20.2.0
 
 # archivy/models.py: 11
-beautifulsoup4 == 4.6.0
+beautifulsoup4 >= 4.8.2
 
 
 # archivy/__init__.py: 6
@@ -48,7 +48,7 @@ python_frontmatter == 0.5.0
 
 # archivy/models.py: 7
 # archivy/routes.py: 4
-requests == 2.20.0
+requests == 2.24.0
 
 # archivy/extensions.py: 7
 # archivy/routes.py: 5
@@ -64,3 +64,6 @@ watchdog == 0.10.3
 # archivy/models.py: 13
 # archivy/routes.py: 10
 flask-login == 0.5.0
+
+click_plugins
+

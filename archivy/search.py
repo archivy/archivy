@@ -1,9 +1,17 @@
 from pypandoc import convert_text
 
-from archivy.extensions import get_elastic_client
+from archivy.helpers import get_elastic_client
 
 
 def add_to_index(index, model):
+    """
+    Adds dataobj to given index. If object of given id already exists, it will be updated.
+
+    Params:
+
+    - **index** - String of the ES Index. Archivy uses `dataobj` by default.
+    - **model** - Instance of `archivy.models.Dataobj`, the object you want to index.
+    """
     es = get_elastic_client()
     if not es:
         return
@@ -14,6 +22,7 @@ def add_to_index(index, model):
 
 
 def remove_from_index(index, dataobj_id):
+    """Removes object of given id"""
     es = get_elastic_client()
     if not es:
         return
@@ -21,6 +30,7 @@ def remove_from_index(index, dataobj_id):
 
 
 def query_index(index, query):
+    """Returns search results for your given query"""
     es = get_elastic_client()
     if not es:
         return []
@@ -47,22 +57,12 @@ def query_index(index, query):
         }
     )
 
-    hits = []
+    text = ""
     for hit in search["hits"]["hits"]:
-        formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"], "highlight": []}
+        text += f"<li>[{hit['_source']['title']}](/dataobj/{hit['_id']})<br><br>    "
         if "highlight" in hit:
-            # FIXME: find a way to make this less hacky and
-            # yet still conserve logical separations
-            # hack to make pandoc faster by converting highlights in one go
-            # join highlights into string with symbolic separator
-            SEPARATOR = "SEPARATOR.m.m.m.m.m.m.m.m.m.SEPARATOR"
-            concatenated_highlight = SEPARATOR.join(
-                    [highlight for highlight in hit["highlight"]["content"]])
-            # re split highlights
-            formatted_hit["highlight"] = convert_text(concatenated_highlight,
-                                                      "html",
-                                                      format="md").split(SEPARATOR)
+            for highlight in hit["highlight"]["content"]:
+                text += f"{highlight}"
+        text += "</li>"
 
-        hits.append(formatted_hit)
-
-    return hits
+    return convert_text(text, "html", format="md")

@@ -11,9 +11,6 @@
 <a href="/bookmarks/new">New Bookmark</a>
 <a href="/notes/new">New Note</a>
 
-<p>
-    Sync with <a href="/pocket">Pocket</a>
-</p>
 {% set path = [] %}
 {% set i = namespace(value=0) %}
 {{ draw_dir(dataobjs, 0, 1) }}
@@ -50,11 +47,12 @@
 				});
 				if (searchQuery.ok && query == input.value) {	
 					let data = await searchQuery.json(), i = 0;
-					document.getElementById("searchHits").innerHTML = "";
+					document.getElementById("searchHits").innerHTML = data;
+					/*
 					data.forEach(function(hit)
 					{
 						appendHit(hit, input.value);
-					})
+					})*/
 				}
 			}
 		});

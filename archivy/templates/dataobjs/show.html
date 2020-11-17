@@ -4,9 +4,12 @@
 	<h2>{{ dataobj['title'] }}</h2>
 	<p>You can edit this file at <a href="file://{{ dataobj['fullpath'] }}">{{dataobj['fullpath']}}</a></p>
     {{ ", ".join(dataobj['tags']) }}
+	<br>
+	{{ dataobj["desc"] }}
     <br>
+	
     {{ dataobj['date'] }}
-	{% if dataobj['type'] == 'bookmarks' or dataobj['type'] == 'pocket_bookmarks' %}
+	{% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
 		<a href="{{ dataobj['url'] }}" rel="noopener">
 			Link
 		</a>
@@ -25,7 +28,7 @@
 
 		async function open_data(id, btn)
 		{
-			let res = await fetch(`${SCRIPT_ROOT}/api/dataobj/local_edit/${id}`, {
+			let res = await fetch(`${SCRIPT_ROOT}/dataobj/local_edit/${id}`, {
 						method: "GET"
 					});
 			if (res.ok)

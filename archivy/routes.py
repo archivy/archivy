@@ -1,30 +1,33 @@
 import os
-from datetime import datetime
 
-import requests
 import frontmatter
 import pypandoc
-from tinydb import Query, operations
-from flask import render_template, flash, redirect, request, jsonify, url_for
+from tinydb import Query
+from flask import render_template, flash, redirect, request, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 
 from archivy.models import DataObj, User
-from archivy.search import query_index
 from archivy import data, app, forms
-from archivy.extensions import get_db
+from archivy.helpers import get_db
 from archivy.config import Config
 
 
 @app.context_processor
 def pass_defaults():
     dataobjs = data.get_items()
+    SEP = os.path.sep
+    # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
+    if SEP == "\\":
+        SEP += "\\"
     return dict(dataobjs=dataobjs, SEP=os.path.sep)
 
 
 @app.before_request
 def check_perms():
-    allowed_path = request.path == "/login" or request.path.startswith("/static")
+    allowed_path = (request.path.startswith("/login") or
+                    request.path.startswith("/static") or
+                    request.path.startswith("/api/login"))
     if not current_user.is_authenticated and not allowed_path:
         return redirect(url_for("login", next=request.path))
     return
@@ -52,7 +55,7 @@ def new_bookmark():
             desc=form.desc.data,
             tags=form.tags.data.split(","),
             path=path,
-            type="bookmarks")
+            type="bookmark")
         bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
         if bookmark_id:
@@ -122,33 +125,6 @@ def delete_data(dataobj_id):
     return redirect("/")
 
 
-@app.route("/folders/new", methods=["POST"])
-def create_folder():
-    directory = request.json.get("paths")
-    try:
-        sanitized_name = data.create_dir(directory)
-    except FileExistsError:
-        return "Directory already exists", 401
-    return sanitized_name, 200
-
-
-@app.route("/folders/delete", methods=["DELETE"])
-def delete_folder():
-    directory = request.json.get("name")
-    if directory == "":
-        return "Cannot delete root dir", 401
-    if data.delete_dir(directory):
-        return "Successfully deleted", 200
-    return "Not found", 404
-
-
-@app.route("/search", methods=["GET"])
-def search_elastic():
-    query = request.args.get("query")
-    search_results = query_index(Config.INDEX_NAME, query)
-    return jsonify(search_results)
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = forms.UserForm()
@@ -194,104 +170,3 @@ def edit_user():
         return redirect("/")
     form.username.data = current_user.username
     return render_template("users/form.html", title="Edit Profile", form=form)
-
-
-@app.route("/pocket", methods=["POST", "GET"])
-def pocket_settings():
-    db = get_db()
-    form = forms.PocketForm()
-    pocket = Query()
-    if form.validate_on_submit():
-        request_data = {
-            "consumer_key": form.api_key.data,
-            "redirect_uri": "http://localhost:5000/parse_pocket?new=1",
-        }
-        resp = requests.post(
-            "https://getpocket.com/v3/oauth/request",
-            json=request_data,
-            headers={
-                "X-Accept": "application/json",
-                "Content-Type": "application/json"})
-        new_data = {
-            "type": "pocket_key",
-            "consumer_key": form.api_key.data,
-            "code": resp.json()["code"]}
-        if db.search(pocket.type == "pocket_key"):
-            db.update(new_data, pocket.type == "pocket_key")
-        else:
-            db.insert(new_data)
-        flash("Settings Saved")
-        return redirect(
-            # FIXME: the redirect is forced to localhost:5000
-            # but the server is started on 0.0.0.0
-            # port 5000 might be on use by another resource
-            # so add a check here
-            f"https://getpocket.com/auth/authorize?"
-            f"request_token={resp.json()['code']}"
-            f"&redirect_uri=http://localhost:5000/"
-            f"parse_pocket?new=1")
-
-    return render_template(
-        "pocket/new.html",
-        title="Pocket Settings",
-        form=form)
-
-
-@app.route("/parse_pocket")
-def parse_pocket():
-    db = get_db()
-    pocket = db.search(Query().type == "pocket_key")[0]
-    if request.args.get("new") == "1":
-        auth_data = {
-            "consumer_key": pocket["consumer_key"],
-            "code": pocket["code"]}
-        resp = requests.post(
-            "https://getpocket.com/v3/oauth/authorize",
-            json=auth_data,
-            headers={
-                "X-Accept": "application/json",
-                "Content-Type": "application/json"})
-        db.update(
-            operations.set(
-                "access_token",
-                resp.json()["access_token"]),
-            Query().type == "pocket_key")
-        flash(f"{resp.json()['username']} Signed in!")
-
-    # update pocket dictionary
-    pocket = db.search(Query().type == "pocket_key")[0]
-
-    pocket_data = {
-        "consumer_key": pocket["consumer_key"],
-        "access_token": pocket["access_token"],
-        "sort": "newest"}
-
-    # get date of latest call to pocket api
-    since = datetime(1970, 1, 1)
-    for post in data.get_items(
-            collections=["pocket_bookmark"],
-            structured=False):
-        date = datetime.strptime(post["date"].replace("-", "/"), "%x")
-        since = max(date, since)
-
-    since = datetime.timestamp(since)
-    if since:
-        pocket_data["since"] = since
-    bookmarks = requests.post(
-        "https://getpocket.com/v3/get",
-        json=pocket_data).json()
-
-    # api spec: https://getpocket.com/developer/docs/v3/retrieve
-    for pocket_bookmark in bookmarks["list"].values():
-        if int(pocket_bookmark["status"]) != 2:
-            desc = pocket_bookmark["excerpt"] if int(
-                pocket_bookmark["is_article"]) else None
-            bookmark = DataObj(
-                desc=desc,
-                url=pocket_bookmark["resolved_url"],
-                date=datetime.now(),
-                type="pocket_bookmarks")
-            bookmark.process_bookmark_url()
-            bookmark.insert()
-
-    return redirect("/")
