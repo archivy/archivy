@@ -30,6 +30,7 @@ Upcoming:
 
 ## Quickstart
 
+Begin by installing [Pandoc](https://pandoc.org), the document converter archivy uses.
 Install with `pip install archivy` and then do `archivy run` to serve the app. You can open it at https://localhost:5000.
 
 The first time you run archivy, an admin user will automatically be created with a random password.
