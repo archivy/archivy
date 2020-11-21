@@ -1,16 +1,18 @@
 
 ## From pip
 
-You can easily install archivy with `pip`.
+You can easily install archivy with `pip`. (pip  is the default package installer for Python, you can use pip to install many packages and apps, see this [link](https://pypi.org/project/pip/) for more information if needed)
 
 
-- Make sure your system has Python, pip and [Pandoc](https://pandoc.org) installed. Pandoc allows us to convert between different formats and is an awesome tool you can download [here](https://pandoc.org/installing.html).
+- Make sure your system has Python, pip and [Pandoc](https://pandoc.org) installed. Pandoc allows us to convert between different formats and is an awesome tool. 
+  - You can download Pandoc [here](https://pandoc.org/installing.html)
+  - The Python programming language can be download from [here](https://www.python.org/downloads/).
 - Install the python package with `pip install archivy`
 - There you go! You should be able to start the app by running `archivy run` in your terminal.
 
 ## With docker
 
-You can also use archivy with docker.
+You can also use archivy with Docker. 
 
 See [Installing with docker](docker.md) for instructions on this.
 
