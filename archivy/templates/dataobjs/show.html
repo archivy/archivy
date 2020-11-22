@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+	<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
 	<h2>{{ dataobj['title'] }}</h2>
 	<p>You can edit this file at <a href="file://{{ dataobj['fullpath'] }}">{{dataobj['fullpath']}}</a></p>
     {{ ", ".join(dataobj['tags']) }}
@@ -14,16 +16,17 @@
 			Link
 		</a>
 	{% endif %}
-    <p>
-        {{ content | safe }}
-    </p>
+	<div id="content-cont">
+		<div id="content">
+			{{ content | safe }}
+		</div>
+	</div>
 	<form action="/dataobj/delete/{{ dataobj['id'] }}" method="delete" novalidate>
         {{ form.hidden_tag() }}
         <p>{{ form.submit() }}</p>
 		<input type="button" value="Edit locally" onclick="open_data({{ dataobj['id'] }}, this)">
+		<input type="button" value="Edit through the web editor" onclick="open_editor(this)">
     </form>
-			</input>
-
 	<script>
 
 		async function open_data(id, btn)
@@ -40,6 +43,31 @@
 				}, 2000);
 
 			}
+		}
+			
+
+		/*
+		function load_ed_assets()
+		{
+			let ed_style = document.createElement("link"), ed_js = document.createElement("script");
+			ed_style.rel = "stylesheet", ed_style.href = "https://unpkg.com/easymde/dist/easymde.min.css";
+			ed_js.src = "https://unpkg.com/easymde/dist/easymde.min.js", ed_js.type = "text/javascript";
+			document.head.appendChild(ed_style)
+			document.body.appendChild(ed_js)
+		}
+		*/
+		function open_editor(btn)
+		{
+			document.getElementById("content").remove();
+			let container = document.getElementById("content-cont");
+			container.appendChild(document.createElement("textarea"))
+			let editor = new EasyMDE({
+				autofocus: true,
+				autosave: {enabled: true}
+			});
+			editor.value(`{{ md_content }}`);
+			document.querySelector(".side-by-side").click();
+			btn.style.display = "none";
 		}
 	</script>
 {% endblock %}
