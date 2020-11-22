@@ -50,10 +50,11 @@ def new_bookmark():
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
+        tags = form.tags.data.split(",") if form.tags.data != "" else []
         bookmark = DataObj(
             url=form.url.data,
             desc=form.desc.data,
-            tags=form.tags.data.split(","),
+            tags=tags,
             path=path,
             type="bookmark")
         bookmark.process_bookmark_url()
@@ -73,10 +74,11 @@ def new_note():
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
+        tags = form.tags.data.split(",") if form.tags.data != "" else []
         note = DataObj(
             title=form.title.data,
             desc=form.desc.data,
-            tags=form.tags.data.split(","),
+            tags=tags,
             path=path,
             type="note")
         note_id = note.insert()
