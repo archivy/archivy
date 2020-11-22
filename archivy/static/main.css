@@ -152,6 +152,11 @@ body form {
 	background: #ed6663;
 }
 
+.dark-theme img#pfp {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+}
+
 #pfp {
 	margin: 15px;
 }
