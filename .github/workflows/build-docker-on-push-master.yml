@@ -22,11 +22,11 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=timestamp::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-          echo ::set-env name=image_tag::source
-          echo ::set-env name=docker_username::uzayg
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
+          echo "${GITHUB_SHA}" | cut -c1-8 > SHORT_SHA
+          echo "source" > IMAGE_TAG
+          echo "uzayg" > DOCKER_USERNAME
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Set up Docker Buildx
         if: success()
@@ -40,7 +40,7 @@ jobs:
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${{ env.docker_username }}" --password-stdin docker.io
+          echo "${DOCKER_PASSWORD}" | docker login --username "$( cat DOCKER_USERNAME )" --password-stdin docker.io
 
       # Build and push images with the tags:
       #   untested-source
@@ -49,10 +49,10 @@ jobs:
         if: success()
         run: |
           docker build \
-            --output type=image,name=${{ env.docker_image }},push=true \
-            --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
-            --tag "${{ env.docker_image }}:untested-${{ env.image_tag }}" \
-            --tag "${{ env.docker_image }}:untested-${{ env.hash }}" \
+            --output type=image,name="$( cat DOCKER_IMAGE )",push=true \
+            --build-arg BUILD_DATE="$( cat TIMESTAMP )" --build-arg VCS_REF="$( cat SHORT_SHA )" \
+            --tag "$( cat DOCKER_IMAGE ):untested-$( cat IMAGE_TAG )" \
+            --tag "$( cat DOCKER_IMAGE ):untested-$( cat SHORT_SHA )" \
             --file ./Dockerfile.source .
 
   ContainerTestAndScan:
@@ -68,8 +68,8 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=image_tag::source
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          echo "source" > IMAGE_TAG
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Lint Dockerfile with Hadolint
         if: success()
@@ -80,18 +80,18 @@ jobs:
       # This is required by container-structure-test. Without this step, it fails to pull the image on its own 
       - name: Run image
         if: success()
-        run: docker run --rm uzayg/archivy:untested-${{ env.image_tag }} sleep 0.1
+        run: docker run --rm uzayg/archivy:untested-"$( cat IMAGE_TAG )" sleep 0.1
 
       - name: Test image with container-structure-test
         uses: plexsystems/container-structure-test-action@v0.2.0
         with:
-          image: '${{ env.docker_image }}:untested-${{ env.image_tag }}'
-          config: './container-structure-test.yaml'
+          image: '$( cat DOCKER_IMAGE ):untested-$( cat IMAGE_TAG )'
+          config: './container-structure-test-source.yaml'
 
       - name: Scan for OS vulnerabilities in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: '${{ env.docker_image }}:untested-${{ env.image_tag }}'
+          image-ref: '$( cat DOCKER_IMAGE ):untested-$( cat IMAGE_TAG )'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -100,7 +100,7 @@ jobs:
       - name: Scan image and code for vulnerabilties using Anchore
         uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: '${{ env.docker_image }}:untested-${{ env.image_tag }}'
+          image-reference: '$( cat DOCKER_IMAGE ):untested-$( cat IMAGE_TAG )'
           dockerfile-path: './Dockerfile.source'
           fail-build: true
           include-app-packages: true
@@ -118,11 +118,11 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=timestamp::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-          echo ::set-env name=image_tag::source
-          echo ::set-env name=docker_username::uzayg
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
+          echo "${GITHUB_SHA}" | cut -c1-8 > SHORT_SHA
+          echo "source" > IMAGE_TAG
+          echo "uzayg" > DOCKER_USERNAME
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Set up Docker Buildx
         if: success()
@@ -136,7 +136,7 @@ jobs:
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${{ env.docker_username }}" --password-stdin docker.io
+          echo "${DOCKER_PASSWORD}" | docker login --username "$( cat DOCKER_USERNAME )" --password-stdin docker.io
 
       # Build and push images with the tags
       #   source
@@ -145,10 +145,10 @@ jobs:
         if: success()
         run: |
           docker build \
-            --output type=image,name=${{ env.docker_image }},push=true \
-            --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
-            --tag "${{ env.docker_image }}:${{ env.image_tag }}" \
-            --tag "${{ env.docker_image }}:${{ env.hash }}" \
+            --output type=image,name="$(cat DOCKER_IMAGE)",push=true \
+            --build-arg BUILD_DATE="$( cat TIMESTAMP )" --build-arg VCS_REF="$( cat SHORT_SHA )" \
+            --tag "$( cat DOCKER_IMAGE ):$( cat IMAGE_TAG )" \
+            --tag "$( cat DOCKER_IMAGE ):$( cat SHORT_SHA )" \
             --file ./Dockerfile.source .
 
   deleteUntestedImage:
@@ -159,15 +159,15 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-          echo ::set-env name=image_tag::source
-          echo ::set-env name=docker_username::uzayg
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          echo ${GITHUB_SHA} | cut -c1-8 > SHORT_SHA
+          echo "source" > IMAGE_TAG
+          echo "uzayg" > DOCKER_USERNAME
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Delete 'untested' image
         if: success()
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          docker run --rm lumir/remove-dockerhub-tag --user "${{ env.docker_username }}" --password "${DOCKER_PASSWORD}" \
-          "${{ env.docker_image }}:untested-${{ env.image_tag }}" "${{ env.docker_image }}:untested-${{ env.hash }}"
+          docker run --rm lumir/remove-dockerhub-tag --user "$( cat DOCKER_USERNAME )" --password "${DOCKER_PASSWORD}" \
+          "$( cat DOCKER_IMAGE ):untested-$( cat IMAGE_TAG )" "$( cat DOCKER_IMAGE ):untested-$( cat SHORT_SHA )"

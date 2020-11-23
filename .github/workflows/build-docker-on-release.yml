@@ -1,8 +1,6 @@
 name: Building, Testing, and Pushing Archivy Container Image On Version Release
 
 on:
-  push:
-    tags: v[0-9]+.[0-9]+.[0-9]+
   release:
     types:
       - published
@@ -20,11 +18,11 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=timestamp::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-          echo ::set-env name=version::${GITHUB_REF/refs\/tags\//}
-          echo ::set-env name=docker_username::uzayg
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
+          echo "${GITHUB_SHA}" | cut -c1-8 > SHORT_SHA
+          echo "${GITHUB_REF/refs\/tags\//}" > VERSION
+          echo "uzayg" > DOCKER_USERNAME
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Set up Docker Buildx
         if: success()
@@ -38,7 +36,7 @@ jobs:
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${{ env.docker_username }}" --password-stdin docker.io
+          echo "${DOCKER_PASSWORD}" | docker login --username "$( cat DOCKER_USERNAME )" --password-stdin docker.io
 
       # Build and push images with the tags:
       #  untested-X.Y.Z  -  Release version
@@ -46,10 +44,10 @@ jobs:
         if: success()
         run: |
           docker build \
-            --output type=image,name=${{ env.docker_image }},push=true --build-arg VERSION=${{ env.version }} \
-            --build-arg BUILD_DATE=${{ env.timestamp }} --build-arg VCS_REF=${{ env.hash }} \
-            --tag "${{ env.docker_image }}:untested-${{ env.version }}" \
-            --tag "${{ env.docker_image }}:untested-${{ env.hash }}" --file ./Dockerfile .
+            --output type=image,name="$( cat DOCKER_IMAGE )",push=true --build-arg VERSION="$( cat VERSION )" \
+            --build-arg BUILD_DATE="$( cat TIMESTAMP )" --build-arg VCS_REF="$( cat SHORT_SHA )" \
+            --tag "$( cat DOCKER_IMAGE ):untested-$( cat VERSION )" \
+            --tag "$( cat DOCKER_IMAGE ):untested-$( cat SHORT_SHA )" --file ./Dockerfile .
 
   ContainerTestAndScan:
     name: Test image with 'untested' tag using Hadolint, container-structure-test, Trivy, and Anchore
@@ -64,8 +62,8 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=version::${GITHUB_REF/refs\/tags\//}
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          echo "${GITHUB_REF/refs\/tags\//}" > VERSION
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Lint Dockerfile
         uses: brpaz/hadolint-action@v1.1.0
@@ -75,18 +73,18 @@ jobs:
       # This is required by container-structure-test. Without this step, it fails to pull the image on its own 
       - name: Run image
         if: success()
-        run: docker run --rm uzayg/archivy:untested-${{ env.version }} sleep 0.1
+        run: docker run --rm uzayg/archivy:untested-"$( cat VERSION )" sleep 0.1
 
       - name: Test image with container-structure-test
         uses: plexsystems/container-structure-test-action@v0.2.0
         with:
-          image: '${{ env.docker_image }}:untested-${{ env.version }}'
+          image: '$( cat DOCKER_IMAGE ):untested-$( cat VERSION )'
           config: './container-structure-test.yaml'
 
       - name: Scan for OS vulnerabilities in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: '${{ env.docker_image }}:untested-${{ env.version }}'
+          image-ref: '$( cat DOCKER_IMAGE ):untested-$( cat VERSION )'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -95,7 +93,7 @@ jobs:
       - name: Scan image and code for vulnerabilties using Anchore
         uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: '${{ env.docker_image }}:untested-${{ env.version }}'
+          image-reference: '$( cat DOCKER_IMAGE ):untested-$( cat VERSION )'
           dockerfile-path: './Dockerfile'
           fail-build: true
           include-app-packages: true
@@ -113,13 +111,13 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=timestamp::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-          echo ::set-env name=version::${GITHUB_REF/refs\/tags\//}
-          echo ::set-env name=major_version::$(echo ${GITHUB_REF/refs\/tags\//} | awk -F'.' '{print $1}')
-          echo ::set-env name=minor_version::$(echo ${GITHUB_REF/refs\/tags\//} | awk -F'.' '{print $2}')
-          echo ::set-env name=docker_username::uzayg
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
+          echo "${GITHUB_SHA}" | cut -c1-8 > SHORT_SHA
+          echo "${GITHUB_REF/refs\/tags\//}" > VERSION
+          echo "${GITHUB_REF/refs\/tags\//}" | awk -F'.' '{print $1}' > MAJOR_VERSION
+          echo "${GITHUB_REF/refs\/tags\//}" | awk -F'.' '{print $2}' > MINOR_VERSION
+          echo "uzayg" > DOCKER_USERNAME
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Set up Docker Buildx
         if: success()
@@ -133,7 +131,7 @@ jobs:
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${{ env.docker_username }}" --password-stdin docker.io
+          echo "${DOCKER_PASSWORD}" | docker login --username "$( cat DOCKER_USERNAME )" --password-stdin docker.io
 
       # Build and push images with the tags
       #   X.Y.Z  - Major.Minor.Patch
@@ -148,14 +146,14 @@ jobs:
         if: success()
         run: |
           docker build \
-            --output type=image,name=${{ env.docker_image }},push=true \
-            --build-arg VERSION=${{ env.version }} --build-arg BUILD_DATE=${{ env.timestamp }} \
-            --build-arg VCS_REF=${{ env.hash }} \
-            --tag "${{ env.docker_image }}:${{ env.version }}" \
-            --tag "${{ env.docker_image }}:${{ env.major_version }}.${{ env.minor_version }}" \
-            --tag "${{ env.docker_image }}:${{ env.hash }}" \
-            --tag "${{ env.docker_image }}:stable" \
-            --tag "${{ env.docker_image }}:latest" \
+            --output type=image,name="$( cat DOCKER_IMAGE )",push=true \
+            --build-arg VERSION="$( cat VERSION )" --build-arg BUILD_DATE="$( cat TIMESTAMP )" \
+            --build-arg VCS_REF="$( cat SHORT_SHA )" \
+            --tag "$( cat DOCKER_IMAGE ):$( cat VERSION )" \
+            --tag "$( cat DOCKER_IMAGE ):$( cat MAJOR_VERSION ).$( cat MINOR_VERSION )" \
+            --tag "$( cat DOCKER_IMAGE ):$( cat SHORT_SHA )" \
+            --tag "$( cat DOCKER_IMAGE ):stable" \
+            --tag "$( cat DOCKER_IMAGE ):latest" \
             --file ./Dockerfile .
 
   deleteUntestedImage:
@@ -166,15 +164,15 @@ jobs:
       - name: Setting variables
         if: success()
         run: |
-          echo ::set-env name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-          echo ::set-env name=version::${GITHUB_REF/refs\/tags\//}
-          echo ::set-env name=docker_username::uzayg
-          echo ::set-env name=docker_image::docker.io/uzayg/archivy
+          echo "${GITHUB_SHA}" | cut -c1-8 > SHORT_SHA
+          echo "{GITHUB_REF/refs\/tags\//}" > VERSION
+          echo "uzayg" > DOCKER_USERNAME
+          echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
       - name: Delete 'untested' image
         if: success()
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          docker run --rm lumir/remove-dockerhub-tag --user "${{ env.docker_username }}" --password "${DOCKER_PASSWORD}" \
-          "${{ env.docker_image }}:untested-${{ env.version }}" "${{ env.docker_image }}:untested-${{ env.hash }}"
+          docker run --rm lumir/remove-dockerhub-tag --user "$( cat DOCKER_USERNAME )" --password "${DOCKER_PASSWORD}" \
+          "$( cat DOCKER_IMAGE ):untested-$( cat VERSION )" "$( cat DOCKER_IMAGE ):untested-$( cat SHORT_SHA )"
