@@ -44,7 +44,6 @@
 
 			}
 		}
-			
 
 		/*
 		function load_ed_assets()
@@ -56,6 +55,7 @@
 			document.body.appendChild(ed_js)
 		}
 		*/
+
 		function open_editor(btn)
 		{
 			document.getElementById("content").remove();
@@ -63,9 +63,36 @@
 			container.appendChild(document.createElement("textarea"))
 			let editor = new EasyMDE({
 				autofocus: true,
-				autosave: {enabled: true}
+				autosave: {enabled: true},
+				toolbar: [
+					"bold", 
+					"italic", 
+					"strikethrough",
+					"heading",
+					"code",
+					"quote",
+					"link",
+					"image",
+					"side-by-side",
+					"preview",
+					"fullscreen",
+					{
+					name: "save",
+					action: (editor) => {
+						fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
+							method: "PUT",
+							body: JSON.stringify({
+								"content": editor.value()
+							}),
+							headers: {
+								"content-type": "application/json"
+							}
+						})
+					},
+					className: "fa fa-save"
+				}]
 			});
-			editor.value(`{{ md_content }}`);
+			editor.value(`{{ dataobj["content"] }}`);
 			document.querySelector(".side-by-side").click();
 			btn.style.display = "none";
 		}

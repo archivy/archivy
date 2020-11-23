@@ -108,9 +108,17 @@ def get_item(dataobj_id):
 def delete_item(dataobj_id):
     """Delete dataobj of given id"""
     file = get_by_id(dataobj_id)
-
     if file:
         Path(file).unlink()
+
+
+def update(dataobj_id, new_content):
+    """Updates contents of object"""
+    filename = get_by_id(dataobj_id)
+    dataobj = frontmatter.load(filename)
+    with open(filename, "w", encoding="utf-8") as f:
+        dataobj.content = new_content
+        f.write(frontmatter.dumps(dataobj))
 
 
 def get_dirs():

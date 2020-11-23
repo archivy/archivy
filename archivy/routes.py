@@ -113,7 +113,6 @@ def show_dataobj(dataobj_id):
         title=dataobj["title"],
         dataobj=dataobj,
         content=content,
-        md_content=dataobj.content,
         form=forms.DeleteDataForm())
 
 
