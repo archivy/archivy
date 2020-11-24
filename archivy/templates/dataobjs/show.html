@@ -63,7 +63,10 @@
 			container.appendChild(document.createElement("textarea"))
 			let editor = new EasyMDE({
 				autofocus: true,
-				autosave: {enabled: true},
+				autosave: {
+					enabled: true,
+					uniqueId: {{ dataobj["id"] }}
+				},
 				toolbar: [
 					"bold", 
 					"italic", 
@@ -77,24 +80,38 @@
 					"preview",
 					"fullscreen",
 					{
-					name: "save",
-					action: (editor) => {
-						fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
-							method: "PUT",
-							body: JSON.stringify({
-								"content": editor.value()
-							}),
-							headers: {
-								"content-type": "application/json"
-							}
-						})
+						name: "save",
+						action: (editor) => {
+							fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
+								method: "PUT",
+								body: JSON.stringify({
+									"content": editor.value()
+								}),
+								headers: {
+									"content-type": "application/json"
+								}
+							})
+							statusBtn.classList.add("fa-check-circle");
+							statusBtn.classList.remove("fa-times");
+						},
+						className: "fa fa-save"
 					},
-					className: "fa fa-save"
-				}]
+					{
+						name: "status",
+						className: "fa fa-check-circle status"
+					}
+				]
 			});
 			editor.value(`{{ dataobj["content"] }}`);
 			document.querySelector(".side-by-side").click();
 			btn.style.display = "none";
+
+
+			let statusBtn = document.querySelector(".status .fa");
+			editor.codemirror.on("change", function() {
+				statusBtn.classList.remove("fa-check-circle");
+				statusBtn.classList.add("fa-times")
+			})
 		}
 	</script>
 {% endblock %}
