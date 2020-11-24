@@ -16,20 +16,23 @@
 			Link
 		</a>
 	{% endif %}
+	<br>
 	<div id="content-cont">
 		<div id="content">
 			{{ content | safe }}
 		</div>
+		<textarea>
+		</textarea>
 	</div>
 	<form action="/dataobj/delete/{{ dataobj['id'] }}" method="delete" novalidate>
+		<input type="button" value="Toggle Web Editor" onclick="toggleEditor(this)">
+		<input type="button" value="Edit locally" onclick="openData({{ dataobj['id'] }}, this)">
         {{ form.hidden_tag() }}
         <p>{{ form.submit() }}</p>
-		<input type="button" value="Edit locally" onclick="open_data({{ dataobj['id'] }}, this)">
-		<input type="button" value="Edit through the web editor" onclick="open_editor(this)">
     </form>
 	<script>
 
-		async function open_data(id, btn)
+		async function openData(id, btn)
 		{
 			let res = await fetch(`${SCRIPT_ROOT}/dataobj/local_edit/${id}`, {
 						method: "GET"
@@ -45,27 +48,12 @@
 			}
 		}
 
-		/*
-		function load_ed_assets()
-		{
-			let ed_style = document.createElement("link"), ed_js = document.createElement("script");
-			ed_style.rel = "stylesheet", ed_style.href = "https://unpkg.com/easymde/dist/easymde.min.css";
-			ed_js.src = "https://unpkg.com/easymde/dist/easymde.min.js", ed_js.type = "text/javascript";
-			document.head.appendChild(ed_style)
-			document.body.appendChild(ed_js)
-		}
-		*/
-
-		function open_editor(btn)
-		{
-			document.getElementById("content").remove();
-			let container = document.getElementById("content-cont");
-			container.appendChild(document.createElement("textarea"))
+		let editorDiv, oldContent;
+		window.addEventListener("load", function() {
 			let editor = new EasyMDE({
 				autofocus: true,
 				autosave: {
 					enabled: true,
-					uniqueId: {{ dataobj["id"] }}
 				},
 				toolbar: [
 					"bold", 
@@ -103,15 +91,20 @@
 				]
 			});
 			editor.value(`{{ dataobj["content"] }}`);
-			document.querySelector(".side-by-side").click();
-			btn.style.display = "none";
-
+			// document.querySelector(".side-by-side").click();
 
 			let statusBtn = document.querySelector(".status .fa");
 			editor.codemirror.on("change", function() {
 				statusBtn.classList.remove("fa-check-circle");
 				statusBtn.classList.add("fa-times")
 			})
+		    oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
+			editorDiv.classList.add("hidden");
+		})
+
+		function toggleEditor(btn)
+		{
+			oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
 		}
 	</script>
 {% endblock %}
