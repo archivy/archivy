@@ -130,7 +130,7 @@ def update_dataobj(dataobj_id):
         try:
             data.update(dataobj_id, request.json.get("content"))
             return Response(status=200)
-        except:
+        except BaseException:
             return Response(status=404)
     return Response("Must provide content parameter", status=401)
 

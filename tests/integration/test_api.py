@@ -92,7 +92,7 @@ def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
     assert bookmark["content"].startswith("Lorem ipsum")
 
 
-def test_put_bookmark(test_app, client: FlaskClient, note_fixture):
+def test_update_dataobj(test_app, client: FlaskClient, note_fixture):
     lorem = "Updated note content"
     resp = client.put("/api/dataobjs/1", json={
         "content": lorem
@@ -102,9 +102,14 @@ def test_put_bookmark(test_app, client: FlaskClient, note_fixture):
 
     resp = client.get("/api/dataobjs/1")
     assert resp.json["content"] == lorem
-    
 
 
+def test_updating_inexistent_dataobj_returns(test_app, client: FlaskClient):
+    resp = client.put("/api/dataobjs/1", json={
+        "content": "test"
+    })
+
+    assert resp.status_code == 404
 
 
 def test_api_login(test_app, client: FlaskClient):
