@@ -124,7 +124,11 @@ def delete_dataobj(dataobj_id):
 @api_bp.route("/dataobjs/<int:dataobj_id>", methods=["PUT"])
 def update_dataobj(dataobj_id):
     """
-    Updates object of given id
+    Updates object of given id.
+
+    Paramter in JSON body:
+
+    - **content**: markdown text of new dataobj.
     """
     if request.json.get("content"):
         try:
