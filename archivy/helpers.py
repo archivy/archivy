@@ -9,13 +9,12 @@ from tinydb import TinyDB, Query, operations
 from archivy.config import Config
 
 
-def get_db():
+def get_db(force_reconnect=False):
     """
     Returns the database object that you can use to
     store data persistently
     """
-
-    if 'db' not in g:
+    if 'db' not in g or force_reconnect:
         g.db = TinyDB(
             os.path.join(
                 current_app.config['APP_PATH'],
