@@ -61,7 +61,8 @@ def client(test_app):
 
 @pytest.fixture
 def mocked_responses():
-    """Setup mock responses using the `responses` python package.
+    """
+    Setup mock responses using the `responses` python package.
 
     Using https://pypi.org/project/responses/, this fixture will mock out
     HTTP calls made by the requests library.
@@ -164,3 +165,6 @@ def ctx(click_cli):
     with click.Context(click_cli, info_name=click_cli, parent=None) as ctx:
         yield ctx
 
+@pytest.fixture()
+def cli_runner():
+    yield click.testing.CliRunner()
