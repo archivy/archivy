@@ -22,7 +22,7 @@ metadataTest:
     - key: 'org.label-schema.schema-version'
       value: '1.0'
   entrypoint: ["entrypoint.sh"]
-  cmd: ["start"]
+  cmd: ["run"]
   volumes: ["/archivy/data"]
   exposedPorts: ["5000"]
 fileExistenceTests:
