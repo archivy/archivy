@@ -6,8 +6,8 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Starts with a base image of Python3.8.5 built on Debian     #
-#       Buster Slim to be used as builder stage.                    #
+#    1. Starts with a base image of Python3.9 built on Alpine       #
+#       Linux.                                                      #
 #    2. Adds 'testing' repository, and installs required packages.  #
 #    3. Clones the 'archivy' repository and installs Archivy.       #
 #    4. Cleans up by deleting packages and cloned repository.       #
@@ -24,7 +24,7 @@
 #   10. Sets a command which will be to check the health of the     #
 #       container.                                                  #
 #   11. Runs the startup script as the entrypoint command with      #
-#       the "start" argument.                                       #
+#       the "run" argument.                                         #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
 #        you wish to access the server. Also, if you want your data #
@@ -40,8 +40,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with python3.8-alpine3.12
-FROM python:3.8.5-alpine3.12
+# Start with python3.9-alpine
+FROM python:3.9-alpine
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
@@ -59,11 +59,12 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
       git \
       xdg-utils \
       pandoc@testing \
+      musl=1.1.24-r10 \
     # Clone the repository
     && git clone ${ARCHIVY_VCS_URL} \
     && cd archivy \
     # Install all necessary files/packages
-    && python3.8 setup.py install \
+    && python3.9 setup.py install \
     # Delete git package
     && apk del git --purge \
     && cd ../ \
@@ -101,10 +102,9 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=5 CMD health
 # the Archivy server.
 ENTRYPOINT ["entrypoint.sh"]
 
-# The 'start' CMD is required by the 'entrypoint.sh' script to set up the Archivy server.
-# Any command given to the 'docker container run' will override the CMD below which
-# will result in the Archivy not being set up.
-CMD ["start"]
+# The 'run' CMD is required by the 'entrypoint.sh' script to set up the Archivy server.
+# Any command given to the 'docker container run' will override the CMD below.
+CMD ["run"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Uzay G" \

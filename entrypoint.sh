@@ -2,7 +2,7 @@
 #
 #: Title        : entrypoint.sh
 #: Date         : 19-Aug-2020
-#: Version      : 0.2
+#: Version      : 0.3
 #: Description  : This file handles the startup of the 'Archivy' server
 #                 and other functions necessary for its startup such as
 #                 setting default environment variables and overriding
@@ -15,12 +15,14 @@
 #                 during startup will be run by the script and the Archivy
 #                 process will not be run.
 #
-#                   ./entrypoint.sh start    -  This will start Archivy
-#                   ./entrypoint.sh command  -  This will run "command"
+#                   ./entrypoint.sh run          -  This will run Archivy
+#                   ./entrypoint archivy command -  This will run "archivy command"
+#                   ./entrypoint.sh command      -  This will run "command"
 # 
 #: Usage        :	Call the script with the appropriate argument
 #
-#                   ./entrypoint.sh start
+#                   ./entrypoint.sh run
+#                   ./entrypoint.sh archivy --version
 #                   ./entrypoint.sh bash
 #                   ./entrypoint.sh sleep 60
 ################
@@ -139,8 +141,9 @@ waitforElasticsearch() {
 
 
 # Main function
-# Runs the Archivy server if the "start" argument is provided.
-# Runs any command if passed instead of the "start" argument.
+# Runs the Archivy server if the "run" argument is provided.
+# Runs "archivy [argument]" if "archivy [argument]" are provided as arguments.
+# Runs any command if passed instead of the "archivy" argument.
 #
 main() {
   printf '%s\n' "Setting environment variables."
@@ -154,25 +157,33 @@ main() {
     printf '\t\t%s\n' "${varName}=${varVal}"
   done
 
-  # If the first argument is "start"
-  if [ "$1" = "start" ] ; then
-    if [ ${ELASTICSEARCH_ENABLED} -eq 1 ] ; then
-      printf '%s\n' "Checking if Elasticsearch is up and running"
-      # Calling the function which will wait until elasticsearch has started
-      waitforElasticsearch
-    else
-      printf '%s\n' "Elasticsearch not used. Search function will not work."
-    fi
-
-    # Starting archivy
-    printf '%s\n' "Starting Archivy"
-    exec archivy
-  else
-    printf '%s\n' "Not starting Archivy. Running \"$@\" instead."
-    # Executing any arguments passed to the script
-    # This is useful when the container needs to be run in interactive mode
-    exec "$@"
-  fi
+  case "$1" in
+    # If the first argument is "run"
+    "run")
+      # If support for Elasticsearch is enabled
+      if [ ${ELASTICSEARCH_ENABLED} -eq 1 ] ; then
+        printf '%s\n' "Checking if Elasticsearch is up and running"
+        # Calling the function which will wait until elasticsearch has started
+        waitforElasticsearch
+      else
+        printf '%s\n' "Elasticsearch not used. Search function will not work."
+      fi
+      # Starting archivy
+      printf '%s\n' "Starting Archivy"
+      exec archivy run
+      ;;
+    # If the first argument is "archivy"
+    "archivy")
+      # Passing any arguments passed to the script to Archivy
+      printf '%s\n' "Running ""$@"""
+      exec archivy "$2"
+      ;;
+    # If the first argument is neither "run" nor "archivy"
+    *)
+      # Running the commands given as arguments
+      exec "$@"
+      ;;
+  esac
 }
 
 
