@@ -22,7 +22,7 @@ def _click_to_tree(ctx: click.Context, node: click.BaseCommand, ancestors=[]):
     res_childs = []
     res = OrderedDict()
     res['is_group'] = isinstance(node, click.core.MultiCommand)
-    omitted = ["shell", "run", "routes"]
+    omitted = ["shell", "run", "routes", "create-admin"]
     if res['is_group']:
         # a group, recurse for e    very child
         children = [node.get_command(ctx, key) for key in node.list_commands(ctx)

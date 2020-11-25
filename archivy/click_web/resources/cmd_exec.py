@@ -26,7 +26,7 @@ def exec(command_path):
     global logger
     logger = click_web.logger
 
-    omitted = ["shell", "run", "routes"]
+    omitted = ["shell", "run", "routes", "create-admin"]
     root_command, *commands = command_path.split('/')
     cmd = ["archivy"]
     req_to_args = RequestToCommandArgs()
