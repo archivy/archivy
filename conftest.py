@@ -26,7 +26,6 @@ def test_app():
         _app = create_click_web_app(cli, cli.cli, app) 
     app_dir = tempfile.mkdtemp()
     _app.config['APP_PATH'] = app_dir
-    os.environ["APP_PATH"] = app_dir
     data_dir = os.path.join(app_dir, "data")
     os.mkdir(data_dir)
 
