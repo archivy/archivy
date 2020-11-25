@@ -85,13 +85,13 @@ jobs:
       - name: Test image with container-structure-test
         uses: plexsystems/container-structure-test-action@v0.2.0
         with:
-          image: '"$(cat DOCKER_IMAGE)":untested-"$(cat IMAGE_TAG)"'
-          config: './container-structure-test-source.yaml'
+          image: "$(cat DOCKER_IMAGE):untested-$(cat IMAGE_TAG)"
+          config: "./container-structure-test-source.yaml"
 
       - name: Scan for OS vulnerabilities in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: '"$(cat DOCKER_IMAGE)":untested-"$(cat IMAGE_TAG)"'
+          image-ref: "$(cat DOCKER_IMAGE):untested-$(cat IMAGE_TAG)"
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -100,8 +100,8 @@ jobs:
       - name: Scan image and code for vulnerabilties using Anchore
         uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: '"$(cat DOCKER_IMAGE)":untested-"$(cat IMAGE_TAG)"'
-          dockerfile-path: './Dockerfile.source'
+          image-reference: "$(cat DOCKER_IMAGE):untested-$(cat IMAGE_TAG)"
+          dockerfile-path: "./Dockerfile.source"
           fail-build: true
           include-app-packages: true
 
