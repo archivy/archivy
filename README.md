@@ -30,17 +30,17 @@ Upcoming:
 
 ## Quickstart
 
-Install with `pip install archivy` and then do `archivy run` to serve the app. You can open it at https://localhost:5000.
+Begin by installing [Pandoc](https://pandoc.org), the document converter archivy uses.
 
-The first time you run archivy, an admin user will automatically be created with a random password.
-These credentials will be printed to the log when you launch like this:
+Install with `pip install archivy`.
 
+Then run this and enter a password to create a new user:
+
+```bash
+$ archivy create-admin <username>
 ```
-[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
-                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
-```
 
-Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+Finally, execute `archivy run` to serve the app. You can open it at https://localhost:5000 and login with the credentials you entered before.
 
 You can then use archivy to create notes, bookmarks and then organize and store information.
 
