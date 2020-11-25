@@ -6,11 +6,11 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Starts with a base image of Python3.8.5 built on Debian     #
+#    1. Starts with a base image of Python3.8 built on Debian       #
 #       Buster Slim to be used as builder stage.                    #
 #    2. Pins a version of archivy.                                  #
 #    3. Installs Archivy using pip in the /install directory.       #
-#    4. Starts with Python3.8.5 based on Alpine 3.12 for the final  #
+#    4. Starts with Python3.8 based on Alpine 3.12 for the final    #
 #       stage.                                                      #
 #    5. Installs xdg-utils(needed by archivy for opening files),    #
 #       pandoc(needed by archivy for extended markdown support),    #
@@ -28,7 +28,7 @@
 #    9. Sets a command which will be to check the health of the     #
 #       container.                                                  #
 #   10. Runs the startup script as the entrypoint command with      #
-#       the "start" argument.                                       #
+#       the "run" argument.                                         #
 #                                                                   #
 # Note : Do not forget to bind port 5000 to a port on your host if  #
 #        you wish to access the server. Also, if you want your data #
@@ -44,18 +44,18 @@
 #                                                                   #
 #####################################################################
 
-# Starting with base image of python3.8.5 built on Debian Buster Slim
-FROM python:3.8.5-slim-buster AS builder
+# Starting with base image of python3.9 built on Debian Buster Slim
+FROM python:3.9-slim AS builder
 
 # Archivy version
 ARG VERSION
 
 # Installing pinned version of Archivy using pip
-RUN pip3.8 install --prefix=/install archivy==$VERSION
+RUN pip3.9 install --prefix=/install archivy==$VERSION
 
 
-# Starting with a base image of python:3.8.5-alpine3.12 for the final stage
-FROM python:3.8.5-alpine3.12
+# Starting with a base image of python:3.8-alpine for the final stage
+FROM python:3.9-alpine
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
@@ -67,11 +67,12 @@ ARG VCS_REF
 # Archivy version
 ARG VERSION
 
-# Installing xdg-utils
+# Installing xdg-utils and pandoc
 RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
     && apk update && apk add --no-cache \
         xdg-utils \
         pandoc@testing \
+        musl=1.1.24-r10 \
     # Creating non-root user and group for running Archivy
     && addgroup -S -g 1000 archivy \
     && adduser -h /archivy -g "User account for running Archivy" \
@@ -103,14 +104,13 @@ STOPSIGNAL SIGTERM
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=5 CMD healthcheck.sh
 
 # Entrypoint - Run 'entrypoint.sh' script. Any command given to 'docker container run' will be added as an argument
-# to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'start' as an argument in order to set up
+# to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'run' as an argument in order to set up
 # the Archivy server.
 ENTRYPOINT ["entrypoint.sh"]
 
-# The 'start' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
-# Any command given to the 'docker container run' will override the CMD below which
-# will result in the Archivy not being set up. 
-CMD ["start"]
+# The 'run' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
+# Any command given to the 'docker container run' will override the CMD below.
+CMD ["run"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Uzay G" \
