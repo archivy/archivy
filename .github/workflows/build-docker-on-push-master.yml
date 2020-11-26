@@ -97,7 +97,6 @@ jobs:
         uses: aquasecurity/trivy-action@0.0.8
         with:
           image-ref: "${DOCKER_IMAGE_TAG}"
-          format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
