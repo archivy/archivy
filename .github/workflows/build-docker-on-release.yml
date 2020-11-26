@@ -65,6 +65,11 @@ jobs:
           echo "${GITHUB_REF/refs\/tags\//}" > VERSION
           echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
+      # Required by container-structure-test so it can access the image name as an env var.
+      - name: Set image name as variable
+        if: success()
+        run: echo "DOCKER_IMAGE_TAG=$(cat DOCKER_IMAGE):untested-$(cat IMAGE_TAG)" >> ${GITHUB_ENV}
+
       - name: Lint Dockerfile
         uses: brpaz/hadolint-action@v1.1.0
         with:
@@ -78,13 +83,13 @@ jobs:
       - name: Test image with container-structure-test
         uses: plexsystems/container-structure-test-action@v0.2.0
         with:
-          image: "$(cat DOCKER_IMAGE):untested-$(cat VERSION)"
+          image: "${DOCKER_IMAGE_TAG}"
           config: "./container-structure-test.yaml"
 
       - name: Scan for OS vulnerabilities in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: "$(cat DOCKER_IMAGE):untested-$(cat VERSION)"
+          image-ref: "${DOCKER_IMAGE_TAG}"
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -93,7 +98,7 @@ jobs:
       - name: Scan image and code for vulnerabilties using Anchore
         uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: "$(cat DOCKER_IMAGE):untested-$(cat VERSION)"
+          image-reference: "${DOCKER_IMAGE_TAG}"
           dockerfile-path: "./Dockerfile"
           fail-build: true
           include-app-packages: true
