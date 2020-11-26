@@ -25,7 +25,8 @@ def _click_to_tree(ctx: click.Context, node: click.BaseCommand, ancestors=[]):
     omitted = ["shell", "run", "routes", "create-admin"]
     if res['is_group']:
         # a group, recurse for e    very child
-        children = [node.get_command(ctx, key) for key in node.list_commands(ctx)
+        subcommand_names = set(click.Group.list_commands(node, ctx))
+        children = [node.get_command(ctx, key) for key in subcommand_names
                     if key not in omitted]
         # Sort so commands comes before groups
         children = sorted(children, key=lambda c: isinstance(c, click.core.MultiCommand))
