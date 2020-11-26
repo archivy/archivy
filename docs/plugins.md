@@ -77,7 +77,7 @@ def command2():
 	...
 ```
 
-With this structure, you'll be able to call `archivy pocket command1` and `archivy pocket command2`. Read the [click docs](https://click.palletsprojects.com/en/7.x/options/) to learn about how to build more intricate
+With this structure, you'll be able to call `archivy pocket command1` and `archivy pocket command2`. Read the [click docs](https://click.palletsprojects.com/en/7.x/options/) to learn about how to build more intricate options. We also provide some custom ones [like email and password](/reference/web_inputs.md)
 
 Let's get into actually writing a command that interacts with the archivy codebase.
 
@@ -148,6 +148,7 @@ And you can finally upload your code! The username you should enter is `__token_
 ```python
 python3 -m twine upload dist/*
 ```
+
 
 ## You're done!
 
