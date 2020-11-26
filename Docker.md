@@ -32,6 +32,7 @@
 - [How To Use This Image](#how-to-use-this-image)
   * [Start An Archivy Instance](##start-an-archivy-instance)
   * [Running Container In Interactive Mode](##running-container-in-interactive-mode)
+  * [Running Archivy CLI commands](##running-archivy-cli-commands)
   * [With Data Persistence](##with-data-persistence)
   * [Environment Variables](##environment-variables)
   * [Try Demo on *'Play With Docker'*](###try-demo-on-play-with-docker)
@@ -68,8 +69,11 @@
 # Supported Tags And Respective `Dockerfile` Links
 
 - [`stable`, `latest`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.8.4`, `0.8.3`, `0.8.2`, `0.8.1`, `0.8.0`, `0.8`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.7.3`, `0.7.2`, `0.7.1`, `0.7.0`, `0.7`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.6.2`, `0.6.1`, `0.6.0`, `0.6`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.5.0`, `0.5`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
-- [`0.4.1`, `0.4`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.4.1`, 0.4`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.4.0`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.3.0`, `0.3`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.2.0`, `0.2`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
@@ -167,6 +171,30 @@ will start an interactive shell inside the container. Remember to pass the `-it`
 
 >- `-i / --interactive` -- Keeps standard input open
 >- `-t / --tty` -- Allocates a pseudo TTY
+
+## Running Archivy CLI commands
+
+You can pass arguments to the Archivy CLI by prefixing `archivy` to the command portion of the `docker run` command, similar to the [previous section](##running-container-in-interactive-mode).
+
+The following command will run `archivy --version` in the container:
+```sh
+$ docker run --rm --name archivy-test -p 5000:5000 uzayg/archivy archivy --version
+```
+
+The following command will run `archivy routes` in the container:
+```sh
+$ docker run --rm --name archivy-test -p 5000:5000 uzayg/archivy archivy routes
+```
+
+The following command will run `archivy shell` in the container:
+```sh
+$ docker run -it --name archivy-test -p 5000:5000 uzayg/archivy archivy shell
+```
+> _NOTE_:
+> Do not forget to add the `-it` flags when you need access to an interactive terminal, as shown above. Else, the container will exit right after running the command.
+
+> **NOTE**:
+> Keep in mind that for all arguments except `shell`(`archivy shell`), will result in the container terminating after the command has been run. To get access to an interactive shell inside the container, refer to the [previous section](##running-container-in-interactive-mode).
 
 ## With Data Persistence
 
@@ -665,7 +693,7 @@ The `archivy` image currently comes in one variant/flavour which is based on Alp
 
 ## `archivy:<version>`, `archivy:stable`, `archivy:latest`, `archivy:master`, `archivy:prerelease`, `archivy:<commit-hash>`
 
-The images with these tags are built on top of [`python3.8-alpine3.12`](https://github.com/docker-library/python/blob/9ff5f04241c7bcb224303ff8cea9434e9976f8af/3.8/alpine3.12/Dockerfile) image which is Python3.8 installed on Alpine Linux `3.12`. There are no additional packages installed *except* for Archivy and the packages it requires.
+The images with these tags are built on top of [`python3.9-alpine`](https://github.com/docker-library/python/blob/c99c77547e99f80fb9b895b7dc13b88b78170e2e/3.9/alpine3.12/Dockerfile) image which is Python3.8 installed on Alpine Linux `3.12`. There are no additional packages installed *except* for Archivy and the packages it requires.
 
 The following can change on a later date, if necessary
 * Version of Python
