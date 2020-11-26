@@ -1,6 +1,6 @@
 import click
 
-from archivy.click_web.web_click_types import EmailParamType
+from archivy.click_web.web_click_types import EmailParamType, PasswordParamType
 
 
 class FieldId:
@@ -258,6 +258,17 @@ class EmailInput(BaseInput):
         return type_attrs
 
 
+class PasswordInput(BaseInput):
+    param_type_cls = PasswordParamType
+
+    @property
+    def type_attrs(self):
+        type_attrs = {}
+        type_attrs['type'] = 'password'
+        type_attrs['click_type'] = 'password'
+        return type_attrs
+
+
 class DefaultInput(BaseInput):
     param_type_cls = click.ParamType
 
@@ -281,7 +292,8 @@ INPUT_TYPES = [ChoiceInput,
                FloatInput,
                FolderInput,
                FileInput,
-               EmailInput]
+               EmailInput,
+               PasswordInput]
 
 _DEFAULT_INPUT = [DefaultInput]
 

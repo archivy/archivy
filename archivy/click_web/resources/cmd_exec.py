@@ -56,7 +56,7 @@ def _run_script_and_generate_stream(req_to_args: 'RequestToCommandArgs', cmd: Li
     """
     Execute the command the via Popen and yield output
     """
-    logger.info('Executing: %s', cmd)
+    logger.info('Executing archivy command')
     if not os.environ.get('PYTHONIOENCODING'):
         # Fix unicode on windows
         os.environ['PYTHONIOENCODING'] = 'UTF-8'
