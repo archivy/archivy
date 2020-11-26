@@ -96,7 +96,7 @@ jobs:
       - name: Scan for OS vulnerabilities in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: ${{ $DOCKER_IMAGE_TAG }}
+          image-ref: ${{ env.DOCKER_IMAGE_TAG }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -105,7 +105,7 @@ jobs:
       - name: Scan image and code for vulnerabilties using Anchore
         uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: ${{ DOCKER_IMAGE_TAG }}
+          image-reference: ${{ env.DOCKER_IMAGE_TAG }}
           dockerfile-path: "./Dockerfile.source"
           fail-build: true
           include-app-packages: true
