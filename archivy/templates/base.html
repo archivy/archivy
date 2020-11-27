@@ -160,7 +160,6 @@
 			let totalPath = basePath;
 			totalPath += (totalPath === "") ? "" : "{{SEP}}";
 			totalPath += input.value;
-			totalPath += "{{SEP}}" + input.value;
 			let result = await fetch(`${SCRIPT_ROOT}/folders/new`, {
 			  method: "POST",
 			  body: JSON.stringify({
@@ -199,7 +198,7 @@
 			fetch(`${SCRIPT_ROOT}/folders/delete`, {
 			  method: "DELETE",
 			  body: JSON.stringify({
-				"name": path
+				"path": path
 			  }),
 			  headers: {"content-type": "application/json"}
 			})
