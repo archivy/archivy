@@ -31,80 +31,79 @@
         <p>{{ form.submit() }}</p>
     </form>
 	<script>
-
 		async function openData(id, btn)
 		{
-			let res = await fetch(`${SCRIPT_ROOT}/dataobj/local_edit/${id}`, {
-						method: "GET"
-					});
-			if (res.ok)
-			{
-				btn.value = "Loading editor...";
-				// impossible to know load time of editor, but hide the button after some time
-				setTimeout(function() {
-					btn.style.display = "none";
-				}, 2000);
+		  let res = await fetch(`${SCRIPT_ROOT}/dataobj/local_edit/${id}`, {
+				method: "GET"
+			  });
+		  if (res.ok)
+		  {
+			btn.value = "Loading editor...";
+			// impossible to know load time of editor, but hide the button after some time
+			setTimeout(function() {
+			  btn.style.display = "none";
+			}, 2000);
 
-			}
+		  }
 		}
 
 		let editorDiv, oldContent;
 		window.addEventListener("load", function() {
-			let editor = new EasyMDE({
-				autofocus: true,
-				autosave: {
-					enabled: true,
-				},
-				toolbar: [
-					"bold", 
-					"italic", 
-					"strikethrough",
-					"heading",
-					"code",
-					"quote",
-					"link",
-					"image",
-					"side-by-side",
-					"preview",
-					"fullscreen",
-					{
-						name: "save",
-						action: (editor) => {
-							fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
-								method: "PUT",
-								body: JSON.stringify({
-									"content": editor.value()
-								}),
-								headers: {
-									"content-type": "application/json"
-								}
-							})
-							statusBtn.classList.add("fa-check-circle");
-							statusBtn.classList.remove("fa-times");
-						},
-						className: "fa fa-save"
-					},
-					{
-						name: "status",
-						className: "fa fa-check-circle status"
+		  let editor = new EasyMDE({
+			autofocus: true,
+			autosave: {
+			  enabled: true,
+			},
+			toolbar: [
+			  "bold", 
+			  "italic", 
+			  "strikethrough",
+			  "heading",
+			  "code",
+			  "quote",
+			  "link",
+			  "image",
+			  "side-by-side",
+			  "preview",
+			  "fullscreen",
+			  {
+				name: "save",
+				action: (editor) => {
+				  fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
+					method: "PUT",
+					body: JSON.stringify({
+					  "content": editor.value()
+					}),
+					headers: {
+					  "content-type": "application/json"
 					}
-				]
-			});
-			editor.value(`{{ dataobj["content"] }}`);
-			// document.querySelector(".side-by-side").click();
+				  })
+				  statusBtn.classList.add("fa-check-circle");
+				  statusBtn.classList.remove("fa-times");
+				},
+				className: "fa fa-save"
+			  },
+			  {
+				name: "status",
+				className: "fa fa-check-circle status"
+			  }
+			]
+		  });
+		  editor.value(`{{ dataobj["content"] }}`);
+		  // document.querySelector(".side-by-side").click();
 
-			let statusBtn = document.querySelector(".status .fa");
-			editor.codemirror.on("change", function() {
-				statusBtn.classList.remove("fa-check-circle");
-				statusBtn.classList.add("fa-times")
-			})
-		    oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
-			editorDiv.classList.add("hidden");
+		  let statusBtn = document.querySelector(".status .fa");
+		  editor.codemirror.on("change", function() {
+			statusBtn.classList.remove("fa-check-circle");
+			statusBtn.classList.add("fa-times")
+		  })
+			oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
+		  editorDiv.classList.add("hidden");
 		})
 
 		function toggleEditor(btn)
 		{
-			oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
+		  oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
 		}
 	</script>
 {% endblock %}
