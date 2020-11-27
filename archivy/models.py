@@ -191,7 +191,7 @@ class DataObj:
         return False
 
     @classmethod
-    def from_md(cls, md_content):
+    def from_md(cls, md_content: str):
         """
         Class method to generate new dataobj from a well formatted markdown string
 
