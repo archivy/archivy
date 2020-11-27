@@ -33,7 +33,9 @@ class ModifHandler(FileSystemEventHandler):
             return
 
         try:
-            file_contents = open(filepath, "r").read()
+            new_file = open(filepath, "r")
+            file_contents = new_file.read()
+            new_file.close()
         except FileNotFoundError:
             return
 
@@ -63,7 +65,8 @@ class ModifHandler(FileSystemEventHandler):
             filename = event.src_path.split(SEP)[-1]
             if re.match(DATAOBJ_REGEX, filename) and self.ELASTIC:
                 self.app.logger.info(f"Detected changes to {event.src_path}")
-                dataobj = models.DataObj.from_md(open(event.src_path).read())
+                with open(event.src_path) as f:
+                    dataobj = models.DataObj.from_md(f.read())
                 if dataobj.validate():
                     search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
             elif self.is_unformatted(filename):
