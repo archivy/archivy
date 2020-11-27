@@ -132,7 +132,7 @@ def update_dataobj(dataobj_id):
     """
     if request.json.get("content"):
         try:
-            data.update(dataobj_id, request.json.get("content"))
+            data.update_item(dataobj_id, request.json.get("content"))
             return Response(status=200)
         except BaseException:
             return Response(status=404)

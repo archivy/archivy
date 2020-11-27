@@ -112,8 +112,37 @@ def delete_item(dataobj_id):
         Path(file).unlink()
 
 
-def update(dataobj_id, new_content):
-    """Updates contents of object"""
+def update_item(dataobj_id, new_content):
+    """
+    Given an object id, this method overwrites the inner content of the post with `new_content`.
+
+    This means that it won't change the frontmatter (eg tags, id, title) but it can change the file content.
+
+    For example:
+
+    If we have a dataobj like this:
+
+    ```md
+    ---
+    id: 1
+    title: Note
+    ---
+
+    # This is random
+    ```
+
+    Calling `update_item(1, "# This is specific")` will turn it into:
+
+
+    ```md
+    ---
+    id: 1 # unchanged
+    title: Note
+    ---
+
+    # This is specific
+    ```
+    """
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
     with open(filename, "w", encoding="utf-8") as f:
