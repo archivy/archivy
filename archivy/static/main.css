@@ -3,8 +3,8 @@
   margin-left: 25%;
 }
 
-.hidden {
-  display: none;
+.hidden * {
+  display: none !important;
 }
 
 .fadein {

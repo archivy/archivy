@@ -121,6 +121,24 @@ def delete_dataobj(dataobj_id):
     return Response(status=204)
 
 
+@api_bp.route("/dataobjs/<int:dataobj_id>", methods=["PUT"])
+def update_dataobj(dataobj_id):
+    """
+    Updates object of given id.
+
+    Paramter in JSON body:
+
+    - **content**: markdown text of new dataobj.
+    """
+    if request.json.get("content"):
+        try:
+            data.update_item(dataobj_id, request.json.get("content"))
+            return Response(status=200)
+        except BaseException:
+            return Response(status=404)
+    return Response("Must provide content parameter", status=401)
+
+
 @api_bp.route("/dataobjs", methods=["GET"])
 def get_dataobjs():
     """Gets all dataobjs"""
@@ -149,8 +167,8 @@ def create_folder():
     try:
         sanitized_name = data.create_dir(directory)
     except FileExistsError:
-        return "Directory already exists", 401
-    return sanitized_name, 200
+        return Response("Directory already exists", status=401)
+    return Response(sanitized_name, status=200)
 
 
 @api_bp.route("/folders/delete", methods=["DELETE"])
@@ -163,10 +181,10 @@ def delete_folder():
     """
     directory = request.json.get("path")
     if directory == "":
-        return "Cannot delete root dir", 401
+        return Response("Cannot delete root dir", status=401)
     if data.delete_dir(directory):
-        return "Successfully deleted", 200
-    return "Not found", 404
+        return Response("Successfully deleted", status=200)
+    return Response("Not found", status=404)
 
 
 @api_bp.route("/search", methods=["GET"])

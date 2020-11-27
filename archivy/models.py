@@ -192,18 +192,18 @@ class DataObj:
         return False
 
     @classmethod
-    def from_file(cls, filename):
+    def from_md(cls, md_content: str):
         """
-        Class method to generate new dataobj from a filename
+        Class method to generate new dataobj from a well formatted markdown string
 
         Call like this:
 
         ```python
-        Dataobj.from_file(filename)
+        Dataobj.from_md(content)
 
         ```
         """
-        data = frontmatter.load(filename)
+        data = frontmatter.loads(md_content)
         dataobj = {}
         dataobj["content"] = data.content
         for pair in ["tags", "desc", "id", "title", "path"]:

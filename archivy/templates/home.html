@@ -19,45 +19,45 @@
 
 </script>
 <script>
-	// search functionality
-	{% if search_enabled %}	
-		function appendHit(hit,  query) {
-			let hitsDiv = document.getElementById("searchHits");
-			let hitLi = document.createElement("li");
-			let body = document.createElement("div");
-			if ("highlight" in hit)
-			{
-				for(let i = 0; i < hit["highlight"].length; i++)
-				{
-					body.innerHTML += hit["highlight"][i];	
-				}
-			}
-			let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-			p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
-			hitLi.append(a);
-			hitLi.append(p);
-			hitLi.append(body);
-			hitsDiv.appendChild(hitLi);
-		}
-		let input = document.getElementById("searchBar");
-		input.addEventListener('input', async function(e) {
-			let query = input.value;
-			if (input.value !== "")
-			{
-				let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
-					"method": "GET"
-				});
-				if (searchQuery.ok && query == input.value) {	
-					let data = await searchQuery.json(), i = 0;
-					document.getElementById("searchHits").innerHTML = data;
-					/*
-					data.forEach(function(hit)
-					{
-						appendHit(hit, input.value);
-					})*/
-				}
-			}
-		});
-	{% endif %}
+  // search functionality
+  {% if search_enabled %}  
+    function appendHit(hit,  query) {
+      let hitsDiv = document.getElementById("searchHits");
+      let hitLi = document.createElement("li");
+      let body = document.createElement("div");
+      if ("highlight" in hit)
+      {
+        for(let i = 0; i < hit["highlight"].length; i++)
+        {
+          body.innerHTML += hit["highlight"][i];  
+        }
+      }
+      let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
+      p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
+      hitLi.append(a);
+      hitLi.append(p);
+      hitLi.append(body);
+      hitsDiv.appendChild(hitLi);
+    }
+    let input = document.getElementById("searchBar");
+    input.addEventListener('input', async function(e) {
+      let query = input.value;
+      if (input.value !== "")
+      {
+        let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
+          "method": "GET"
+        });
+        if (searchQuery.ok && query == input.value) {  
+          let data = await searchQuery.json(), i = 0;
+          document.getElementById("searchHits").innerHTML = data;
+          /*
+          data.forEach(function(hit)
+          {
+            appendHit(hit, input.value);
+          })*/
+        }
+      }
+    });
+  {% endif %}
 </script>
 {% endblock %}
