@@ -29,4 +29,12 @@ class EmailParamType(click.ParamType):
             self.fail(f'{value} is not a valid email', param, ctx)
 
 
+class PasswordParamType(click.ParamType):
+    name = "password"
+
+    def convert(self, value, param, ctx):
+        return value
+
+
 EMAIL_TYPE = EmailParamType()
+PASSWORD_TYPE = PasswordParamType()
