@@ -30,6 +30,7 @@ nav:
       - Usage: "usage.md"
       - Search: "setup-search.md"
       - Config: "config.md"
+      - Editing: "editing.md"
       - What's Next: "whats_next.md"
   - Plugins:
       - Index: "plugins.md"
