@@ -40,6 +40,7 @@ nav:
     - Dataobj Filesystem Layer: "reference/filesystem_layer.md"
     - Search: "reference/search.md" 
     - Helpers: "reference/helpers.md"
+    - Web Inputs For Plugins: "reference/web_inputs.md"
 
 repo_url: https://github.com/archivy/archivy
 repo_name: archivy
