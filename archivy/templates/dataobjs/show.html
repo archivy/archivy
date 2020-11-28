@@ -51,9 +51,6 @@
 		window.addEventListener("load", function() {
 		  let editor = new EasyMDE({
 			autofocus: true,
-			autosave: {
-			  enabled: true,
-			},
 			toolbar: [
 			  "bold", 
 			  "italic", 
@@ -91,7 +88,8 @@
 			  "guide"
 			]
 		  });
-		  editor.value(`{{ dataobj["content"] }}`);
+		  // escape backticks in template literal and escape backslashes.
+		  editor.value(`{{ dataobj["content"].replace("\\", "\\\\").replace("`", "\\`")}}`);
 		  // document.querySelector(".side-by-side").click();
 
 		  let statusBtn = document.querySelector(".status .fa");
