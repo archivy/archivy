@@ -1,0 +1,6 @@
+data_dir: /home/uzay/Documents/Projects/archivy
+elasticsearch:
+  enabled: 0
+  index_name: dataobj
+  url: http://localhost:9200
+pandoc_theme: pygments

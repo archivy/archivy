@@ -4,10 +4,19 @@ import sys
 import elasticsearch
 from elasticsearch import Elasticsearch
 from flask import current_app, g
+import yaml
 from tinydb import TinyDB, Query, operations
 
 from archivy.config import Config
 
+
+def load_config():
+    with open(os.path.join(current_app.config["APP_PATH"], "config.yml")) as f:
+        return yaml.load(f.read(), Loader=yaml.FullLoader)
+
+def write_config(config: dict):
+    with open(os.path.join(current_app.config["APP_PATH"], "config.yml"), "w") as f:
+        yaml.dump(config, f)
 
 def get_db(force_reconnect=False):
     """
@@ -17,7 +26,7 @@ def get_db(force_reconnect=False):
     if 'db' not in g or force_reconnect:
         g.db = TinyDB(
             os.path.join(
-                current_app.config['APP_PATH'],
+                current_app.config["APP_PATH"],
                 'db.json'
             )
         )
