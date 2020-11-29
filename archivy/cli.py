@@ -72,6 +72,7 @@ def init(ctx):
             pypandoc.download_pandoc()
 
     config.override({"USER_DIR": data_dir})
+    app.config["USER_DIR"] = data_dir
 
     write_config(vars(config))
     click.echo("Config successfully created at "

@@ -1,7 +1,79 @@
+import os
+import tempfile
+
 from tinydb import Query
 
 from archivy.cli import cli
 from archivy.helpers import get_db
+
+
+def test_initialization(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    try:
+        # conf shouldn't exist
+        open(conf_path)
+        assert False
+    except IOError:
+        pass
+    old_data_dir = test_app.config["USER_DIR"]
+    
+    with cli_runner.isolated_filesystem():
+        res = cli_runner.invoke(cli, ["init"], input="y\nn\nusername\npassword\npassword")
+
+    # verify user was created
+    assert len(get_db().search(Query().type == "user" and Query().username == "username"))
+    assert "Config successfully created" in res.output
+    conf = open(conf_path).read()
+
+    # assert defaults are saved
+    assert "PANDOC_HIGHLIGHT_THEME: pygments" in conf
+    assert f"USER_DIR: {test_app.config['USER_DIR']}" in conf
+    # check ES config not saved
+    assert "ELASTICSEARCH" not in conf
+
+    # check initialization in random directory
+    # has resulted in change of user dir
+    assert old_data_dir != test_app.config["USER_DIR"]
+
+
+def test_initialization_with_es(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    old_data_dir = test_app.config["USER_DIR"]
+    
+    with cli_runner.isolated_filesystem():
+        res = cli_runner.invoke(cli, ["init"], input="y\ny\nusername\npassword\npassword")
+
+    assert "Config successfully created" in res.output
+    conf = open(conf_path).read()
+
+    # assert ES Config is saved
+    assert "ELASTICSEARCH" in conf
+    assert "enabled: 1" in conf
+    assert "url: http://localhost:9200" in conf
+
+    # check initialization in random directory
+    # has resulted in change of user dir
+    assert old_data_dir != test_app.config["USER_DIR"]
+
+
+def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    data_dir = tempfile.mkdtemp()
+    
+    with cli_runner.isolated_filesystem():
+        res = cli_runner.invoke(cli, ["init"], input=f"n\n{data_dir}\nn\nusername\npassword\npassword")
+
+    assert "Config successfully created" in res.output
+    conf = open(conf_path).read()
+
+    assert f"USER_DIR: {data_dir}" in conf
+
+
+    # check initialization in random directory
+    # has resulted in change of user dir
+    assert data_dir == test_app.config["USER_DIR"]
+
+
 
 def test_create_admin(test_app, cli_runner, click_cli):
     db = get_db()
