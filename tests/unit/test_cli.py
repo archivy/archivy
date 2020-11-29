@@ -8,8 +8,7 @@ def test_create_admin(test_app, cli_runner, click_cli):
     nb_users = len(db.search(Query().type == "user"))
     cli_runner.invoke(cli,
                        ["create-admin", "__username__"],
-                       input="password\npassword",
-                       env={"ARCHIVY_DATA_DIR": test_app.config["APP_PATH"]})
+                       input="password\npassword")
 
     # need to reconnect to db because it has been modified by different processes
     # so the connection needs to be updated for new changes
@@ -20,7 +19,6 @@ def test_create_admin(test_app, cli_runner, click_cli):
 def test_create_admin_small_password_fails(test_app, cli_runner, click_cli):
     cli_runner.invoke(cli,
                        ["create-admin", "__username__"],
-                       input="short\nshort",
-                       env={"ARCHIVY_DATA_DIR": test_app.config["APP_PATH"]})
+                       input="short\nshort")
     db = get_db()
     assert not len(db.search(Query().type == "user" and Query().username == "__username__"))

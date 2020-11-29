@@ -8,6 +8,10 @@ from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
 
 from archivy import app
 from archivy.check_changes import Watcher
+<<<<<<< Updated upstream
+=======
+from archivy.config import Config
+>>>>>>> Stashed changes
 from archivy.helpers import load_config, write_config
 from archivy.models import User
 from archivy.click_web import create_click_web_app
@@ -69,6 +73,55 @@ def init(ctx):
     write_config(conf)
     click.echo(f"Config successfully created at {os.path.join(app.config['APP_PATH'], 'config.yml')}")
     
+
+@cli.command("init", short_help="Initialise your archivy application")
+@click.pass_context
+def init(ctx):
+    try:
+        load_config()
+        click.confirm("Config already found. Do you wish to reset it? "
+                      "Otherwise run archivy config", abort=True)
+    except IOError:
+        pass
+
+    config = Config()
+    delattr(config, "SECRET_KEY")
+
+    click.echo("This is the archivy installation initialization wizard.")
+    set_curr_dir = click.confirm("Use current directory as data directory for archivy?")
+    if set_curr_dir:
+        data_dir = os.getcwd()
+    else:
+        data_dir = click.prompt("Otherwise, enter the full path of the "
+                                "directory where you'd like us to store data.", type=str)
+
+    es_enabled = click.confirm("Would you like to enable Elasticsearch? For this to work "
+                               "when you run archivy, you must have ES installed.")
+    if es_enabled:
+        config.ELASTICSEARCH_CONF["enabled"] = 1
+    else:
+        delattr(config, "ELASTICSEARCH_CONF")
+
+    click.echo("Please enter credentials for a new admin user:")
+    username = click.prompt("Username")
+    password = click.prompt("Password", hide_input=True, confirmation_prompt=True)
+    if not ctx.invoke(create_admin, username=username, password=password):
+        return
+
+    try:
+        pypandoc.get_pandoc_version()
+    except OSError:
+        download_pandoc = click.confirm("Archivy requires Pandoc to be installed. "
+                                        "Do you want us to install it automatically?")
+        if download_pandoc:
+            pypandoc.download_pandoc()
+
+    config.override({"USER_DIR": data_dir})
+
+    write_config(vars(config))
+    click.echo("Config successfully created at "
+               + os.path.join(app.config['INTERNAL_DIR'], 'config.yml'))
+
 
 @cli.command("run", short_help="Runs archivy web application")
 def run():

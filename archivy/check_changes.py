@@ -17,8 +17,8 @@ class ModifHandler(FileSystemEventHandler):
     def __init__(self, app: flask.Flask):
         self.app = app
         self.app.logger.info("Running watcher")
-        self.ELASTIC = app.config["ELASTICSEARCH_ENABLED"]
-        self.data_dir = os.path.join(app.config["APP_PATH"], "data" + SEP)
+        self.ELASTIC = app.config["ELASTICSEARCH_CONF"]["enabled"]
+        self.data_dir = os.path.join(app.config["USER_DIR"], "data" + SEP)
         self.last_formatted = ""
         self.time_formatted = time.time()
 
@@ -68,7 +68,7 @@ class ModifHandler(FileSystemEventHandler):
                 with open(event.src_path) as f:
                     dataobj = models.DataObj.from_md(f.read())
                 if dataobj.validate():
-                    search.add_to_index(self.app.config['INDEX_NAME'], dataobj)
+                    search.add_to_index(self.app.config["ELASTICSEARCH_CONF"]["index_name"], dataobj)
             elif self.is_unformatted(filename):
                 self.format_file(event.src_path)
 
@@ -78,7 +78,7 @@ class ModifHandler(FileSystemEventHandler):
             if (re.match(DATAOBJ_REGEX, filename)
                     and self.ELASTIC):
                 id = event.src_path.split(SEP)[-1].split("-")[0]
-                search.remove_from_index(self.app.config['INDEX_NAME'], id)
+                search.remove_from_index(self.app.config["ELASTICSEARCH_CONF"]["index_name"], id)
                 self.app.logger.info(f"{event.src_path} has been removed")
 
     def on_created(self, event):
@@ -101,10 +101,7 @@ class Watcher(Thread):
         observer = Observer()
         observer.schedule(
             event_handler,
-            path=os.path.join(
-                self.app.config['APP_PATH'],
-                'data' + SEP
-            ),
+            path=event_handler.data_dir,
             recursive=True)
         observer.start()
 

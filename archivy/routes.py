@@ -10,7 +10,6 @@ from flask_login import login_user, login_required, current_user, logout_user
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db
-from archivy.config import Config
 
 
 @app.context_processor
@@ -39,7 +38,7 @@ def index():
     return render_template(
             "home.html",
             title="Home",
-            search_enabled=Config.ELASTICSEARCH_ENABLED,
+            search_enabled=app.config["ELASTICSEARCH_CONF"]["enabled"],
             )
 
 

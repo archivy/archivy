@@ -7,18 +7,19 @@ from flask import current_app, g
 import yaml
 from tinydb import TinyDB, Query, operations
 
-from archivy.config import Config
 
-
-def load_config():
-    with open(os.path.join(current_app.config["APP_PATH"], "config.yml")) as f:
+def load_config(path=""):
+    path = path or current_app.config["INTERNAL_DIR"]
+    with open(os.path.join(path, "config.yml")) as f:
         return yaml.load(f.read(), Loader=yaml.FullLoader)
 
+
 def write_config(config: dict):
-    with open(os.path.join(current_app.config["APP_PATH"], "config.yml"), "w") as f:
+    with open(os.path.join(current_app.config["INTERNAL_DIR"], "config.yml"), "w") as f:
         yaml.dump(config, f)
 
-def get_db(force_reconnect=False):
+
+def get_db(force_reconnect=False, db_path=""):
     """
     Returns the database object that you can use to
     store data persistently
@@ -26,8 +27,8 @@ def get_db(force_reconnect=False):
     if 'db' not in g or force_reconnect:
         g.db = TinyDB(
             os.path.join(
-                current_app.config["APP_PATH"],
-                'db.json'
+                current_app.config["INTERNAL_DIR"],
+                "db.json"
             )
         )
 
@@ -52,21 +53,21 @@ def set_max_id(val):
 
 def get_elastic_client():
     """Returns the elasticsearch client you can use to search and insert / delete data"""
-    if not current_app.config['ELASTICSEARCH_ENABLED']:
+    if not current_app.config["ELASTICSEARCH_CONF"]["enabled"]:
         return None
 
-    es = Elasticsearch(current_app.config['ELASTICSEARCH_URL'])
+    es = Elasticsearch(current_app.config["ELASTICSEARCH_CONF"]["url"])
     try:
         health = es.cluster.health()
     except elasticsearch.exceptions.ConnectionError:
         current_app.logger.error(
             "Elasticsearch does not seem to be running on "
-            f"{Config.ELASTICSEARCH_URL}. Please start "
+            f"{current_app.config['ELASTICSEARCH_CONF']['url']}. Please start "
             "it, for example with: sudo service elasticsearch restart"
         )
         current_app.logger.error(
-            "You can disable Elasticsearch by setting the "
-            "ELASTICSEARCH_ENABLED environment variable to 0"
+            "You can disable Elasticsearch by modifying the `enabled` variable "
+            f"in {os.path.join(current_app.config['INTERNAL_DIR'], 'config.yml')}"
         )
         sys.exit(1)
 

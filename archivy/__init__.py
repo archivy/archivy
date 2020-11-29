@@ -9,14 +9,21 @@ from flask_login import LoginManager
 
 from archivy import helpers
 from archivy.api import api_bp
-from archivy.config import Config
 from archivy.models import User
+from archivy.config import Config
+from archivy.helpers import load_config
 
 app = Flask(__name__)
-app.config.from_object(Config)
 app.logger.setLevel(logging.INFO)
+config = Config()
+try:
+    # if it exists, load user config
+    config.override(load_config(config.INTERNAL_DIR))
+except IOError:
+    pass
+app.config.from_object(config)
 
-# check if pandoc is installed, otherwise install
+# check if pandoc is installed
 try:
     pypandoc.get_pandoc_version()
 except OSError:
@@ -24,17 +31,15 @@ except OSError:
                      + "Please install it at https://pandoc.org/installing.html")
     sys.exit(1)
 
-# create dir that will hold data if it doesn't already exist
-DIRNAME = app.config["APP_PATH"] + "/data/"
-Path(DIRNAME).mkdir(parents=True, exist_ok=True)
+(Path(app.config["USER_DIR"]) / "data").mkdir(parents=True, exist_ok=True)
 
-if app.config["ELASTICSEARCH_ENABLED"]:
+if app.config["ELASTICSEARCH_CONF"]["enabled"]:
     with app.app_context():
         es = helpers.get_elastic_client()
         try:
             es.indices.create(
-                index=app.config["INDEX_NAME"],
-                body=app.config["ELASTIC_CONF"])
+                index=app.config["ELASTICSEARCH_CONF"]["index_name"],
+                body=app.config["ELASTICSEARCH_CONF"]["search_conf"])
         except elasticsearch.ElasticsearchException:
             app.logger.info("Elasticsearch index already created")
 
