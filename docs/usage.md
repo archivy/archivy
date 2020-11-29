@@ -8,19 +8,18 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  routes  Show the routes for the app.
-  run     Runs archivy web application
-  shell   Run a shell in the app context.
+  create-admin  Creates a new admin user
+  routes        Show the routes for the app.
+  run           Runs archivy web application
+  shell         Run a shell in the app context.
 ```
 
-The first time you run archivy, an admin user will automatically be created with a random password.
-These credentials will be printed to the log when you launch like this:
+Make sure you've configured Archivy by running `archivy init`, as outlined in [install](install.md).
 
-```
-[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
-                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
-```
+If you'd like to add users, you can simply create new admin users with the `create-admin` command. Only give credentials to trusted people.
 
-Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+You can then use archivy to create notes, bookmarks and to organize and store information.
 
-You can then use archivy to create notes, bookmarks and then organize and store information.
+You can use the [web api](reference/web_api.md) to extend archivy, or [plugins](plugins.md).
+
+These have been recently introduced, but you can check the existing plugins that you can install onto your instance [here](https://github.com/archivy/awesome-archivy).
