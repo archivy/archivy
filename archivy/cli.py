@@ -8,10 +8,7 @@ from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
 
 from archivy import app
 from archivy.check_changes import Watcher
-<<<<<<< Updated upstream
-=======
 from archivy.config import Config
->>>>>>> Stashed changes
 from archivy.helpers import load_config, write_config
 from archivy.models import User
 from archivy.click_web import create_click_web_app
