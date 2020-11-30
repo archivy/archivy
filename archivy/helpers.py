@@ -19,7 +19,7 @@ def write_config(config: dict):
         yaml.dump(config, f)
 
 
-def get_db(force_reconnect=False, db_path=""):
+def get_db(force_reconnect=False):
     """
     Returns the database object that you can use to
     store data persistently

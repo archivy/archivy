@@ -5,6 +5,8 @@ from tinydb import Query
 
 from archivy.cli import cli
 from archivy.helpers import get_db
+from archivy.models import DataObj
+from archivy.data import get_items
 
 
 def test_initialization(test_app, cli_runner, click_cli):
@@ -19,10 +21,15 @@ def test_initialization(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         res = cli_runner.invoke(cli, ["init"], input="y\nn\nusername\npassword\npassword")
+        assert "Config successfully created" in res.output
 
-    # verify user was created
-    assert len(get_db().search(Query().type == "user" and Query().username == "username"))
-    assert "Config successfully created" in res.output
+        # verify user was created
+        assert len(get_db().search(Query().type == "user" and Query().username == "username"))
+
+        # verify dataobj creation works
+        assert DataObj(type="note", title="Test note").insert()
+        assert len(get_items(structured=False)) == 1
+
     conf = open(conf_path).read()
 
     # assert defaults are saved
@@ -34,6 +41,7 @@ def test_initialization(test_app, cli_runner, click_cli):
     # check initialization in random directory
     # has resulted in change of user dir
     assert old_data_dir != test_app.config["USER_DIR"]
+
 
 
 def test_initialization_with_es(test_app, cli_runner, click_cli):
@@ -72,6 +80,10 @@ def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
     # check initialization in random directory
     # has resulted in change of user dir
     assert data_dir == test_app.config["USER_DIR"]
+
+    # verify dataobj creation works
+    assert DataObj(type="note", title="Test note").insert()
+    assert len(get_items(structured=False)) == 1
 
 
 

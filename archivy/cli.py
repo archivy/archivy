@@ -74,6 +74,9 @@ def init(ctx):
     config.override({"USER_DIR": data_dir})
     app.config["USER_DIR"] = data_dir
 
+    # create data dir
+    os.makedirs(os.path.join(data_dir, "data"), exist_ok=True)
+
     write_config(vars(config))
     click.echo("Config successfully created at "
                + os.path.join(app.config['INTERNAL_DIR'], 'config.yml'))
