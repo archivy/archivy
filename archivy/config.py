@@ -7,6 +7,7 @@ class Config(object):
 
     def __init__(self):
         self.SECRET_KEY = os.urandom(32)
+        self.PORT = 5000
         self.INTERNAL_DIR = appdirs.user_data_dir("archivy")
         self.USER_DIR = self.INTERNAL_DIR
         os.makedirs(self.INTERNAL_DIR, exist_ok=True)

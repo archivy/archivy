@@ -8,19 +8,15 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  routes  Show the routes for the app.
-  run     Runs archivy web application
-  shell   Run a shell in the app context.
+  config        Open archivy config.
+  create-admin  Creates a new admin user
+  init          Initialise your archivy application
+  run           Runs archivy web application
+  shell         Run a shell in the app context.
 ```
 
-The first time you run archivy, an admin user will automatically be created with a random password.
-These credentials will be printed to the log when you launch like this:
-
-```
-[2020-10-10 10:48:27,764] INFO in __init__: Archivy has created an admin user as it did not exist.
-                            Username: 'admin', password: '5a512991c605ea51038ce2a0'
-```
-
-Login with these credentials and then you can change your password/username by clicking the profile button on the top left.
+Make sure you've followed the steps in [install](install.md).
 
 You can then use archivy to create notes, bookmarks and then organize and store information.
+
+The `create-admin` command allows you to add new authorized admin users (only to people you trust), the `config` command to play around with [configuration](config.md) and `shell` if you'd like to play around with the archivy python API.

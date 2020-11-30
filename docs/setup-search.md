@@ -10,11 +10,7 @@ http.cors.enabled: true
 http.cors.allow-origin: "http://localhost:5000"
 ```
 
-Run archivy like this:
-
-```bash
-ELASTICSEARCH_ENABLED=1 archivy run
-```
+Then, when you run `archivy init` simply specify you have enabled ES to integrate it with archivy.
 
 You will now have full-text search on your knowledge base!
 

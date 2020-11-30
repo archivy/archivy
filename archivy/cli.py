@@ -9,9 +9,10 @@ from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
 from archivy import app
 from archivy.check_changes import Watcher
 from archivy.config import Config
+from archivy.click_web import create_click_web_app
+from archivy.data import open_file
 from archivy.helpers import load_config, write_config
 from archivy.models import User
-from archivy.click_web import create_click_web_app
 
 
 def create_app():
@@ -25,7 +26,6 @@ def cli():
 
 
 # add built in commands:
-cli.add_command(routes_command)
 cli.add_command(shell_command)
 
 
@@ -79,16 +79,20 @@ def init(ctx):
                + os.path.join(app.config['INTERNAL_DIR'], 'config.yml'))
 
 
+@cli.command("config", short_help="Open archivy config.")
+def config():
+    open_file(os.path.join(app.config["INTERNAL_DIR"], "config.yml"))
+
+
 @cli.command("run", short_help="Runs archivy web application")
 def run():
     click.echo('Running archivy...')
     load_dotenv()
     watcher = Watcher(app)
     watcher.start()
-    port = int(os.environ.get("ARCHIVY_PORT", 5000))
     os.environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
-    app_with_cli.run(host='0.0.0.0', port=port)
+    app_with_cli.run(host='0.0.0.0', port=app.config["PORT"])
     click.echo("Stopping archivy watcher")
     watcher.stop()
     watcher.join()
