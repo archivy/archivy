@@ -21,6 +21,7 @@ try:
     config.override(load_config(config.INTERNAL_DIR))
 except IOError:
     pass
+
 app.config.from_object(config)
 
 # check if pandoc is installed

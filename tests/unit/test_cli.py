@@ -20,7 +20,8 @@ def test_initialization(test_app, cli_runner, click_cli):
     old_data_dir = test_app.config["USER_DIR"]
     
     with cli_runner.isolated_filesystem():
-        res = cli_runner.invoke(cli, ["init"], input="y\nn\nusername\npassword\npassword")
+        # create user, and don't use ES
+        res = cli_runner.invoke(cli, ["init"], input="y\nn\ny\nusername\npassword\npassword")
         assert "Config successfully created" in res.output
 
         # verify user was created
@@ -49,7 +50,8 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     old_data_dir = test_app.config["USER_DIR"]
     
     with cli_runner.isolated_filesystem():
-        res = cli_runner.invoke(cli, ["init"], input="y\ny\nusername\npassword\npassword")
+        # use ES and don't create user
+        res = cli_runner.invoke(cli, ["init"], input="y\ny\nn")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
@@ -69,7 +71,8 @@ def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
     data_dir = tempfile.mkdtemp()
     
     with cli_runner.isolated_filesystem():
-        res = cli_runner.invoke(cli, ["init"], input=f"n\n{data_dir}\nn\nusername\npassword\npassword")
+        # input data dir - don't use ES and don't create user
+        res = cli_runner.invoke(cli, ["init"], input=f"n\n{data_dir}\nn\nn")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()

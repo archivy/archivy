@@ -57,11 +57,12 @@ def init(ctx):
     else:
         delattr(config, "ELASTICSEARCH_CONF")
 
-    click.echo("Please enter credentials for a new admin user:")
-    username = click.prompt("Username")
-    password = click.prompt("Password", hide_input=True, confirmation_prompt=True)
-    if not ctx.invoke(create_admin, username=username, password=password):
-        return
+    create_new_user = click.confirm("Would you like to create a new admin user?")
+    if create_new_user:
+        username = click.prompt("Username")
+        password = click.prompt("Password", hide_input=True, confirmation_prompt=True)
+        if not ctx.invoke(create_admin, username=username, password=password):
+            return
 
     try:
         pypandoc.get_pandoc_version()

@@ -55,4 +55,9 @@ class Config(object):
 
     def override(self, user_conf: dict):
         for k, v in user_conf.items():
-            self.__setattr__(k, v)
+            # handle ES options, don't override entire dict if one key is passed
+            if k == "ELASTICSEARCH_CONF":
+                for subkey, subval in v.items():
+                    self.ELASTICSEARCH_CONF[subkey] = subval
+            else:
+                self.__setattr__(k, v)
