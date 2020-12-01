@@ -86,7 +86,10 @@
 				className: "fa fa-check-circle status"
 			  },
 			  "guide"
-			]
+			],
+			shortcuts: {
+				"save": "Ctrl-S"
+			}
 		  });
 		  // escape backticks in template literal and escape backslashes.
 		  editor.value(`{{ dataobj["content"].replace("\\", "\\\\").replace("`", "\\`")}}`);
@@ -97,10 +100,16 @@
 			statusBtn.classList.remove("fa-check-circle");
 			statusBtn.classList.add("fa-times")
 		  })
-			oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
+		  oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
 		  editorDiv.classList.add("hidden");
 		})
 
+		function save(editor)
+		{
+
+
+
+		}
 		function toggleEditor(btn)
 		{
 		  oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
