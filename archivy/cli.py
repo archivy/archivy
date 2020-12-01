@@ -4,7 +4,7 @@ from pkg_resources import iter_entry_points
 import click
 import pypandoc
 from click_plugins import with_plugins
-from flask.cli import FlaskGroup, load_dotenv, routes_command, shell_command
+from flask.cli import FlaskGroup, load_dotenv, shell_command
 
 from archivy import app
 from archivy.check_changes import Watcher

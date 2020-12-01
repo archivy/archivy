@@ -68,7 +68,9 @@ class ModifHandler(FileSystemEventHandler):
                 with open(event.src_path) as f:
                     dataobj = models.DataObj.from_md(f.read())
                 if dataobj.validate():
-                    search.add_to_index(self.app.config["ELASTICSEARCH_CONF"]["index_name"], dataobj)
+                    search.add_to_index(
+                            self.app.config["ELASTICSEARCH_CONF"]["index_name"],
+                            dataobj)
             elif self.is_unformatted(filename):
                 self.format_file(event.src_path)
 
