@@ -60,4 +60,4 @@ class Config(object):
                 for subkey, subval in v.items():
                     self.ELASTICSEARCH_CONF[subkey] = subval
             else:
-                self.__setattr__(k, v)
+                setattr(self, k, v)

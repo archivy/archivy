@@ -9,12 +9,14 @@ from tinydb import TinyDB, Query, operations
 
 
 def load_config(path=""):
+    """Loads `config.yml` file and deserializes it to a python dict."""
     path = path or current_app.config["INTERNAL_DIR"]
     with open(os.path.join(path, "config.yml")) as f:
         return yaml.load(f.read(), Loader=yaml.FullLoader)
 
 
 def write_config(config: dict):
+    """Writes a new config dict to a `config.yml` file that will override defaults"""
     with open(os.path.join(current_app.config["INTERNAL_DIR"], "config.yml"), "w") as f:
         yaml.dump(config, f)
 
