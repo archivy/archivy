@@ -69,7 +69,8 @@
 # Supported Tags And Respective `Dockerfile` Links
 
 - [`stable`, `latest`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
-- [`0.8.4`, `0.8.3`, `0.8.2`, `0.8.1`, `0.8.0`, `0.8`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.9.2`, `0.9.1`, `0.9.0`, `0.9`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
+- [`0.8.5`, `0.8.4`, `0.8.3`, `0.8.2`, `0.8.1`, `0.8.0`, `0.8`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.7.3`, `0.7.2`, `0.7.1`, `0.7.0`, `0.7`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.6.2`, `0.6.1`, `0.6.0`, `0.6`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
 - [`0.5.0`, `0.5`](https://github.com/Uzay-G/archivy/blob/docker/Dockerfile)
@@ -159,6 +160,34 @@ $ docker logs -f [name-of-container]
 
 which will continuously stream the logs to the terminal. To exit, type ctrl+c. To just print the logs and exit, run the same command without the -f flag.
 
+> **NOTE**:
+> To login, use the username `admin` and password `password`. These are the default values used to create a new user.
+
+## Providing User Credentials
+
+User credentials can be passed via the `-e` option to Archivy as follows
+
+```sh
+$ docker run -d --name archivy-test -p 5000:5000 -e ADMIN_USER="user" -e ADMIN_PASSWORD="pass" uzayg/archivy
+```
+
+If value for `ADMIN_USER` and `ADMIN_PASSWORD` are not provided, the default values of `admin` and `password` are used. You can change the login password after logging in, if necessary.
+
+| OPTION           | DEFAULT    |
+| ---------------- | ---------- |
+| `ADMIN_USER`     | `admin`    |
+| `ADMIN_PASSWORD` | `password` |
+
+## Resuming Stopped Instance
+
+If you have an instance of Archivy running that you wish to restart with previously saved data(like users and corresponding passwords), you __must__ provide the `run` command to the `docker` command as follows:
+
+```sh
+$ docker run -d --name archivy-test -p 5000:5000 -v /path/to/data/dir:/archivy uzayg/archivy run
+```
+
+This will start the container will the `/path/to/data/dir` bind-mounted to the `/archivy` directory.
+
 ## Running container in interactive mode
 
 You can also pass commands to the container by appending it to the docker run command. Keep in mind that the container will execute your commands and not run Archivy. This is useful if you want to find out what is going on inside the container. For example,
@@ -201,23 +230,23 @@ $ docker run -it --name archivy-test -p 5000:5000 uzayg/archivy archivy shell
 You can bind-mount any directory on your host to the data directory on the container in order to ensure that if and when the container is stopped/terminated, the data saved to the container isn’t lost. This can be done as follows:
 
 ```shell
-docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/archivy/data uzayg/archivy
+docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/archivy uzayg/archivy
 ```
 
 > `-v / --volume host:container`	——	Bind-mount host path to container path
 
-The argument `-v /path/to/host/dir:/archivy/data` bind-mounts the directory `/path/to/host/dir` on the host to `/archivy/data` on the container.
+The argument `-v /path/to/host/dir:/archivy` bind-mounts the directory `/path/to/host/dir` on the host to `/archivy` on the container.
 
-If you wish to mount, say `/home/bob/data`, you would first need to create the data directory at `/home/bob`, and then change the argument to `-v /home/bob/data:/archivy/data`.
+If you wish to mount, say `/home/bob/data`, you would first need to create the data directory at `/home/bob`, and then change the argument to `-v /home/bob/data:/archivy`.
 
-This container is configured to use `/archivy/data` as the location where all data will be saved. You can bind-mount a host directory to this location as shown above.
+This container is configured to use `/archivy` as the location where all data will be saved. You can bind-mount a host directory to this location as shown above.
 
 ## Environment Variables
 
 You can inject environment variables while starting the container as follows:
 
 ```shell
-$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/archivy/data -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="http://localhost:9200/" uzayg/archivy
+$ docker run -d --name archivy -p 5000:5000 -v /path/to/host/dir:/archivy -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 -e ELASTICSEARCH_URL="http://localhost:9200/" uzayg/archivy
 ```
 
 >`-e/--env KEY=value`	——	Set the environment variable(key=value)
@@ -231,12 +260,14 @@ Multiple such environment variables can be specified during run time. For now, A
 | `ELASTICSEARCH_URL` | `http://localhost:9200/` | Sets the URL at which Elasticsearch listens. |
 | `ARCHIVY_DATA_DIR` | On Linux systems, it follows the [XDG specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html): `~/.local/share/archivy` | Directory in which data will be saved |
 | `ARCHIVY_PORT` | `5000` | Port number on which Archivy listens. |
+| `ADMIN_USER` | `admin` | Login username. Used only during initial start up. |
+| `ADMIN_PASSWORD` | `password` | Login password. Used only during initial start up. |
 
 ---
 
 > **NOTE**:
 >
-> The environment variable `ARCHIVY_DATA_DIR` is already set to `/archivy/data` by the container image. This cannot be changed by the user unless they build the image from scratch.
+> The environment variable `ARCHIVY_DATA_DIR` is already set to `/archivy` by the container image. This cannot be changed by the user unless they build the image from scratch.
 >
 > The environment variable `ARCHIVY_PORT` is already set to `5000` by the container image. This cannot be changed by the user unless they build the image from scratch, in which case they will also need to change the port in the `Dockerfile`.
 
@@ -263,7 +294,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/archivy/data
+      - archivyData:/archivy
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=0
@@ -300,7 +331,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/archivy/data
+      - archivyData:/archivy
     environment:
     	- FLASK_DEBUG=1
     	- ELASTICSEARCH_ENABLED=0
@@ -315,7 +346,7 @@ This file
 
 - pulls the container image uzayg/archivy from DockerHub.
 - binds port `5000` on the host to port `5000` on the container.
-- creates a named volume `archivyData` on the host and mounts it to the `/archivy/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/archivy` directory on the container(which is where all persistent data will be stored).
 - Sets the following environment variables so that they can be used by Archivy during run time
   * `FLASK_DEBUG=1`
   * `ELASTICSEARCH_ENABLED=0`
@@ -325,7 +356,7 @@ This would be the same as running the following commands:
 
 ```shell
 $ docker volume create archivyData
-$ docker run -d -p 5000:5000 -v archivyData:/archivy/data --cap-drop=ALL -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 uzayg/archivy
+$ docker run -d -p 5000:5000 -v archivyData:/archivy --cap-drop=ALL -e FLASK_DEBUG=1 -e ELASTICSEARCH_ENABLED=0 uzayg/archivy
 ```
 When multiple container get involved, it becomes a lot easier to deal with compose files.
 
@@ -353,7 +384,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/archivy/data
+      - archivyData:/archivy
     environment:
     	- FLASK_DEBUG=0
     	- ELASTICSEARCH_ENABLED=0
@@ -368,7 +399,7 @@ This file
 
 - pulls the official `archivy` image.
 - binds port `5000` on the host to port `5000` on the container.
-- creates a named volume `archivyData` on the host and mounts it to the `/archivy/data` directory on the container(which is where all persistent data will be stored).
+- creates a named volume `archivyData` on the host and mounts it to the `/archivy` directory on the container(which is where all persistent data will be stored).
 - Drops all privileged capabilities for the container(better for security).
 
 > **NOTE**:
@@ -380,7 +411,7 @@ This file
 >  archivy:
 >     ...
 >     volumes:
->       - ./archivyData:/archivy/data
+>       - ./archivyData:/archivy
 > ```
 > This will create a folder named archivyData in your current working directory. This is the folder in which all user-generated notes/bookmarks will be stored.
 
@@ -407,7 +438,7 @@ services:
         published: 5000
         protocol: tcp
     volumes:
-      - archivyData:/archivy/data
+      - archivyData:/archivy
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
@@ -471,11 +502,13 @@ services:
     ports:
     	- "5000:5000"
     volumes:
-      - ./archivyData:/archivy/data
+      - ./archivyData:/archivy
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
       - ELASTICSEARCH_URL=http://elasticsearch:9200/
+      - ADMIN_USER="user"
+      - ADMIN_PASSWORD="password"
     depends_on:
       - elasticsearch
   
@@ -494,11 +527,13 @@ The declarations are described below:
 - For the `archivy` service (`archivy:`)
   * Pulls the `uzayg:archivy` image. (`image:`)
   * Connects port `5000` on the host to port `5000` on the container. (`ports:`)
-  * Creates the `archivyData` directory in the current working directory and bind-mounts it to the `/archivy/data` directory in the `archivy` container. (`volumes:`)
+  * Creates the `archivyData` directory in the current working directory and bind-mounts it to the `/archivy` directory in the `archivy` container. (`volumes:`)
   * Sets the following environment variables. (`environment:`)
     + `FLASK_DEBUG=0`
     + `ELASTICSEARCH_ENABLED=1` *(required to enable Elasticsearch support)*
     + `ELASTICSEARCH_URL=http://elasticsearch:9200/` *(required by Archivy to connect to Elasticsearch)*
+    + `ADMIN_USER="user”`(_If not provided, default value of `admin` will be used_)
+    + `ADMIN_PASSWORD="password"`(_If not provided, default value of `password` will be used_)
   * Sets a condition that the `archivy` container will start only after the `elasticsearch` container starts. (`depends_on:`)
 - For the `elasticsearch` service
   * Pulls the `elasticsearch:7.9.0` image. (`image:`)
@@ -711,15 +746,17 @@ For a list of all packages installed in the image, refer to the [Packages Instal
 * `Werkzeug == 1.0.1`
 * `appdirs == 1.4.4`
 * `attrs == 20.2.0`
-* `beautifulsoup4 == 4.6.0`
+* `beautifulsoup4 >= 4.8.2`
 * `elasticsearch == 7.7.1`
 * `pypandoc == 1.5`
 * `python_dotenv == 0.13.0`
 * `python_frontmatter == 0.5.0`
-* `requests == 2.20.0`
+* `requests == 2.24.0`
 * `tinydb == 4.1.1`
 * `validators == 0.15.0`
 * `watchdog == 0.10.3`
+* `flask-login == 0.5.0`
+* `click_plugins`
 
 ## User-Installed Packages
 
