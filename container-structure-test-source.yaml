@@ -22,8 +22,8 @@ metadataTest:
     - key: 'org.label-schema.schema-version'
       value: '1.0'
   entrypoint: ["entrypoint.sh"]
-  cmd: ["run"]
-  volumes: ["/archivy/data"]
+  cmd: ["startup"]
+  volumes: ["/archivy"]
   exposedPorts: ["5000"]
 fileExistenceTests:
   - name: 'Check if /usr/local/bin directory exists'

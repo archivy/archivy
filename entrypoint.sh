@@ -17,6 +17,7 @@
 #
 #                   ./entrypoint.sh run          -  This will run Archivy
 #                   ./entrypoint archivy command -  This will run "archivy command"
+#                   ./entrypoint archivy run     -  This will run "archivy run"
 #                   ./entrypoint.sh command      -  This will run "command"
 # 
 #: Usage        :	Call the script with the appropriate argument
@@ -158,6 +159,27 @@ main() {
   done
 
   case "$1" in
+    "startup")
+      # If support for Elasticsearch is enabled
+      if [ ${ELASTICSEARCH_ENABLED} -eq 1 ] ; then
+        printf '%s\n' "Checking if Elasticsearch is up and running"
+        # Calling the function which will wait until elasticsearch has started
+        waitforElasticsearch
+      else
+        printf '%s\n' "Elasticsearch not used. Search function will not work."
+      fi
+
+      # Creating admin user for Archivy
+      printf '%s\n' "Creating admin user ""${ADMIN_USER:-"admin"}"" with password ""${ADMIN_PASSWORD:-"password"}"""
+      archivy create-admin "${ADMIN_USER:-"admin"}" --password "${ADMIN_PASSWORD:-"password"}" \
+        || ( printf '%s\n' "Could not create user ""${ADMIN_USER:-"admin"}""." 1>&2 ; unset -v ADMIN_PASSWORD ; exit 1; )
+      # Unset ADMIN_PASSWORD variable(so it cannot be accessed again)
+      unset -v ADMIN_PASSWORD
+
+      # Starting archivy
+      printf '%s\n' "Starting Archivy"
+      exec archivy run
+      ;;
     # If the first argument is "run"
     "run")
       # If support for Elasticsearch is enabled

@@ -36,10 +36,10 @@
 #                                                                   #
 #        Example:                                                   #
 #        docker run --name archivy -p 5000:5000 -v \                #
-#        "$(pwd)"/testDir:/archivy/data archivy:latest              #
+#        "$(pwd)"/testDir:/archivy archivy:latest                   #
 #                                                                   #
 #        where 'testDir' is the directory on the host and           #
-#        '/archivy/data' is the path of the volume on the           #
+#        '/archivy' is the path of the volume on the                #
 #        container(fixed in Dockerfile).                            #
 #                                                                   #
 #####################################################################
@@ -92,7 +92,7 @@ COPY --chown=archivy:archivy entrypoint.sh healthcheck.sh /usr/local/bin/
 USER archivy
 
 # Creating mount point for persistent data
-VOLUME /archivy/data
+VOLUME /archivy
 
 # Exposing port 5000
 EXPOSE 5000
@@ -108,9 +108,9 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=5 CMD health
 # the Archivy server.
 ENTRYPOINT ["entrypoint.sh"]
 
-# The 'run' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
+# The 'startup' CMD is required by the 'entrypoint.sh' script to set up the Archivy server. 
 # Any command given to the 'docker container run' will override the CMD below.
-CMD ["run"]
+CMD ["startup"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Uzay G" \
