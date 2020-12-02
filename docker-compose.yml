@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - archivyData:/archivy/data
+      - archivyData:/archivy
     cap_drop:
       - ALL
 

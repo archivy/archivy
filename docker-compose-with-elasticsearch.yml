@@ -8,7 +8,7 @@ services:
         published: 5000
         protocol: tcp
     volumes:
-      - archivyData:/archivy/data
+      - archivyData:/archivy
     environment:
       - FLASK_DEBUG=0
       - ELASTICSEARCH_ENABLED=1
