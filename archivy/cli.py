@@ -36,7 +36,7 @@ def init(ctx):
         load_config()
         click.confirm("Config already found. Do you wish to reset it? "
                       "Otherwise run `archivy config`", abort=True)
-    except IOError:
+    except FileNotFoundError:
         pass
 
     config = Config()

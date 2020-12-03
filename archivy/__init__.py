@@ -19,7 +19,7 @@ config = Config()
 try:
     # if it exists, load user config
     config.override(load_config(config.INTERNAL_DIR))
-except IOError:
+except FileNotFoundError:
     pass
 
 app.config.from_object(config)

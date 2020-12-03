@@ -15,7 +15,7 @@ def test_initialization(test_app, cli_runner, click_cli):
         # conf shouldn't exist
         open(conf_path)
         assert False
-    except IOError:
+    except FileNotFoundError:
         pass
     old_data_dir = test_app.config["USER_DIR"]
     
