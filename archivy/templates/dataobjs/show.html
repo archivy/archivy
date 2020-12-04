@@ -91,8 +91,13 @@
 				"save": "Ctrl-S"
 			}
 		  });
-		  // escape backticks in template literal and escape backslashes.
-		  editor.value(`{{ dataobj["content"].replace("\\", "\\\\").replace("`", "\\`")}}`);
+		  // escape text for template literal - double slashes for python rendering and js rendering
+		  editor.value(
+			  `{{ dataobj["content"]
+				    .replace("\\", "\\\\")
+					.replace("`", "\\`")
+					.replace("${", "\\${") | safe }}` 
+				)
 		  // document.querySelector(".side-by-side").click();
 
 		  let statusBtn = document.querySelector(".status .fa");
