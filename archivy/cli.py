@@ -43,12 +43,10 @@ def init(ctx):
     delattr(config, "SECRET_KEY")
 
     click.echo("This is the archivy installation initialization wizard.")
-    set_curr_dir = click.confirm("Use current directory as data directory for archivy?")
-    if set_curr_dir:
-        data_dir = os.getcwd()
-    else:
-        data_dir = click.prompt("Otherwise, enter the full path of the "
-                                "directory where you'd like us to store data.", type=str)
+    data_dir = click.prompt("Enter the full path of the "
+                            "directory where you'd like us to store data.",
+                            type=str,
+                            default=os.getcwd())
 
     es_enabled = click.confirm("Would you like to enable Elasticsearch? For this to work "
                                "when you run archivy, you must have ES installed.")

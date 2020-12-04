@@ -21,7 +21,7 @@ def test_initialization(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         # create user, and don't use ES
-        res = cli_runner.invoke(cli, ["init"], input="y\nn\ny\nusername\npassword\npassword")
+        res = cli_runner.invoke(cli, ["init"], input="\nn\ny\nusername\npassword\npassword")
         assert "Config successfully created" in res.output
 
         # verify user was created
@@ -51,7 +51,7 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         # use ES and don't create user
-        res = cli_runner.invoke(cli, ["init"], input="y\ny\nn")
+        res = cli_runner.invoke(cli, ["init"], input="\ny\nn")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
@@ -72,7 +72,7 @@ def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         # input data dir - don't use ES and don't create user
-        res = cli_runner.invoke(cli, ["init"], input=f"n\n{data_dir}\nn\nn")
+        res = cli_runner.invoke(cli, ["init"], input=f"{data_dir}\nn\nn")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
