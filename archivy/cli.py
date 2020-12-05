@@ -94,7 +94,7 @@ def run():
     watcher.start()
     os.environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
-    app_with_cli.run(host='0.0.0.0', port=app.config["PORT"])
+    app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
     click.echo("Stopping archivy watcher")
     watcher.stop()
     watcher.join()
