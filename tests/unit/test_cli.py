@@ -20,8 +20,8 @@ def test_initialization(test_app, cli_runner, click_cli):
     old_data_dir = test_app.config["USER_DIR"]
     
     with cli_runner.isolated_filesystem():
-        # create user, and don't use ES
-        res = cli_runner.invoke(cli, ["init"], input="\nn\ny\nusername\npassword\npassword")
+        # create user, localhost, and don't use ES
+        res = cli_runner.invoke(cli, ["init"], input="\nn\ny\nusername\npassword\npassword\n\n")
         assert "Config successfully created" in res.output
 
         # verify user was created
@@ -36,6 +36,7 @@ def test_initialization(test_app, cli_runner, click_cli):
     # assert defaults are saved
     assert "PANDOC_HIGHLIGHT_THEME: pygments" in conf
     assert f"USER_DIR: {test_app.config['USER_DIR']}" in conf
+    assert "HOST: 127.0.0.1"
     # check ES config not saved
     assert "ELASTICSEARCH" not in conf
 
@@ -50,8 +51,8 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     old_data_dir = test_app.config["USER_DIR"]
     
     with cli_runner.isolated_filesystem():
-        # use ES and don't create user
-        res = cli_runner.invoke(cli, ["init"], input="\ny\nn")
+        # use ES, localhost and don't create user
+        res = cli_runner.invoke(cli, ["init"], input="\ny\nn\n\n")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
@@ -71,8 +72,8 @@ def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
     data_dir = tempfile.mkdtemp()
     
     with cli_runner.isolated_filesystem():
-        # input data dir - don't use ES and don't create user
-        res = cli_runner.invoke(cli, ["init"], input=f"{data_dir}\nn\nn")
+        # input data dir - localhost - don't use ES and don't create user
+        res = cli_runner.invoke(cli, ["init"], input=f"{data_dir}\nn\nn\n\n")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
@@ -88,6 +89,28 @@ def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
     assert DataObj(type="note", title="Test note").insert()
     assert len(get_items(structured=False)) == 1
 
+
+def test_initialization_custom_host(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    try:
+        # conf shouldn't exist
+        open(conf_path)
+        assert False
+    except FileNotFoundError:
+        pass
+    
+    with cli_runner.isolated_filesystem():
+        # create user, localhost, and don't use ES
+        res = cli_runner.invoke(cli, ["init"],
+                input="\nn\nn\n0.0.0.0")
+        assert "Host" in res.output
+        assert "Config successfully created" in res.output
+
+    conf = open(conf_path).read()
+
+    # assert defaults are saved
+    print(res.output)
+    assert f"HOST: 0.0.0.0" in conf
 
 
 def test_create_admin(test_app, cli_runner, click_cli):
