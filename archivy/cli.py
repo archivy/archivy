@@ -50,7 +50,7 @@ def init(ctx):
 
     es_enabled = click.confirm("Would you like to enable Elasticsearch? For this to work "
                                "when you run archivy, you must have ES installed."
-                               "See https://archivy.github.io/setup-search/ for more info.") 
+                               "See https://archivy.github.io/setup-search/ for more info.")
     if es_enabled:
         config.ELASTICSEARCH_CONF["enabled"] = 1
     else:
@@ -64,8 +64,7 @@ def init(ctx):
             return
 
     config.HOST = click.prompt("Host [localhost (127.0.0.1)]",
-                        type=str, default="127.0.0.1", show_default=False)
-    
+                               type=str, default="127.0.0.1", show_default=False)
 
     try:
         pypandoc.get_pandoc_version()
