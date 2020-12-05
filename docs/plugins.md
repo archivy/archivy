@@ -5,7 +5,7 @@ Plugins are a newly introduced method to add extensions to the archivy cli and w
 
 To help you understand the way the plugin system works, we're going to build our own plugin that allows users to sync content from `pocket`. We'll even deploy it to Pypi so that other people can install it.
 
-Note: The source code for this plugin is available [here](https://github.com/archivy/archivy_pocket).
+Note: The source code for this plugin is available [here](https://github.com/archivy/archivy-pocket).
 
 We also recommend you to read [the overview of the reference](reference/architecture.md) so you can better use the wrapper methods archivy exposes.
 
@@ -109,7 +109,7 @@ def auth(api_key):
 ```
 
 
-We also added some other commands, but we'll skip them for brevity and you can check out the source code [here](https://github.com/archivy/archivy_pocket).
+We also added some other commands, but we'll skip them for brevity and you can check out the source code [here](https://github.com/archivy/archivy-pocket).
 
 Now you just need to do `pip install .` in the main directory and you'll have access to the commands. Check it out by running `archivy --help`.
 
