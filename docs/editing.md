@@ -22,4 +22,4 @@ If you're remotely hosting archivy, and you'd like to edit content, you can stil
 
 Unfortunately this editor does not provide direct preview of math equations and other nice pandoc markdown features.
 
-However, you can still use pandoc markdown syntax, save the changes, and render the dataobj (not in the editor, but normally).
+However, you can still use pandoc markdown syntax, save the changes, and render the dataobj through the normal archivy interface.

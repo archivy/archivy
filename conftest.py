@@ -25,11 +25,12 @@ def test_app():
     if _app is None:
         _app = create_click_web_app(cli, cli.cli, app) 
     app_dir = tempfile.mkdtemp()
-    _app.config['APP_PATH'] = app_dir
+    _app.config["INTERNAL_DIR"] = app_dir
+    _app.config["USER_DIR"] = app_dir
     data_dir = os.path.join(app_dir, "data")
     os.mkdir(data_dir)
 
-    _app.config['TESTING'] = True
+    _app.config["TESTING"] = True
     _app.config["WTF_CSRF_ENABLED"] = False
     # This setups a TinyDB instance, using the `app_dir` temporary
     # directory defined above

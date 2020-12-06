@@ -1,14 +1,41 @@
-Archivy uses environment variables for its configuration (we are hesitating on this and might switch to a yaml file):
+Once you've [initialized](install.md) your archivy install, a yaml archivy config is automatically generated.
+
+You can edit it by running `archivy config`.
+
+Here's an overview of the different values you can set and modify.
+
+
+### General
 
 | Variable                | Default                     | Description                           |
 |-------------------------|-----------------------------|---------------------------------------|
-| `ARCHIVY_DATA_DIR`      | System-dependent, see below | Directory in which data will be saved |
-| `ARCHIVY_PORT`          | 5000                        | Port on which archivy will run        |
-| `ELASTICSEARCH_ENABLED` | 0                           | Enable Elasticsearch integration      |
-| `ELASTICSEARCH_URL`     | http://localhost:9200       | Url to the elasticsearch server       |
+| `USER_DIR`      | System-dependent, see below. It is recommended to set this through `archivy init` | Directory in which markdown data will be saved |
+| `INTERNAL_DIR` | System-dependent, see below | Directory where archivy internals will be stored (config, db...)
+| `PORT`          | 5000                        | Port on which archivy will run        |
+| `HOST`          | 127.0.0.1                   | Host on which the app will run. |
 
 
-`ARCHIVY_DATA_DIR` by default will be set by the
+### Elasticsearch
+
+All of these are children of the `ELASTICSEARCH_CONF` object, like this in the yaml:
+
+```yaml
+ELASTICSEARCH_CONF:
+  enabled:
+  url:
+  # ...
+```
+
+This part will not be configured by default unless you specify you wish to integrate with ES.
+
+| Variable                | Default                        | Description                           |
+|-------------------------|--------------------------------|---------------------------------------|
+| `enabled`               | 1                              |                                       |
+| `url`                   | http://localhost:9200          | Url to the elasticsearch server       |
+| `search_conf`           | Long dict of ES config options | Configuration of Elasticsearch [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html), [mappings](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) and general settings. |
+
+
+`INTERNAL_DIR` and `USER_DIR` by default will be set by the
 [appdirs](https://pypi.org/project/appdirs/) python library:
 
 On Linux systems, it follows the [XDG

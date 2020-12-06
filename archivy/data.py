@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
     """Returns the directory where dataobjs are stored"""
-    return Path(current_app.config['APP_PATH']) / "data"
+    return Path(current_app.config['USER_DIR']) / "data"
 
 
 class Directory:
