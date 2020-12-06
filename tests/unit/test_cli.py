@@ -1,15 +1,124 @@
+import os
+import tempfile
+
 from tinydb import Query
 
 from archivy.cli import cli
 from archivy.helpers import get_db
+from archivy.models import DataObj
+from archivy.data import get_items
+
+
+def test_initialization(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    try:
+        # conf shouldn't exist
+        open(conf_path)
+        assert False
+    except FileNotFoundError:
+        pass
+    old_data_dir = test_app.config["USER_DIR"]
+    
+    with cli_runner.isolated_filesystem():
+        # create user, localhost, and don't use ES
+        res = cli_runner.invoke(cli, ["init"], input="\nn\ny\nusername\npassword\npassword\n\n")
+        assert "Config successfully created" in res.output
+
+        # verify user was created
+        assert len(get_db().search(Query().type == "user" and Query().username == "username"))
+
+        # verify dataobj creation works
+        assert DataObj(type="note", title="Test note").insert()
+        assert len(get_items(structured=False)) == 1
+
+    conf = open(conf_path).read()
+
+    # assert defaults are saved
+    assert "PANDOC_HIGHLIGHT_THEME: pygments" in conf
+    assert f"USER_DIR: {test_app.config['USER_DIR']}" in conf
+    assert "HOST: 127.0.0.1"
+    # check ES config not saved
+    assert "ELASTICSEARCH" not in conf
+
+    # check initialization in random directory
+    # has resulted in change of user dir
+    assert old_data_dir != test_app.config["USER_DIR"]
+
+
+
+def test_initialization_with_es(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    old_data_dir = test_app.config["USER_DIR"]
+    
+    with cli_runner.isolated_filesystem():
+        # use ES, localhost and don't create user
+        res = cli_runner.invoke(cli, ["init"], input="\ny\nn\n\n")
+
+    assert "Config successfully created" in res.output
+    conf = open(conf_path).read()
+
+    # assert ES Config is saved
+    assert "ELASTICSEARCH" in conf
+    assert "enabled: 1" in conf
+    assert "url: http://localhost:9200" in conf
+
+    # check initialization in random directory
+    # has resulted in change of user dir
+    assert old_data_dir != test_app.config["USER_DIR"]
+
+
+def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    data_dir = tempfile.mkdtemp()
+    
+    with cli_runner.isolated_filesystem():
+        # input data dir - localhost - don't use ES and don't create user
+        res = cli_runner.invoke(cli, ["init"], input=f"{data_dir}\nn\nn\n\n")
+
+    assert "Config successfully created" in res.output
+    conf = open(conf_path).read()
+
+    assert f"USER_DIR: {data_dir}" in conf
+
+
+    # check initialization in random directory
+    # has resulted in change of user dir
+    assert data_dir == test_app.config["USER_DIR"]
+
+    # verify dataobj creation works
+    assert DataObj(type="note", title="Test note").insert()
+    assert len(get_items(structured=False)) == 1
+
+
+def test_initialization_custom_host(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    try:
+        # conf shouldn't exist
+        open(conf_path)
+        assert False
+    except FileNotFoundError:
+        pass
+    
+    with cli_runner.isolated_filesystem():
+        # create user, localhost, and don't use ES
+        res = cli_runner.invoke(cli, ["init"],
+                input="\nn\nn\n0.0.0.0")
+        assert "Host" in res.output
+        assert "Config successfully created" in res.output
+
+    conf = open(conf_path).read()
+
+    # assert defaults are saved
+    print(res.output)
+    assert f"HOST: 0.0.0.0" in conf
+
 
 def test_create_admin(test_app, cli_runner, click_cli):
     db = get_db()
     nb_users = len(db.search(Query().type == "user"))
     cli_runner.invoke(cli,
                        ["create-admin", "__username__"],
-                       input="password\npassword",
-                       env={"ARCHIVY_DATA_DIR": test_app.config["APP_PATH"]})
+                       input="password\npassword")
 
     # need to reconnect to db because it has been modified by different processes
     # so the connection needs to be updated for new changes
@@ -20,7 +129,6 @@ def test_create_admin(test_app, cli_runner, click_cli):
 def test_create_admin_small_password_fails(test_app, cli_runner, click_cli):
     cli_runner.invoke(cli,
                        ["create-admin", "__username__"],
-                       input="short\nshort",
-                       env={"ARCHIVY_DATA_DIR": test_app.config["APP_PATH"]})
+                       input="short\nshort")
     db = get_db()
     assert not len(db.search(Query().type == "user" and Query().username == "__username__"))

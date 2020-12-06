@@ -5,7 +5,6 @@ from tinydb import Query
 
 from archivy import data
 from archivy.search import query_index
-from archivy.config import Config
 from archivy.models import DataObj, User
 from archivy.helpers import get_db
 
@@ -196,5 +195,5 @@ def search_elastic():
     - **query**
     """
     query = request.args.get("query")
-    search_results = query_index(Config.INDEX_NAME, query)
+    search_results = query_index(current_app.config["INDEX_NAME"], query)
     return jsonify(search_results)
