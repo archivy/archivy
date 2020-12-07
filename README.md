@@ -25,14 +25,15 @@ Features:
 Upcoming:
 
 - Links between different knowledge base items
-- Multi User System.
+- Multi User System with permission setup.
+- Major improvements in UI
 - Option to compile data to a static site.
 
 ## Quickstart
 
 Begin by installing [Pandoc](https://pandoc.org), the document converter archivy uses.
 
-Install with `pip install archivy`.
+Then install archivy source: `pip install archivy`.
 
 Then run this and enter a password to create a new user:
 
