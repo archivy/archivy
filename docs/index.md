@@ -25,14 +25,15 @@ Features:
 Upcoming:
 
 - Links between different knowledge base items
-- Multi User System.
+- Multi User System with permission setup.
+- Major improvements in UI
 - Option to compile data to a static site.
 
 ## Quickstart
 
 Begin by installing [Pandoc](https://pandoc.org), the document converter archivy uses.
 
-Install with `pip install archivy`.
+Then install with `pip install archivy`.
 
 Then run this and enter a password to create a new user:
 
@@ -43,3 +44,6 @@ $ archivy create-admin <username>
 Finally, execute `archivy run` to serve the app. You can open it at https://localhost:5000 and login with the credentials you entered before.
 
 You can then use archivy to create notes, bookmarks and then organize and store information.
+
+
+[Changelog](https://github.com/archivy/archivy/releases)
