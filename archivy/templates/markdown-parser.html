@@ -1,0 +1,32 @@
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-it-texmath/css/texmath.min.css">
+<link rel="stylesheet" href="/static/monokai.css">
+
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@12.0.3/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.2/dist/markdown-it-footnote.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it-mark@3.0.0/dist/markdown-it-mark.min.js"></script>
+<script>
+	const tm = texmath.use(katex);
+	window.parser = window.markdownit(
+		{
+			linkify: true,
+			highlight: function (str, lang) {
+    			if (lang && hljs.getLanguage(lang)) {
+      				try {
+        				return '<pre class="hljs"><code>' +
+               				hljs.highlight(lang, str, true).value +
+               				'</code></pre>';
+      				} catch (__) {}
+				}
+			}
+    	})
+			.use(tm, { engine: katex,
+					   delimiters:'dollars',
+					   katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
+					 })
+			.use(window.markdownitFootnote)
+			.use(window.markdownitMark);
+</script>

@@ -177,7 +177,6 @@ code,
 samp {
     background-color: var(--color-accent);
     border-radius: var(--border-radius);
-    color: var(--color-text);
     display: inline-block;
     margin: 0 0.1rem;
     padding: 0 0.5rem;

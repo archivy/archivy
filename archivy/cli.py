@@ -2,7 +2,6 @@ import os
 from pkg_resources import iter_entry_points
 
 import click
-import pypandoc
 from click_plugins import with_plugins
 from flask.cli import FlaskGroup, load_dotenv, shell_command
 
@@ -65,14 +64,6 @@ def init(ctx):
 
     config.HOST = click.prompt("Host [localhost (127.0.0.1)]",
                                type=str, default="127.0.0.1", show_default=False)
-
-    try:
-        pypandoc.get_pandoc_version()
-    except OSError:
-        download_pandoc = click.confirm("Archivy requires Pandoc to be installed. "
-                                        "Do you want us to install it automatically?")
-        if download_pandoc:
-            pypandoc.download_pandoc()
 
     config.override({"USER_DIR": data_dir})
     app.config["USER_DIR"] = data_dir

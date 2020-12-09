@@ -17,11 +17,11 @@
 {% set i = namespace(value=0) %}
 {{ draw_dir(dataobjs, 0, 1) }}
 
-</script>
+{% include "markdown-parser.html" %}
 <script>
   // search functionality
   {% if search_enabled %}  
-    function appendHit(hit,  query) {
+    function appendHit(hit) {
       let hitsDiv = document.getElementById("searchHits");
       let hitLi = document.createElement("li");
       let body = document.createElement("div");
@@ -29,7 +29,7 @@
       {
         for(let i = 0; i < hit["highlight"].length; i++)
         {
-          body.innerHTML += hit["highlight"][i];  
+          body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);  
         }
       }
       let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
@@ -39,6 +39,7 @@
       hitLi.append(body);
       hitsDiv.appendChild(hitLi);
     }
+
     let input = document.getElementById("searchBar");
     input.addEventListener('input', async function(e) {
       let query = input.value;
@@ -49,12 +50,12 @@
         });
         if (searchQuery.ok && query == input.value) {  
           let data = await searchQuery.json(), i = 0;
-          document.getElementById("searchHits").innerHTML = data;
-          /*
+		  document.getElementById("searchHits").innerHTML = "";
           data.forEach(function(hit)
           {
-            appendHit(hit, input.value);
-          })*/
+            appendHit(hit);
+          })
+	
         }
       }
     });
