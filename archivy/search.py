@@ -62,7 +62,6 @@ def query_index(index, query):
         formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"]}
         if "highlight" in hit:
             formatted_hit["highlight"] = hit["highlight"]["content"]
-            print(formatted_hit["highlight"])
         hits.append(formatted_hit)
 
     return hits

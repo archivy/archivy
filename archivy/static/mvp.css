@@ -233,7 +233,6 @@ small {
 }
 
 sup {
-    background-color: var(--color-secondary);
     border-radius: var(--border-radius);
     color: var(--color-bg);
     font-size: xx-small;

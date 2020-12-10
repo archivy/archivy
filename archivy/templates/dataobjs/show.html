@@ -2,7 +2,7 @@
 
 {% block content %}
 	{% include "markdown-parser.html" %}
-	<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+	<link rel="stylesheet" href="/static/editor.css">
 	<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
 	<h2>{{ dataobj['title'] }}</h2>
 	<p>You can edit this file at <a href="file://{{ dataobj['fullpath'] }}">{{dataobj['fullpath']}}</a></p>
@@ -35,9 +35,10 @@
 				    		| replace("\\", "\\\\")
 							| replace("`", "\\`")
 							| replace("${", "\\${")
+							| safe
 		%}
 		document.getElementById("content").innerHTML = window.parser.render(`
-		  {{ content }}
+		  \n{{ content }}
 		`)
 		async function openData(id, btn)
 		{
@@ -59,6 +60,9 @@
 		window.addEventListener("load", function() {
 		  let editor = new EasyMDE({
 			autofocus: true,
+			previewRender: function(content) {
+			  return window.parser.render(content);  
+			},
 			toolbar: [
 			  "bold", 
 			  "italic", 
@@ -68,10 +72,16 @@
 			  "quote",
 			  "link",
 			  "image",
-			  "side-by-side",
-			  "preview",
-			  "fullscreen",
 			  "table",
+			  {
+			    name: "LaTeX",
+				className: "fa fa-math",
+				action: (editor) => {
+					editor.value(editor.value() + "\n$$\n$$")
+				}
+			  },
+			  "side-by-side",
+			  "fullscreen",
 			  {
 				name: "save",
 				action: (editor) => {
@@ -93,7 +103,6 @@
 				name: "status",
 				className: "fa fa-check-circle status"
 			  },
-			  "guide"
 			],
 			shortcuts: {
 				"save": "Ctrl-S"

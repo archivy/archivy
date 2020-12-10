@@ -178,6 +178,15 @@ mark {
 	margin-bottom: 1em;
 	padding: 7px;
 }
+
+.LaTeX {
+	width: 50px !important;
+}
+.LaTeX:before {
+	content: "LaTeX"
+}
+
+
 @media only screen and (max-width: 500px) {
   .content {
     width: 90%;
