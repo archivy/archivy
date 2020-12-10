@@ -102,8 +102,9 @@ def bookmark_fixture(test_app, mocked_responses):
         <head><title>Example</title></head><body><p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit
         <script>console.log("this should be sanitized")</script>
-        <img src="/images/image1.png"> 
-        <a href="/testing-absolute-url">
+        <img src="/images/image1.png">
+        <a href="/testing-absolute-url">link</a>
+        <a href"/empty-link"></a>
         </p></body></html>
     """)
 
