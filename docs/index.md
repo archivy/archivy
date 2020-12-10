@@ -31,9 +31,7 @@ Upcoming:
 
 ## Quickstart
 
-Begin by installing [Pandoc](https://pandoc.org), the document converter archivy uses.
-
-Then install with `pip install archivy`.
+Install with `pip install archivy`.
 
 Then run this and enter a password to create a new user:
 
