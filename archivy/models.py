@@ -146,9 +146,9 @@ class DataObj:
                 if not tag.string:
                     # delete tag
                     tag.decompose()
-                    
-            elif tag.name == "img" and tag.has_attr("src") and (tag["src"].startswith("/") 
-                    or tag["src"].startswith("./")):
+
+            elif tag.name == "img" and tag.has_attr("src") and (tag["src"].startswith("/")
+                                                                or tag["src"].startswith("./")):
 
                 tag["src"] = urljoin(url, tag["src"])
 

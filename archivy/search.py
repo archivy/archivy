@@ -1,5 +1,3 @@
-from pypandoc import convert_text
-
 from archivy.helpers import get_elastic_client
 
 
