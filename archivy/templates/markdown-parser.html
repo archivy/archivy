@@ -6,6 +6,8 @@
 <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.0.3/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.2/dist/markdown-it-footnote.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"></script>
+<script src="https://unpkg.com/markdown-it-anchor/dist/markdownItAnchor.umd.js"></script>
+<script src="https://unpkg.com/markdown-it-toc-done-right/dist/markdownItTocDoneRight.umd.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-mark@3.0.0/dist/markdown-it-mark.min.js"></script>
 <script>
@@ -28,5 +30,7 @@
 					   katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
 					 })
 			.use(window.markdownitFootnote)
-			.use(window.markdownitMark);
+			.use(window.markdownitMark)
+			.use(window.markdownItAnchor, {permalink: true, permalinkSymbol: '¶'})
+			.use(window.markdownItTocDoneRight);
 </script>

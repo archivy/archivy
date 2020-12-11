@@ -37,9 +37,7 @@
 							| replace("${", "\\${")
 							| safe
 		%}
-		document.getElementById("content").innerHTML = window.parser.render(`
-		  \n{{ content }}
-		`)
+		document.getElementById("content").innerHTML = window.parser.render(`\${toc}\n{{ content }}`)
 		async function openData(id, btn)
 		{
 		  let res = await fetch(`${SCRIPT_ROOT}/dataobj/local_edit/${id}`, {
@@ -61,7 +59,7 @@
 		  let editor = new EasyMDE({
 			autofocus: true,
 			previewRender: function(content) {
-			  return window.parser.render(content);  
+			  return window.parser.render("${toc}\n\n" + content);  
 			},
 			toolbar: [
 			  "bold", 
@@ -77,7 +75,7 @@
 			    name: "LaTeX",
 				className: "fa fa-math",
 				action: (editor) => {
-					editor.value(editor.value() + "\n$$\n$$")
+				  editor.value(editor.value() + "\n$$\n$$")
 				}
 			  },
 			  "side-by-side",
@@ -105,13 +103,11 @@
 			  },
 			],
 			shortcuts: {
-				"save": "Ctrl-S"
+			  "save": "Ctrl-S"
 			}
 		  });
 		  // escape text for template literal - double slashes for python rendering and js rendering
-		  editor.value(`
-			{{ content }}
-		  `)
+		  editor.value(`{{ content }}`)
 		  // document.querySelector(".side-by-side").click();
 
 		  let statusBtn = document.querySelector(".status .fa");
