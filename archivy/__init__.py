@@ -45,6 +45,7 @@ app.register_blueprint(api_bp, url_prefix='/api')
 # compress files
 Compress(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     db = helpers.get_db()
