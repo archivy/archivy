@@ -3,6 +3,7 @@ from pathlib import Path
 
 import elasticsearch
 from flask import Flask
+from flask_compress import Compress
 from flask_login import LoginManager
 
 from archivy import helpers
@@ -41,6 +42,8 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 app.register_blueprint(api_bp, url_prefix='/api')
 
+# compress files
+Compress(app)
 
 @login_manager.user_loader
 def load_user(user_id):
