@@ -1,10 +1,9 @@
 import logging
-import sys
 from pathlib import Path
 
 import elasticsearch
-import pypandoc
 from flask import Flask
+from flask_compress import Compress
 from flask_login import LoginManager
 
 from archivy import helpers
@@ -24,14 +23,6 @@ except FileNotFoundError:
 
 app.config.from_object(config)
 
-# check if pandoc is installed
-try:
-    pypandoc.get_pandoc_version()
-except OSError:
-    app.logger.error("Pandoc installation not found.\n"
-                     + "Please install it at https://pandoc.org/installing.html")
-    sys.exit(1)
-
 (Path(app.config["USER_DIR"]) / "data").mkdir(parents=True, exist_ok=True)
 
 if app.config["ELASTICSEARCH_CONF"]["enabled"]:
@@ -50,6 +41,9 @@ login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
 app.register_blueprint(api_bp, url_prefix='/api')
+
+# compress files
+Compress(app)
 
 
 @login_manager.user_loader

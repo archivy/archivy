@@ -1,11 +1,10 @@
 import os
 
 import frontmatter
-import pypandoc
-from tinydb import Query
 from flask import render_template, flash, redirect, request, url_for
-from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
+from tinydb import Query
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from archivy.models import DataObj, User
 from archivy import data, app, forms
@@ -101,17 +100,10 @@ def show_dataobj(dataobj_id):
     if request.args.get("raw") == "1":
         return frontmatter.dumps(dataobj)
 
-    extra_pandoc_args = ["--highlight-style="
-                         + app.config['PANDOC_HIGHLIGHT_THEME'],
-                         "--standalone"]
-
-    content = pypandoc.convert_text(dataobj.content, 'html', format='md',
-                                    extra_args=extra_pandoc_args)
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
         dataobj=dataobj,
-        content=content,
         form=forms.DeleteDataForm())
 
 

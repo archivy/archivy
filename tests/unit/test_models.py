@@ -51,7 +51,10 @@ def test_bookmark_sanitization(test_app, client, mocked_responses,
     # test script is sanitized 
     assert bookmark_fixture.content.find("<script>") == -1
     # test relative urls in the HTML are remapped to an absolute urls
-    assert bookmark_fixture.content.find("example.com/images/image1.png") != -1
-    assert bookmark_fixture.content.find("example.com/testing-absolute-url") != -1
+    assert "example.com/images/image1.png" in bookmark_fixture.content
+    assert "example.com/testing-absolute-url" in bookmark_fixture.content
+
+    # check empty link has been cleared
+    assert "[](empty-link)" not in bookmark_fixture.content
 
 

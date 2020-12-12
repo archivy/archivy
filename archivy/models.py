@@ -3,7 +3,6 @@ from typing import List, Optional
 from urllib.parse import urljoin
 
 import frontmatter
-from pypandoc import convert_text
 import requests
 import validators
 from attr import attrs, attrib
@@ -11,6 +10,7 @@ from attr.validators import instance_of, optional
 from bs4 import BeautifulSoup
 from flask import current_app, flash
 from flask_login import UserMixin
+from html2text import html2text
 from tinydb import Query
 from werkzeug.security import generate_password_hash
 
@@ -136,17 +136,24 @@ class DataObj:
             if getattr(beautsoup, tag):
                 getattr(beautsoup, tag).extract()
         resources = beautsoup.find_all(["a", "img"])
-        for external in resources:
-            if external.name == "a" and \
-                    external.has_attr("href") and \
-                    external["href"].startswith("/"):
-                external["href"] = urljoin(url, external["href"])
-            elif external.name == "img" and \
-                    external.has_attr("src") and \
-                    external["src"].startswith("/"):
-                external["src"] = urljoin(url, external["src"])
+        for tag in resources:
+            if tag.name == "a":
+                if tag.has_attr("href") and (tag["href"].startswith("/")):
+                    tag["href"] = urljoin(url, tag["href"])
 
-        return convert_text(str(beautsoup), "md", format="html")
+                # check it's a normal link and not some sort of image
+                # string returns the text content of the tag
+                if not tag.string:
+                    # delete tag
+                    tag.decompose()
+
+            elif tag.name == "img" and tag.has_attr("src") and (tag["src"].startswith("/")
+                                                                or tag["src"].startswith("./")):
+
+                tag["src"] = urljoin(url, tag["src"])
+
+        res = html2text(str(beautsoup), bodywidth=0)
+        return res
 
     def validate(self):
         """Verifies that the content matches required validation constraints"""

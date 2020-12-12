@@ -1,0 +1,34 @@
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-it-texmath/css/texmath.min.css">
+<link rel="stylesheet" href="/static/monokai.css">
+<script src="/static/math.js">
+</script>
+<script src="/static/highlight.js"></script> 
+<script src="/static/parser.js"></script>
+<script>
+	//window.onload = () => {
+	  window.parser = window.markdownit(
+	    {
+		  linkify: true,
+		    highlight: function (str, lang) {
+			  if (lang && hljs.getLanguage(lang))
+			  {
+			    try {
+        	      return '<pre class="hljs"><code>' +
+                    hljs.highlight(lang, str, true).value +
+               	    '</code></pre>';
+      		    } catch (__) {}
+		      }
+		    }
+        })
+
+		.use(texmath.use(katex), { engine: katex,
+		  delimiters:'dollars',
+		  katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
+		})
+	    .use(window.markdownitFootnote)
+	    .use(window.markdownitMark)
+	    .use(window.markdownItAnchor, {permalink: true, permalinkSymbol: '¶'})
+	    .use(window.markdownItTocDoneRight);
+	//}
+</script>

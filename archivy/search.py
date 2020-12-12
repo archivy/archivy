@@ -1,5 +1,3 @@
-from pypandoc import convert_text
-
 from archivy.helpers import get_elastic_client
 
 
@@ -47,8 +45,8 @@ def query_index(index, query):
             "highlight": {
                 "fields": {
                     "content": {
-                        "pre_tags": "<span class='matches'>",
-                        "post_tags": "</span>",
+                        "pre_tags": "==",
+                        "post_tags": "==",
                         "boundary_max_scan": 200,
                         "fragment_size": 0
                     }
@@ -57,12 +55,11 @@ def query_index(index, query):
         }
     )
 
-    text = ""
+    hits = []
     for hit in search["hits"]["hits"]:
-        text += f"<li>[{hit['_source']['title']}](/dataobj/{hit['_id']})\n\n"
+        formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"]}
         if "highlight" in hit:
-            for highlight in hit["highlight"]["content"]:
-                text += f"{highlight}"
-        text += "</li>"
+            formatted_hit["highlight"] = hit["highlight"]["content"]
+        hits.append(formatted_hit)
 
-    return convert_text(text, "html", format="md")
+    return hits

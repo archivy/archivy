@@ -103,7 +103,7 @@ body form {
   color: white;
 }
 
-.matches {
+mark {
 	background-color: #f6efa6;
 }
 
@@ -178,6 +178,15 @@ body form {
 	margin-bottom: 1em;
 	padding: 7px;
 }
+
+.LaTeX {
+	width: 50px !important;
+}
+.LaTeX:before {
+	content: "LaTeX"
+}
+
+
 @media only screen and (max-width: 500px) {
   .content {
     width: 90%;

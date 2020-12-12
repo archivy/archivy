@@ -29,7 +29,7 @@ type: note
 ...
 ```
 
-Archivy uses the [python-frontmatter](https://python-frontmatter.readthedocs.io/en/latest/) package to handle the parsing of these files. They can be organized into user-specified sub-directories. Check out [the reference](filesystem_layer.md) to see the methods archivy uses for this. We also use [pandoc](https://pandoc.org) for the conversion of different formats, and plan on using this onwards to support many more formats (PDF, EPUB, etc...)
+Archivy uses the [python-frontmatter](https://python-frontmatter.readthedocs.io/en/latest/) package to handle the parsing of these files. They can be organized into user-specified sub-directories. Check out [the reference](filesystem_layer.md) to see the methods archivy uses for this.
 
 - Another storage method Archivy uses is [TinyDB](https://tinydb.readthedocs.io/en/stable/). This is a small, simple document-oriented database archivy gives you access to for persistent data you might want to store in archivy plugins. Use [`helpers.get_db`](/reference/helpers/#archivy.helpers.get_db) to call the database.
 

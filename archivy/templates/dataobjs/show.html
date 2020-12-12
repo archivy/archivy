@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-	<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+	{% include "markdown-parser.html" %}
+	<link rel="stylesheet" href="/static/editor.css">
+	<script async src="/static/editor.js"></script>
 	<h2>{{ dataobj['title'] }}</h2>
-	<p>You can edit this file at <a href="file://{{ dataobj['fullpath'] }}">{{dataobj['fullpath']}}</a></p>
     {{ ", ".join(dataobj['tags']) }}
 	<br>
 	{{ dataobj["desc"] }}
@@ -19,7 +19,6 @@
 	<br>
 	<div id="content-cont">
 		<div id="content">
-			{{ content | safe }}
 		</div>
 		<textarea>
 		</textarea>
@@ -31,6 +30,13 @@
         <p>{{ form.submit() }}</p>
     </form>
 	<script>
+		{% set content = dataobj["content"]
+				    		| replace("\\", "\\\\")
+							| replace("`", "\\`")
+							| replace("${", "\\${")
+							| safe
+		%}
+		document.getElementById("content").innerHTML = window.parser.render(`\${toc}\n{{ content }}`)
 		async function openData(id, btn)
 		{
 		  let res = await fetch(`${SCRIPT_ROOT}/dataobj/local_edit/${id}`, {
@@ -51,6 +57,9 @@
 		window.addEventListener("load", function() {
 		  let editor = new EasyMDE({
 			autofocus: true,
+			previewRender: function(content) {
+			  return window.parser.render("${toc}\n\n" + content);  
+			},
 			toolbar: [
 			  "bold", 
 			  "italic", 
@@ -60,10 +69,16 @@
 			  "quote",
 			  "link",
 			  "image",
-			  "side-by-side",
-			  "preview",
-			  "fullscreen",
 			  "table",
+			  {
+			    name: "LaTeX",
+				className: "fa fa-math",
+				action: (editor) => {
+				  editor.value(editor.value() + "\n$$\n$$")
+				}
+			  },
+			  "side-by-side",
+			  "fullscreen",
 			  {
 				name: "save",
 				action: (editor) => {
@@ -85,19 +100,13 @@
 				name: "status",
 				className: "fa fa-check-circle status"
 			  },
-			  "guide"
 			],
 			shortcuts: {
-				"save": "Ctrl-S"
+			  "save": "Ctrl-S"
 			}
 		  });
 		  // escape text for template literal - double slashes for python rendering and js rendering
-		  editor.value(
-			  `{{ dataobj["content"]
-				    .replace("\\", "\\\\")
-					.replace("`", "\\`")
-					.replace("${", "\\${") | safe }}` 
-				)
+		  editor.value(`{{ content }}`)
 		  // document.querySelector(".side-by-side").click();
 
 		  let statusBtn = document.querySelector(".status .fa");
@@ -109,12 +118,7 @@
 		  editorDiv.classList.add("hidden");
 		})
 
-		function save(editor)
-		{
 
-
-
-		}
 		function toggleEditor(btn)
 		{
 		  oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
