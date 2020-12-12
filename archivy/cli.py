@@ -51,9 +51,9 @@ def init(ctx):
                                "when you run archivy, you must have ES installed."
                                "See https://archivy.github.io/setup-search/ for more info.")
     if es_enabled:
-        config.ELASTICSEARCH_CONF["enabled"] = 1
+        config.SEARCH_CONF["enabled"] = 1
     else:
-        delattr(config, "ELASTICSEARCH_CONF")
+        delattr(config, "SEARCH_CONF")
 
     create_new_user = click.confirm("Would you like to create a new admin user?")
     if create_new_user:
@@ -85,14 +85,16 @@ def config():
 def run():
     click.echo('Running archivy...')
     load_dotenv()
-    watcher = Watcher(app)
-    watcher.start()
+    if app.config["SEARCH_CONF"]["enable_watcher"]:
+        watcher = Watcher(app)
+        watcher.start()
     os.environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
     app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
     click.echo("Stopping archivy watcher")
-    watcher.stop()
-    watcher.join()
+    if app.config["SEARCH_CONF"]["enable_watcher"]:
+        watcher.stop()
+        watcher.join()
 
 
 @cli.command(short_help="Creates a new admin user")

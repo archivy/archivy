@@ -17,10 +17,10 @@ Here's an overview of the different values you can set and modify.
 
 ### Elasticsearch
 
-All of these are children of the `ELASTICSEARCH_CONF` object, like this in the yaml:
+All of these are children of the `SEARCH_CONF` object, like this in the yaml:
 
 ```yaml
-ELASTICSEARCH_CONF:
+SEARCH_CONF:
   enabled:
   url:
   # ...
@@ -31,6 +31,7 @@ This part will not be configured by default unless you specify you wish to integ
 | Variable                | Default                        | Description                           |
 |-------------------------|--------------------------------|---------------------------------------|
 | `enabled`               | 1                              |                                       |
+| `enable_watcher`        | 1                              | Whether or not to run the watcher that auto-syncs changes to dataobjs to Elasticsearch. Otherwise you can handle syncing yourself through `archivy search-index` |
 | `url`                   | http://localhost:9200          | Url to the elasticsearch server       |
 | `search_conf`           | Long dict of ES config options | Configuration of Elasticsearch [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html), [mappings](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) and general settings. |
 

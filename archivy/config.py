@@ -15,7 +15,8 @@ class Config(object):
 
         self.PANDOC_HIGHLIGHT_THEME = "pygments"
 
-        self.ELASTICSEARCH_CONF = {
+        self.SEARCH_CONF = {
+                "enable_watcher": True,
                 "enabled": 0,
                 "url": "http://localhost:9200",
                 "index_name": "dataobj",
@@ -57,8 +58,8 @@ class Config(object):
     def override(self, user_conf: dict):
         for k, v in user_conf.items():
             # handle ES options, don't override entire dict if one key is passed
-            if k == "ELASTICSEARCH_CONF":
+            if k == "SEARCH_CONF":
                 for subkey, subval in v.items():
-                    self.ELASTICSEARCH_CONF[subkey] = subval
+                    self.SEARCH_CONF[subkey] = subval
             else:
                 setattr(self, k, v)

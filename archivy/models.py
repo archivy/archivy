@@ -194,7 +194,7 @@ class DataObj:
                                 path=self.path,
                                 )
 
-            add_to_index(current_app.config["ELASTICSEARCH_CONF"]["index_name"], self)
+            add_to_index(current_app.config["SEARCH_CONF"]["index_name"], self)
             return self.id
         return False
 

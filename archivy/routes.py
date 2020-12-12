@@ -37,7 +37,7 @@ def index():
     return render_template(
             "home.html",
             title="Home",
-            search_enabled=app.config["ELASTICSEARCH_CONF"]["enabled"],
+            search_enabled=app.config["SEARCH_CONF"]["enabled"],
             )
 
 
