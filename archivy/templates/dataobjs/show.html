@@ -3,9 +3,8 @@
 {% block content %}
 	{% include "markdown-parser.html" %}
 	<link rel="stylesheet" href="/static/editor.css">
-	<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+	<script async src="/static/editor.js"></script>
 	<h2>{{ dataobj['title'] }}</h2>
-	<p>You can edit this file at <a href="file://{{ dataobj['fullpath'] }}">{{dataobj['fullpath']}}</a></p>
     {{ ", ".join(dataobj['tags']) }}
 	<br>
 	{{ dataobj["desc"] }}

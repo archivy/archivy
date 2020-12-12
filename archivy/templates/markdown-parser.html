@@ -1,41 +1,34 @@
-{% set on_home_page = dataobj is not defined %}
-<!-- find better check here for math - maybe regex? -->
-{% set enable_latex = on_home_page or "$" in dataobj["content"] %}
-{% set enable_code_highlighting = on_home_page or "```" in dataobj["content"] %}
-{% if enable_latex %}
-	<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-it-texmath/css/texmath.min.css">
-	<script src="/static/math.js"></script>
-{% endif %}
-{% if enable_code_highlighting %}
-	<link rel="stylesheet" href="/static/monokai.css">
-	<script src="/static/highlight.js"></script> 
-{% endif %}
-
-<script src="/static/editor.js"></script>
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-it-texmath/css/texmath.min.css">
+<link rel="stylesheet" href="/static/monokai.css">
+<script src="/static/math.js">
+</script>
+<script src="/static/highlight.js"></script> 
+<script src="/static/parser.js"></script>
 <script>
-	window.parser = window.markdownit(
-	  {
-		linkify: true,
-		{% if enable_code_highlighting %}
-		  highlight: function (str, lang) {
-			try {
-			  let highlighted = (lang && hljs.getLanguage(lang)) ? hljs.highlight(lang, str, true) : hljs.highlightAuto(str);
-        	  return '<pre class="hljs"><code>' +
-                highlighted.value +
-               	'</code></pre>';
-      		} catch (__) {}
-		  }
-		{% endif %}
-      })
-	  {% if enable_latex %}
-	  	.use(texmath.use(katex), { engine: katex,
-			delimiters:'dollars',
-			katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
+	//window.onload = () => {
+	  window.parser = window.markdownit(
+	    {
+		  linkify: true,
+		    highlight: function (str, lang) {
+			  if (lang && hljs.getLanguage(lang))
+			  {
+			    try {
+        	      return '<pre class="hljs"><code>' +
+                    hljs.highlight(lang, str, true).value +
+               	    '</code></pre>';
+      		    } catch (__) {}
+		      }
+		    }
+        })
+
+		.use(texmath.use(katex), { engine: katex,
+		  delimiters:'dollars',
+		  katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
 		})
-	  {% endif %}
-	  .use(window.markdownitFootnote)
-	  .use(window.markdownitMark)
-	  .use(window.markdownItAnchor, {permalink: true, permalinkSymbol: '¶'})
-	  .use(window.markdownItTocDoneRight);
+	    .use(window.markdownitFootnote)
+	    .use(window.markdownitMark)
+	    .use(window.markdownItAnchor, {permalink: true, permalinkSymbol: '¶'})
+	    .use(window.markdownItTocDoneRight);
+	//}
 </script>
