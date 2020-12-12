@@ -1,4 +1,3 @@
-
 ![logo](docs/img/logo.png)
 
 Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
@@ -12,6 +11,7 @@ Features:
 - If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
 - Login module that allows you to host the service on a server
 - Plugin system to allow people to publish and write extensions to archivy
+- Notes are stored in an extended markdown format with footnotes, LaTeX math rendering, syntax highlighting and more. 
 - CLI that provides a nice backend interface to the app
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
