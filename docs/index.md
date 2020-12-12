@@ -20,7 +20,7 @@ Features:
 - Dark Theme
 
 
-![demo (low res)](https://github.com/Uzay-G/archivy/raw/master/archivy.gif)
+![demo (low res)](https://www.uzpg.me/assets/images/archivy.gif)
 
 
 Upcoming:
