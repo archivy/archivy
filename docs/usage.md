@@ -14,13 +14,14 @@ Commands:
   init          Initialise your archivy application
   run           Runs archivy web application
   shell         Run a shell in the app context.
+  unformat      Convert archivy-formatted files back to normal markdown.
 ```
 
 Make sure you've configured Archivy by running `archivy init`, as outlined in [install](install.md).
 
 If you'd like to add users, you can simply create new admin users with the `create-admin` command. Only give credentials to trusted people.
 
-If you have normal md files you'd like to migrate to archivy, move your files into your archivy data directory and then run `archivy format <filenames>` to make them conform to [archivy's formatting](/reference/architecture/#data-storage).
+If you have normal md files you'd like to migrate to archivy, move your files into your archivy data directory and then run `archivy format <filenames>` to make them conform to [archivy's formatting](/reference/architecture/#data-storage). Run `archivy unformat` to convert the other way around.
 
 The `config` command allows you to play around with [configuration](config.md) and use `shell` if you'd like to play around with the archivy python API.
 
