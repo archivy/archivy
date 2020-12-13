@@ -1,12 +1,12 @@
 import os
-import tempfile
+from tempfile import mkdtemp
 
 from tinydb import Query
 
 from archivy.cli import cli
 from archivy.helpers import get_db
 from archivy.models import DataObj
-from archivy.data import get_items
+from archivy.data import get_items, create_dir, get_data_dir
 
 
 def test_initialization(test_app, cli_runner, click_cli):
@@ -69,7 +69,7 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
 
 def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
     conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
-    data_dir = tempfile.mkdtemp()
+    data_dir = mkdtemp()
     
     with cli_runner.isolated_filesystem():
         # input data dir - localhost - don't use ES and don't create user
@@ -146,11 +146,12 @@ def test_format_multiple_md_file(test_app, cli_runner, click_cli):
         for filename in files:
             assert f"Formatted and moved {filename}" in res.output
 
-def test_format_directory_in_data_dir(test_app, cli_runner, click_cli):
+def test_format_entire_directory(test_app, cli_runner, click_cli):
     with cli_runner.isolated_filesystem():
-        files = ["unformatted/test-note-1.md", "unformatted/test-note-2.md"]
+        files = ["unformatted/test-note-1.md", "unformatted/test-note-2.md", "unformatted/nested/test-note-3.md"]
         os.mkdir("data")
         os.mkdir("data/unformatted")
+        os.mkdir("data/unformatted/nested")
 
         for filename in files:
             with open("data/" + filename, "w") as f:
@@ -166,3 +167,25 @@ def test_format_directory_in_data_dir(test_app, cli_runner, click_cli):
             # assert directory files got moved correctly
             assert f"Formatted and moved {filename}" in res.output
         assert(os.path.abspath("") + "/data/unformatted") in res.output
+
+
+def test_unformat_multiple_md_file(test_app, cli_runner, click_cli, bookmark_fixture, note_fixture):
+    out_dir = mkdtemp()
+    create_dir("")
+    res = cli_runner.invoke(cli, ["unformat", str(bookmark_fixture.fullpath), str(note_fixture.fullpath), out_dir])
+    assert f"Unformatted and moved {bookmark_fixture.fullpath} to {out_dir}/{bookmark_fixture.title}" in res.output
+    assert f"Unformatted and moved {note_fixture.fullpath} to {out_dir}/{note_fixture.title}" in res.output
+
+
+def test_unformat_directory(test_app, cli_runner, click_cli, bookmark_fixture, note_fixture):
+    out_dir = mkdtemp()
+
+    # create directory to store archivy note
+    note_dir = "note-dir"
+    create_dir(note_dir)
+    nested_note = DataObj(type="note", title="Nested note", path=note_dir)
+    nested_note.insert()
+
+    # unformat directory
+    res = cli_runner.invoke(cli, ["unformat", os.path.join(get_data_dir(), note_dir), out_dir])
+    assert f"Unformatted and moved {nested_note.fullpath} to {out_dir}/{note_dir}/{nested_note.title}" in res.output

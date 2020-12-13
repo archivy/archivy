@@ -9,7 +9,7 @@ from archivy import app
 from archivy.check_changes import Watcher
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
-from archivy.data import open_file, reformat_file
+from archivy.data import open_file, format_file, unformat_file
 from archivy.helpers import load_config, write_config
 from archivy.models import User
 
@@ -118,4 +118,11 @@ def create_admin(username, password):
 @click.argument("filenames", type=click.Path(exists=True), nargs=-1)
 def format(filenames):
     for path in filenames:
-        reformat_file(path)
+        format_file(path)
+
+@cli.command(short_help="Convert archivy-formatted files back to normal markdown.")
+@click.argument("filenames", type=click.Path(exists=True), nargs=-1)
+@click.argument("output_dir", type=click.Path(exists=True, file_okay=False))
+def unformat(filenames, output_dir):
+    for path in filenames:
+        unformat_file(path, output_dir)
