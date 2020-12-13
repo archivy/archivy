@@ -20,7 +20,6 @@ class ModifHandler(FileSystemEventHandler):
         self.ELASTIC = app.config["SEARCH_CONF"]["enabled"]
         self.data_dir = os.path.join(app.config["USER_DIR"], "data" + SEP)
 
-
     def on_modified(self, event):
         with self.app.app_context():
             filename = event.src_path.split(SEP)[-1]
@@ -32,7 +31,6 @@ class ModifHandler(FileSystemEventHandler):
                     search.add_to_index(
                             self.app.config["SEARCH_CONF"]["index_name"],
                             dataobj)
-
 
     def on_deleted(self, event):
         with self.app.app_context():

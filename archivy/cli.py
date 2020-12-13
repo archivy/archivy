@@ -120,6 +120,7 @@ def format(filenames):
     for path in filenames:
         format_file(path)
 
+
 @cli.command(short_help="Convert archivy-formatted files back to normal markdown.")
 @click.argument("filenames", type=click.Path(exists=True), nargs=-1)
 @click.argument("output_dir", type=click.Path(exists=True, file_okay=False))
