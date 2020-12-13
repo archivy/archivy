@@ -58,7 +58,7 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     conf = open(conf_path).read()
 
     # assert ES Config is saved
-    assert "ELASTICSEARCH" in conf
+    assert "SEARCH_CONF" in conf
     assert "enabled: 1" in conf
     assert "url: http://localhost:9200" in conf
 
@@ -132,3 +132,37 @@ def test_create_admin_small_password_fails(test_app, cli_runner, click_cli):
                        input="short\nshort")
     db = get_db()
     assert not len(db.search(Query().type == "user" and Query().username == "__username__"))
+
+
+def test_format_multiple_md_file(test_app, cli_runner, click_cli):
+    with cli_runner.isolated_filesystem():
+        files = ["test-note-1.md", "test-note-2.md"]
+        for filename in files:
+            with open(filename, "w") as f:
+                f.write("Unformatted Test Content")
+
+        res = cli_runner.invoke(cli, ["format"] + files)
+
+        for filename in files:
+            assert f"Formatted and moved {filename}" in res.output
+
+def test_format_directory_in_data_dir(test_app, cli_runner, click_cli):
+    with cli_runner.isolated_filesystem():
+        files = ["unformatted/test-note-1.md", "unformatted/test-note-2.md"]
+        os.mkdir("data")
+        os.mkdir("data/unformatted")
+
+        for filename in files:
+            with open("data/" + filename, "w") as f:
+                f.write("Unformatted Test Content")
+
+        # set user_dir to current dir by configuring
+        res = cli_runner.invoke(cli, ["init"], input="\nn\nn\n\n\n")
+
+        # format directory
+        res = cli_runner.invoke(cli, ["format", "data/unformatted/"])
+
+        for filename in files:
+            # assert directory files got moved correctly
+            assert f"Formatted and moved {filename}" in res.output
+        assert(os.path.abspath("") + "/data/unformatted") in res.output

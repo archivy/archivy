@@ -19,46 +19,7 @@ class ModifHandler(FileSystemEventHandler):
         self.app.logger.info("Running watcher")
         self.ELASTIC = app.config["SEARCH_CONF"]["enabled"]
         self.data_dir = os.path.join(app.config["USER_DIR"], "data" + SEP)
-        self.last_formatted = ""
-        self.time_formatted = time.time()
 
-    def is_unformatted(self, filename):
-        return (not re.match(DATAOBJ_REGEX, filename)
-                and not filename.startswith(".")
-                and filename.endswith(".md"))
-
-    def format_file(self, filepath):
-        # weird buggy errors with watchdog where event is triggered twice
-        if filepath == self.last_formatted and time.time() - self.time_formatted <= 40:
-            return
-
-        try:
-            new_file = open(filepath, "r")
-            file_contents = new_file.read()
-            new_file.close()
-        except FileNotFoundError:
-            return
-
-        # extract name of file
-        split_path = filepath.replace(self.data_dir, "").split(SEP)
-        file_title = split_path[-1].split(".")[0]
-        directory = "/".join(split_path[0:-1])
-        note_dataobj = {
-                "title": file_title,
-                "content": file_contents,
-                "type": "note",
-                "path": directory
-            }
-
-        dataobj = models.DataObj(**note_dataobj)
-        dataobj.insert()
-
-        self.last_formatted = filepath
-        self.time_formatted = time.time()
-        try:
-            os.remove(filepath)
-        except FileNotFoundError:
-            return
 
     def on_modified(self, event):
         with self.app.app_context():
@@ -71,8 +32,7 @@ class ModifHandler(FileSystemEventHandler):
                     search.add_to_index(
                             self.app.config["SEARCH_CONF"]["index_name"],
                             dataobj)
-            elif self.is_unformatted(filename):
-                self.format_file(event.src_path)
+
 
     def on_deleted(self, event):
         with self.app.app_context():
@@ -82,13 +42,6 @@ class ModifHandler(FileSystemEventHandler):
                 id = event.src_path.split(SEP)[-1].split("-")[0]
                 search.remove_from_index(self.app.config["SEARCH_CONF"]["index_name"], id)
                 self.app.logger.info(f"{event.src_path} has been removed")
-
-    def on_created(self, event):
-        with self.app.app_context():
-            filename = event.src_path.split(SEP)[-1]
-            # check file is not formatted and is md file and is not temp file
-            if self.is_unformatted(filename):
-                self.format_file(event.src_path)
 
 
 class Watcher(Thread):

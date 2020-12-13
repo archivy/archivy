@@ -9,6 +9,7 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 
 
+
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
     """Returns the directory where dataobjs are stored"""
@@ -178,6 +179,45 @@ def delete_dir(name):
         return True
     except FileNotFoundError:
         return False
+
+def reformat_file(path: str):
+    """
+    Converts normal md of file at `path` to formatted archivy markdown file, with yaml front matter
+    and a filename of format "{id}-{old_filename}.md"
+    """
+
+    from archivy.models import DataObj
+    data_dir = get_data_dir()
+    path = Path(path)
+    if not path.exists():
+        return
+
+    if path.is_dir():
+        for filename in path.iterdir():
+            reformat_file(filename)
+
+    else:
+        new_file = path.open()
+        file_contents = new_file.read()
+        new_file.close()
+        try:
+            # get relative path of object in `data` dir
+            datapath = path.parent.resolve().relative_to(data_dir)
+        except ValueError:
+            datapath = Path()
+
+        note_dataobj = {
+                "title": path.name.replace(".md", ""),
+                "content": file_contents,
+                "type": "note",
+                "path": datapath.name
+            }
+
+        dataobj = DataObj(**note_dataobj)
+        dataobj.insert()
+
+        path.unlink()
+        current_app.logger.info(f"Formatted and moved {str(datapath / path.name)} to {dataobj.fullpath}")
 
 
 def open_file(path):

@@ -53,6 +53,8 @@ def set_max_id(val):
     db.update(operations.set("val", val), Query().name == "max_id")
 
 
+
+
 def get_elastic_client():
     """Returns the elasticsearch client you can use to search and insert / delete data"""
     if not current_app.config["SEARCH_CONF"]["enabled"]:

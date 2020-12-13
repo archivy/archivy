@@ -9,7 +9,7 @@ from archivy import app
 from archivy.check_changes import Watcher
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
-from archivy.data import open_file
+from archivy.data import open_file, reformat_file
 from archivy.helpers import load_config, write_config
 from archivy.models import User
 
@@ -112,3 +112,10 @@ def create_admin(username, password):
         else:
             click.echo("User with given username already exists.")
             return False
+
+
+@cli.command(short_help="Format normal markdown files for archivy.")
+@click.argument("filenames", type=click.Path(exists=True), nargs=-1)
+def format(filenames):
+    for path in filenames:
+        reformat_file(path)
