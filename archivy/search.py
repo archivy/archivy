@@ -46,12 +46,11 @@ def query_index(query):
                 }
             },
             "highlight": {
+                "fragment_size": 0,
                 "fields": {
                     "content": {
                         "pre_tags": "==",
                         "post_tags": "==",
-                        "boundary_max_scan": 200,
-                        "fragment_size": 0
                     }
                 }
             }
