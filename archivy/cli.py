@@ -10,7 +10,7 @@ from archivy import app
 from archivy.check_changes import Watcher
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
-from archivy.data import open_file, format_file, unformat_file, get_items
+from archivy.data import open_file, format_file, unformat_file
 from archivy.helpers import load_config, write_config
 from archivy.models import User, DataObj
 

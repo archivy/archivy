@@ -8,7 +8,7 @@ import validators
 from attr import attrs, attrib
 from attr.validators import instance_of, optional
 from bs4 import BeautifulSoup
-from flask import current_app, flash
+from flask import flash
 from flask_login import UserMixin
 from html2text import html2text
 from tinydb import Query
@@ -200,7 +200,6 @@ class DataObj:
 
     def index(self):
         return add_to_index(self)
-
 
     @classmethod
     def from_md(cls, md_content: str):
