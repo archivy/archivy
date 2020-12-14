@@ -19,7 +19,7 @@ Features:
 - Dark Theme
 
 
-![demo (low res)](https://www.uzpg.me/assets/images/archivy.gif)
+[demo (low res)](https://www.uzpg.me/assets/images/archivy.gif)
 
 
 Upcoming:
