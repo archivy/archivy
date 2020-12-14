@@ -8,6 +8,8 @@ import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
 
+from archivy.search import remove_from_index
+
 
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
@@ -108,6 +110,7 @@ def get_item(dataobj_id):
 def delete_item(dataobj_id):
     """Delete dataobj of given id"""
     file = get_by_id(dataobj_id)
+    remove_from_index(dataobj_id)
     if file:
         Path(file).unlink()
 
@@ -178,6 +181,83 @@ def delete_dir(name):
         return True
     except FileNotFoundError:
         return False
+
+
+def format_file(path: str):
+    """
+    Converts normal md of file at `path` to formatted archivy markdown file, with yaml front matter
+    and a filename of format "{id}-{old_filename}.md"
+    """
+
+    from archivy.models import DataObj
+    data_dir = get_data_dir()
+    path = Path(path)
+    if not path.exists():
+        return
+
+    if path.is_dir():
+        for filename in path.iterdir():
+            format_file(filename)
+
+    else:
+        new_file = path.open()
+        file_contents = new_file.read()
+        new_file.close()
+        try:
+            # get relative path of object in `data` dir
+            datapath = path.parent.resolve().relative_to(data_dir)
+        except ValueError:
+            datapath = Path()
+
+        note_dataobj = {
+                "title": path.name.replace(".md", ""),
+                "content": file_contents,
+                "type": "note",
+                "path": str(datapath)
+            }
+
+        dataobj = DataObj(**note_dataobj)
+        dataobj.insert()
+
+        path.unlink()
+        current_app.logger.info(
+                f"Formatted and moved {str(datapath / path.name)} to {dataobj.fullpath}")
+
+
+def unformat_file(path: str, out_dir: str):
+    """
+    Converts normal md of file at `path` to formatted archivy markdown file, with yaml front matter
+    and a filename of format "{id}-{old_filename}.md"
+    """
+
+    data_dir = get_data_dir()
+    path = Path(path)
+    out_dir = Path(out_dir)
+    if not path.exists() and out_dir.exists() and out_dir.is_dir():
+        return
+
+    if path.is_dir():
+        path.mkdir(exist_ok=True)
+        for filename in path.iterdir():
+            unformat_file(filename, str(out_dir))
+
+    else:
+        dataobj = frontmatter.load(str(path))
+
+        try:
+            # get relative path of object in `data` dir
+            datapath = path.parent.resolve().relative_to(data_dir)
+        except ValueError:
+            datapath = Path()
+
+        # create subdir if doesn't exist
+        (out_dir / datapath).mkdir(exist_ok=True)
+        new_path = out_dir / datapath / f"{dataobj.metadata['title']}.md"
+        with new_path.open("w") as f:
+            f.write(dataobj.content)
+
+        current_app.logger.info(f"Unformatted and moved {str(path)} to {str(new_path.resolve())}")
+        path.unlink()
 
 
 def open_file(path):

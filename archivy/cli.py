@@ -1,4 +1,5 @@
-import os
+from pathlib import Path
+from os import environ
 from pkg_resources import iter_entry_points
 
 import click
@@ -9,9 +10,9 @@ from archivy import app
 from archivy.check_changes import Watcher
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
-from archivy.data import open_file
+from archivy.data import open_file, format_file, unformat_file
 from archivy.helpers import load_config, write_config
-from archivy.models import User
+from archivy.models import User, DataObj
 
 
 def create_app():
@@ -45,15 +46,15 @@ def init(ctx):
     data_dir = click.prompt("Enter the full path of the "
                             "directory where you'd like us to store data.",
                             type=str,
-                            default=os.getcwd())
+                            default=str(Path(".").resolve()))
 
     es_enabled = click.confirm("Would you like to enable Elasticsearch? For this to work "
                                "when you run archivy, you must have ES installed."
                                "See https://archivy.github.io/setup-search/ for more info.")
     if es_enabled:
-        config.ELASTICSEARCH_CONF["enabled"] = 1
+        config.SEARCH_CONF["enabled"] = 1
     else:
-        delattr(config, "ELASTICSEARCH_CONF")
+        delattr(config, "SEARCH_CONF")
 
     create_new_user = click.confirm("Would you like to create a new admin user?")
     if create_new_user:
@@ -69,30 +70,32 @@ def init(ctx):
     app.config["USER_DIR"] = data_dir
 
     # create data dir
-    os.makedirs(os.path.join(data_dir, "data"), exist_ok=True)
+    (Path(data_dir) / "data").mkdir(exist_ok=True)
 
     write_config(vars(config))
     click.echo("Config successfully created at "
-               + os.path.join(app.config['INTERNAL_DIR'], 'config.yml'))
+               + str((Path(app.config['INTERNAL_DIR']) / 'config.yml').resolve()))
 
 
 @cli.command("config", short_help="Open archivy config.")
 def config():
-    open_file(os.path.join(app.config["INTERNAL_DIR"], "config.yml"))
+    open_file(str(Path(app.config["INTERNAL_DIR"]) / "config.yml"))
 
 
 @cli.command("run", short_help="Runs archivy web application")
 def run():
     click.echo('Running archivy...')
     load_dotenv()
-    watcher = Watcher(app)
-    watcher.start()
-    os.environ["FLASK_RUN_FROM_CLI"] = "false"
+    if app.config["SEARCH_CONF"]["enable_watcher"]:
+        watcher = Watcher(app)
+        watcher.start()
+    environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
     app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
-    click.echo("Stopping archivy watcher")
-    watcher.stop()
-    watcher.join()
+    if app.config["SEARCH_CONF"]["enable_watcher"]:
+        click.echo("Stopping archivy watcher")
+        watcher.stop()
+        watcher.join()
 
 
 @cli.command(short_help="Creates a new admin user")
@@ -110,3 +113,37 @@ def create_admin(username, password):
         else:
             click.echo("User with given username already exists.")
             return False
+
+
+@cli.command(short_help="Format normal markdown files for archivy.")
+@click.argument("filenames", type=click.Path(exists=True), nargs=-1)
+def format(filenames):
+    for path in filenames:
+        format_file(path)
+
+
+@cli.command(short_help="Convert archivy-formatted files back to normal markdown.")
+@click.argument("filenames", type=click.Path(exists=True), nargs=-1)
+@click.argument("output_dir", type=click.Path(exists=True, file_okay=False))
+def unformat(filenames, output_dir):
+    for path in filenames:
+        unformat_file(path, output_dir)
+
+
+@cli.command(short_help="Sync content to Elasticsearch")
+def index():
+    data_dir = Path(app.config["USER_DIR"]) / "data"
+
+    if not app.config["SEARCH_CONF"]["enabled"]:
+        click.echo("Search must be enabled for this command.")
+        return
+
+    for filename in data_dir.rglob("*.md"):
+        cur_file = open(filename)
+        dataobj = DataObj.from_md(cur_file.read())
+        cur_file.close()
+
+        if dataobj.index():
+            click.echo(f"Indexed {dataobj.title}...")
+        else:
+            click.echo(f"Failed to index {dataobj.title}")
