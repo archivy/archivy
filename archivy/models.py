@@ -172,6 +172,10 @@ class DataObj:
             helpers.set_max_id(helpers.get_max_id() + 1)
             self.id = helpers.get_max_id()
             self.date = datetime.now()
+
+            hooks = helpers.load_hooks()
+
+            hooks.before_dataobj_create(self)
             data = {
                 "type": self.type,
                 "desc": self.desc,
@@ -194,6 +198,7 @@ class DataObj:
                                 path=self.path,
                                 )
 
+            hooks.on_dataobj_create(self)
             self.index()
             return self.id
         return False
@@ -264,7 +269,8 @@ class User(UserMixin):
             "is_admin": self.is_admin,
             "type": "user"
         }
-
+        
+        helpers.load_hooks().on_user_create(self)
         return db.insert(db_user)
 
     @classmethod

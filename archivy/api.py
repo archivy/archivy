@@ -105,12 +105,6 @@ def get_dataobj(dataobj_id):
     ) if dataobj else Response(status=404)
 
 
-@api_bp.route("/bookmarks/<int:bookmark_id>", methods=["PUT"])
-def change_bookmark(bookmark_id):
-    current_app.logger.debug(f'Attempting to delete bookmark <{bookmark_id}>')
-    return Response(status=501)
-
-
 @api_bp.route("/dataobjs/<int:dataobj_id>", methods=["DELETE"])
 def delete_dataobj(dataobj_id):
     """Deletes object of given id"""

@@ -1,6 +1,8 @@
 import os
 import appdirs
 
+from archivy.models import DataObj, User
+
 
 class Config(object):
     """Configuration object for the application"""
@@ -63,3 +65,23 @@ class Config(object):
                     self.SEARCH_CONF[subkey] = subval
             else:
                 setattr(self, k, v)
+
+
+class BaseHooks:
+    """
+    Class of methods users can inherit to configure and extend archivy with hooks.
+
+    Eg: to add 'x' at the end of each object before saving it, you'd use `before_create`.
+    """
+
+    def on_dataobj_create(self, dataobj: DataObj):
+        """Hook for dataobj creation."""
+ 
+    def before_dataobj_create(self, dataobj: DataObj):
+        """Hook called immediately before dataobj creation."""
+
+    def on_user_create(self, user: User):
+        """Hook called after a new user is created."""
+
+    def on_web_edit(self, dataobj_path: str):
+        """Hook called whenever a user edits through the web interface."""

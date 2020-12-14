@@ -8,6 +8,7 @@ import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
 
+from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
 
 
@@ -153,6 +154,7 @@ def update_item(dataobj_id, new_content):
     with open(filename, "w", encoding="utf-8") as f:
         dataobj.content = new_content
         f.write(frontmatter.dumps(dataobj))
+    load_hooks().on_web_edit(filename)
 
 
 def get_dirs():
