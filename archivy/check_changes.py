@@ -34,7 +34,6 @@ class ModifHandler(FileSystemEventHandler):
     def on_deleted(self, event):
         with self.app.app_context():
             filename = event.src_path.split(SEP)[-1]
-            print(filename)
             if (re.match(DATAOBJ_REGEX, filename)
                     and self.ELASTIC):
                 id = event.src_path.split(SEP)[-1].split("-")[0]
