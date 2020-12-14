@@ -194,9 +194,13 @@ class DataObj:
                                 path=self.path,
                                 )
 
-            add_to_index(current_app.config["SEARCH_CONF"]["index_name"], self)
+            self.index()
             return self.id
         return False
+
+    def index(self):
+        return add_to_index(self)
+
 
     @classmethod
     def from_md(cls, md_content: str):

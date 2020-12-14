@@ -195,5 +195,5 @@ def search_elastic():
     - **query**
     """
     query = request.args.get("query")
-    search_results = query_index(current_app.config["SEARCH_CONF"]["index_name"], query)
+    search_results = query_index(query)
     return jsonify(search_results)

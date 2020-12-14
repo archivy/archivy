@@ -11,6 +11,7 @@ Commands:
   config        Open archivy config.
   create-admin  Creates a new admin user
   format        Format normal markdown files for archivy.
+  index         Sync content to Elasticsearch
   init          Initialise your archivy application
   run           Runs archivy web application
   shell         Run a shell in the app context.
@@ -22,6 +23,8 @@ Make sure you've configured Archivy by running `archivy init`, as outlined in [i
 If you'd like to add users, you can simply create new admin users with the `create-admin` command. Only give credentials to trusted people.
 
 If you have normal md files you'd like to migrate to archivy, move your files into your archivy data directory and then run `archivy format <filenames>` to make them conform to [archivy's formatting](/reference/architecture/#data-storage). Run `archivy unformat` to convert the other way around.
+
+You can sync changes to files to the Elasticsearch index by running `archivy index` or by simply running archivy when you edit (and not disabling the [watcher](/reference/architecture#daemon).
 
 The `config` command allows you to play around with [configuration](config.md) and use `shell` if you'd like to play around with the archivy python API.
 

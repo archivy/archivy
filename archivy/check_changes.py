@@ -29,16 +29,16 @@ class ModifHandler(FileSystemEventHandler):
                     dataobj = models.DataObj.from_md(f.read())
                 if dataobj.validate():
                     search.add_to_index(
-                            self.app.config["SEARCH_CONF"]["index_name"],
                             dataobj)
 
     def on_deleted(self, event):
         with self.app.app_context():
             filename = event.src_path.split(SEP)[-1]
+            print(filename)
             if (re.match(DATAOBJ_REGEX, filename)
                     and self.ELASTIC):
                 id = event.src_path.split(SEP)[-1].split("-")[0]
-                search.remove_from_index(self.app.config["SEARCH_CONF"]["index_name"], id)
+                search.remove_from_index(id)
                 self.app.logger.info(f"{event.src_path} has been removed")
 
 

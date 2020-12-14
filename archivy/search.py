@@ -1,7 +1,9 @@
+from flask import current_app
+
 from archivy.helpers import get_elastic_client
 
 
-def add_to_index(index, model):
+def add_to_index(model):
     """
     Adds dataobj to given index. If object of given id already exists, it will be updated.
 
@@ -16,24 +18,25 @@ def add_to_index(index, model):
     payload = {}
     for field in model.__searchable__:
         payload[field] = getattr(model, field)
-    es.index(index=index, id=model.id, body=payload)
+    es.index(index=current_app.config["SEARCH_CONF"]["index_name"], id=model.id, body=payload)
+    return True
 
 
-def remove_from_index(index, dataobj_id):
+def remove_from_index(dataobj_id):
     """Removes object of given id"""
     es = get_elastic_client()
     if not es:
         return
-    es.delete(index=index, id=dataobj_id)
+    es.delete(index=current_app.config["SEARCH_CONF"]["index_name"], id=dataobj_id)
 
 
-def query_index(index, query):
+def query_index(query):
     """Returns search results for your given query"""
     es = get_elastic_client()
     if not es:
         return []
     search = es.search(
-        index=index,
+        index=current_app.config["SEARCH_CONF"]["index_name"],
         body={
             "query": {
                 "multi_match": {

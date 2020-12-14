@@ -8,6 +8,8 @@ import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
 
+from archivy.search import remove_from_index
+
 
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
@@ -108,6 +110,7 @@ def get_item(dataobj_id):
 def delete_item(dataobj_id):
     """Delete dataobj of given id"""
     file = get_by_id(dataobj_id)
+    remove_from_index(dataobj_id)
     if file:
         Path(file).unlink()
 
