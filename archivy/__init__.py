@@ -25,14 +25,14 @@ app.config.from_object(config)
 
 (Path(app.config["USER_DIR"]) / "data").mkdir(parents=True, exist_ok=True)
 
-if app.config["ELASTICSEARCH_CONF"]["enabled"]:
+if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
         es = helpers.get_elastic_client()
         try:
             es.indices.create(
-                index=app.config["ELASTICSEARCH_CONF"]["index_name"],
-                body=app.config["ELASTICSEARCH_CONF"]["search_conf"])
-        except elasticsearch.ElasticsearchException:
+                index=app.config["SEARCH_CONF"]["index_name"],
+                body=app.config["SEARCH_CONF"]["search_conf"])
+        except elasticsearch.exceptions.RequestError:
             app.logger.info("Elasticsearch index already created")
 
 

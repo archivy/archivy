@@ -45,11 +45,7 @@ Check out the [helper methods](search.md) archivy exposes for ES.
 
 Since the DataObjs are stored on the filesystem, archivy runs a daemon to check for changes in the files.
 
-
-What it does:
-
-- If you have elasticsearch enabled, whenever you edit a file, it will sync the changes to ES.
-- Say you have a large amount of markdown files, that are obviously not formatted to be used by archivy. Moving them into your DataObj dir will cause the daemon to automatically format them so they conform to the archivy format and can be used.
+It has a simple function: if you have elasticsearch enabled, whenever you edit a file, it will sync the changes to ES.
 
 
 ## Auth

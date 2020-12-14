@@ -53,7 +53,7 @@ setup(
 
 Let's walk through what this is doing. We are setting up our package and we define a few characteristics of the package. We specify some metadata you can adapt to your own package. We then load our package by using the `find_packages` function. The `entry_points` part is the most important. The `[archivy.plugins]` tells archivy that this package will extend our CLI and then we define the command we want to add. In our case, people will call the extension using `archivy pocket`. We will actually be creating a group so that people will call subcommands like this: `archivy pocket <subcommand>`. You can do things either way.
 
-Create a `README.md` file that you can keep empty for now but should haCve information on your project.
+Create a `README.md` file that you can keep empty for now but should store information on your project.
 
 ## Step 3: Writing the core code of our plugin
 
