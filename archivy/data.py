@@ -149,12 +149,19 @@ def update_item(dataobj_id, new_content):
     # This is specific
     ```
     """
+
+    from archivy.models import DataObj
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
+    dataobj.content = new_content
+    md = frontmatter.dumps(dataobj)
     with open(filename, "w", encoding="utf-8") as f:
-        dataobj.content = new_content
-        f.write(frontmatter.dumps(dataobj))
-    load_hooks().on_web_edit(filename)
+        f.write(md)
+
+    converted_dataobj = DataObj.from_md(md)
+    converted_dataobj.fullpath = str(filename.relative_to(current_app.config["USER_DIR"]))
+    converted_dataobj.index()
+    load_hooks().on_web_edit(converted_dataobj)
 
 
 def get_dirs():

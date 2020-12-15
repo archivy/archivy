@@ -83,5 +83,5 @@ class BaseHooks:
     def on_user_create(self, user: User):
         """Hook called after a new user is created."""
 
-    def on_web_edit(self, dataobj_path: str):
+    def on_web_edit(self, dataobj: DataObj):
         """Hook called whenever a user edits through the web interface."""
