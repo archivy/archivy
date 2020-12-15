@@ -4,7 +4,7 @@ This document is a general overview of how the different pieces of archivy inter
 
 Archivy is:
 
-- A [Flask](flask.palletsprojects.com/) web application.
+- A [Flask](https://flask.palletsprojects.com/) web application.
 - A [click](https://click.palletsprojects.com/) backend command line interface.
 
 

@@ -24,6 +24,7 @@ nav:
   - Home: 
     - "index.md"
     - What makes Archivy different: "difference.md"
+    - Architecture: "reference/architecture.md"
     - Contributing: "CONTRIBUTING.md"
   - Getting Started:
       - Installing Archivy: "install.md"
