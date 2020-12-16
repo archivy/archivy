@@ -41,13 +41,6 @@ Elasticsearch requires configuration to have higher quality search results. You 
 
 Check out the [helper methods](search.md) archivy exposes for ES.
 
-## Daemon
-
-Since the DataObjs are stored on the filesystem, archivy runs a daemon to check for changes in the files.
-
-It has a simple function: if you have elasticsearch enabled, whenever you edit a file, it will sync the changes to ES.
-
-
 ## Auth
 
 Archivy uses [flask-login](https://flask-login.readthedocs.io/en/latest/) for auth. All endpoints require to be authenticated. When you run archivy for the first time, it creates an admin user for you and outputs a temporary password.

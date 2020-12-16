@@ -7,7 +7,6 @@ from click_plugins import with_plugins
 from flask.cli import FlaskGroup, load_dotenv, shell_command
 
 from archivy import app
-from archivy.check_changes import Watcher
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
 from archivy.data import open_file, format_file, unformat_file
@@ -86,16 +85,9 @@ def config():
 def run():
     click.echo('Running archivy...')
     load_dotenv()
-    if app.config["SEARCH_CONF"]["enable_watcher"]:
-        watcher = Watcher(app)
-        watcher.start()
     environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
     app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
-    if app.config["SEARCH_CONF"]["enable_watcher"]:
-        click.echo("Stopping archivy watcher")
-        watcher.stop()
-        watcher.join()
 
 
 @cli.command(short_help="Creates a new admin user")
