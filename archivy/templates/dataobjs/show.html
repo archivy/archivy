@@ -74,7 +74,7 @@
 			    name: "LaTeX",
 				className: "fa fa-math",
 				action: (editor) => {
-				  editor.value(editor.value() + "\n$$\n$$")
+				  editor.codemirror.replaceSelection("$$\n$$")
 				}
 			  },
 			  "side-by-side",
