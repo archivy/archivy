@@ -7,6 +7,8 @@ from elasticsearch import Elasticsearch
 from flask import current_app, g
 from tinydb import TinyDB, Query, operations
 
+from archivy.config import BaseHooks
+
 
 def load_config(path=""):
     """Loads `config.yml` file and deserializes it to a python dict."""
@@ -21,7 +23,11 @@ def write_config(config: dict):
         yaml.dump(config, f)
 
 def load_hooks():
-    user_hooks = (Path(current_app.config["USER_DIR"]) / "hooks.py").open()
+    try:
+        user_hooks = (Path(current_app.config["USER_DIR"]) / "hooks.py").open()
+    except FileNotFoundError:
+        return BaseHooks()
+
     user_locals = {}
     exec(user_hooks.read(), globals(), user_locals)
     user_hooks.close()

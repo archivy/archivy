@@ -21,7 +21,7 @@ def test_initialization(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         # create user, localhost, and don't use ES
-        res = cli_runner.invoke(cli, ["init"], input="\nn\ny\nusername\npassword\npassword\n\n")
+        res = cli_runner.invoke(click_cli, ["init"], input="\nn\ny\nusername\npassword\npassword\n\n")
         assert "Config successfully created" in res.output
 
         # verify user was created
@@ -52,7 +52,7 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         # use ES, localhost and don't create user
-        res = cli_runner.invoke(cli, ["init"], input="\ny\nn\n\n")
+        res = cli_runner.invoke(click_cli, ["init"], input="\ny\nn\n\n")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
@@ -101,7 +101,7 @@ def test_initialization_custom_host(test_app, cli_runner, click_cli):
     
     with cli_runner.isolated_filesystem():
         # create user, localhost, and don't use ES
-        res = cli_runner.invoke(cli, ["init"],
+        res = cli_runner.invoke(click_cli, ["init"],
                 input="\nn\nn\n0.0.0.0")
         assert "Host" in res.output
         assert "Config successfully created" in res.output
@@ -116,7 +116,7 @@ def test_initialization_custom_host(test_app, cli_runner, click_cli):
 def test_create_admin(test_app, cli_runner, click_cli):
     db = get_db()
     nb_users = len(db.search(Query().type == "user"))
-    cli_runner.invoke(cli,
+    cli_runner.invoke(click_cli,
                        ["create-admin", "__username__"],
                        input="password\npassword")
 
@@ -127,7 +127,7 @@ def test_create_admin(test_app, cli_runner, click_cli):
     assert len(db.search(Query().type == "user" and Query().username == "__username__"))
 
 def test_create_admin_small_password_fails(test_app, cli_runner, click_cli):
-    cli_runner.invoke(cli,
+    cli_runner.invoke(click_cli,
                        ["create-admin", "__username__"],
                        input="short\nshort")
     db = get_db()

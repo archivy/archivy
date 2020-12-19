@@ -1,8 +1,6 @@
 import os
 import appdirs
 
-from archivy.models import DataObj, User
-
 
 class Config(object):
     """Configuration object for the application"""
@@ -74,14 +72,14 @@ class BaseHooks:
     Eg: to add 'x' at the end of each object before saving it, you'd use `before_create`.
     """
 
-    def on_dataobj_create(self, dataobj: DataObj):
+    def on_dataobj_create(self, dataobj):
         """Hook for dataobj creation."""
  
-    def before_dataobj_create(self, dataobj: DataObj):
+    def before_dataobj_create(self, dataobj):
         """Hook called immediately before dataobj creation."""
 
-    def on_user_create(self, user: User):
+    def on_user_create(self, user):
         """Hook called after a new user is created."""
 
-    def on_web_edit(self, dataobj: DataObj):
-        """Hook called whenever a user edits through the web interface."""
+    def on_edit(self, dataobj):
+        """Hook called whenever a user edits through the web interface or the API."""

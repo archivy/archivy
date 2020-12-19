@@ -161,7 +161,7 @@ def update_item(dataobj_id, new_content):
     converted_dataobj = DataObj.from_md(md)
     converted_dataobj.fullpath = str(filename.relative_to(current_app.config["USER_DIR"]))
     converted_dataobj.index()
-    load_hooks().on_web_edit(converted_dataobj)
+    load_hooks().on_edit(converted_dataobj)
 
 
 def get_dirs():
