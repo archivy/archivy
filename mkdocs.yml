@@ -41,8 +41,9 @@ nav:
     - Web API: "reference/web_api.md"
     - Models for User and DataObj: "reference/models.md"
     - Dataobj Filesystem Layer: "reference/filesystem_layer.md"
-    - Search: "reference/search.md" 
     - Helpers: "reference/helpers.md"
+    - Hooks: "reference/hooks.md"
+    - Search: "reference/search.md" 
     - Web Inputs For Plugins: "reference/web_inputs.md"
 
 repo_url: https://github.com/archivy/archivy

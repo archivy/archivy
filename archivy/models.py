@@ -32,13 +32,12 @@ from archivy.search import add_to_index
 #     POCKET_BOOKMARK = 'bookmark imported from pocket'
 #     NOTE = 'note'
 #     PROCESSED_DATAOBJ = 'bookmark that has been processed'
-
 @attrs(kw_only=True)
 class DataObj:
     """
     Class that holds a data object (either a note or a bookmark).
 
-    Attrbutes:
+    Attributes:
 
     [Required to pass when creating a new object]
 
@@ -172,6 +171,10 @@ class DataObj:
             helpers.set_max_id(helpers.get_max_id() + 1)
             self.id = helpers.get_max_id()
             self.date = datetime.now()
+
+            hooks = helpers.load_hooks()
+
+            hooks.before_dataobj_create(self)
             data = {
                 "type": self.type,
                 "desc": self.desc,
@@ -194,6 +197,7 @@ class DataObj:
                                 path=self.path,
                                 )
 
+            hooks.on_dataobj_create(self)
             self.index()
             return self.id
         return False
@@ -265,6 +269,7 @@ class User(UserMixin):
             "type": "user"
         }
 
+        helpers.load_hooks().on_user_create(self)
         return db.insert(db_user)
 
     @classmethod

@@ -8,6 +8,7 @@ import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
 
+from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
 
 
@@ -148,6 +149,7 @@ def update_item(dataobj_id, new_content):
     # This is specific
     ```
     """
+
     from archivy.models import DataObj
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
@@ -156,8 +158,10 @@ def update_item(dataobj_id, new_content):
     with open(filename, "w", encoding="utf-8") as f:
         f.write(md)
 
-    # save changes to ES
-    DataObj.from_md(md).index()
+    converted_dataobj = DataObj.from_md(md)
+    converted_dataobj.fullpath = str(filename.relative_to(current_app.config["USER_DIR"]))
+    converted_dataobj.index()
+    load_hooks().on_edit(converted_dataobj)
 
 
 def get_dirs():

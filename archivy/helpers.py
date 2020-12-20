@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import sys
 
 import elasticsearch
@@ -7,18 +7,33 @@ from elasticsearch import Elasticsearch
 from flask import current_app, g
 from tinydb import TinyDB, Query, operations
 
+from archivy.config import BaseHooks
+
 
 def load_config(path=""):
     """Loads `config.yml` file and deserializes it to a python dict."""
     path = path or current_app.config["INTERNAL_DIR"]
-    with open(os.path.join(path, "config.yml")) as f:
+    with (Path(path) / "config.yml").open() as f:
         return yaml.load(f.read(), Loader=yaml.FullLoader)
 
 
 def write_config(config: dict):
     """Writes a new config dict to a `config.yml` file that will override defaults"""
-    with open(os.path.join(current_app.config["INTERNAL_DIR"], "config.yml"), "w") as f:
+    with (Path(current_app.config["INTERNAL_DIR"]) / "config.yml").open("w") as f:
         yaml.dump(config, f)
+
+
+def load_hooks():
+    try:
+        user_hooks = (Path(current_app.config["USER_DIR"]) / "hooks.py").open()
+    except FileNotFoundError:
+        return BaseHooks()
+
+    user_locals = {}
+    exec(user_hooks.read(), globals(), user_locals)
+    user_hooks.close()
+
+    return user_locals["Hooks"]()
 
 
 def get_db(force_reconnect=False):
@@ -27,12 +42,7 @@ def get_db(force_reconnect=False):
     store data persistently
     """
     if 'db' not in g or force_reconnect:
-        g.db = TinyDB(
-            os.path.join(
-                current_app.config["INTERNAL_DIR"],
-                "db.json"
-            )
-        )
+        g.db = TinyDB(str(Path(current_app.config["INTERNAL_DIR"]) / "db.json"))
 
     return g.db
 
@@ -69,7 +79,7 @@ def get_elastic_client():
         )
         current_app.logger.error(
             "You can disable Elasticsearch by modifying the `enabled` variable "
-            f"in {os.path.join(current_app.config['INTERNAL_DIR'], 'config.yml')}"
+            f"in {str(Path(current_app.config['INTERNAL_DIR']) / 'config.yml')}"
         )
         sys.exit(1)
 
