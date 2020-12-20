@@ -22,6 +22,7 @@ def write_config(config: dict):
     with (Path(current_app.config["INTERNAL_DIR"]) / "config.yml").open("w") as f:
         yaml.dump(config, f)
 
+
 def load_hooks():
     try:
         user_hooks = (Path(current_app.config["USER_DIR"]) / "hooks.py").open()
@@ -33,7 +34,6 @@ def load_hooks():
     user_hooks.close()
 
     return user_locals["Hooks"]()
-
 
 
 def get_db(force_reconnect=False):

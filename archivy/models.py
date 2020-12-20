@@ -268,7 +268,7 @@ class User(UserMixin):
             "is_admin": self.is_admin,
             "type": "user"
         }
-        
+
         helpers.load_hooks().on_user_create(self)
         return db.insert(db_user)
 

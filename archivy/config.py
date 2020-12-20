@@ -72,7 +72,7 @@ class BaseHooks:
 
     ## Usage:
 
-    Archivy checks for the presence of a `hooks.py` file in the 
+    Archivy checks for the presence of a `hooks.py` file in the
     user directory that stores the `data/` directory with your notes and bookmarks.
     This location is usually set during `archivy init`.
 
@@ -91,13 +91,14 @@ class BaseHooks:
 
         # ...
     ```
-    
-    If you have ideas for any other hooks you'd find useful if they were supported, please open an [issue](https://github.com/archivy/archivy/issues).
+
+    If you have ideas for any other hooks you'd find useful if they were supported,
+    please open an [issue](https://github.com/archivy/archivy/issues).
     """
 
     def on_dataobj_create(self, dataobj):
         """Hook for dataobj creation."""
- 
+
     def before_dataobj_create(self, dataobj):
         """Hook called immediately before dataobj creation."""
 

@@ -1,4 +1,4 @@
-from flask import Response, jsonify, request, Blueprint, current_app
+from flask import Response, jsonify, request, Blueprint
 from werkzeug.security import check_password_hash
 from flask_login import login_user
 from tinydb import Query
