@@ -16,7 +16,6 @@ class Config(object):
         self.PANDOC_HIGHLIGHT_THEME = "pygments"
 
         self.SEARCH_CONF = {
-                "enable_watcher": True,
                 "enabled": 0,
                 "url": "http://localhost:9200",
                 "index_name": "dataobj",

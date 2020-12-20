@@ -157,7 +157,7 @@ def update_item(dataobj_id, new_content):
     md = frontmatter.dumps(dataobj)
     with open(filename, "w", encoding="utf-8") as f:
         f.write(md)
-
+        
     converted_dataobj = DataObj.from_md(md)
     converted_dataobj.fullpath = str(filename.relative_to(current_app.config["USER_DIR"]))
     converted_dataobj.index()

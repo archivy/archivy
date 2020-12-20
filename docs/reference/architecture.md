@@ -4,7 +4,7 @@ This document is a general overview of how the different pieces of archivy inter
 
 Archivy is:
 
-- A [Flask](flask.palletsprojects.com/) web application.
+- A [Flask](https://flask.palletsprojects.com/) web application.
 - A [click](https://click.palletsprojects.com/) backend command line interface.
 
 
@@ -40,13 +40,6 @@ Archivy uses [Elasticsearch](https://www.elastic.co/) to index and allow users t
 Elasticsearch requires configuration to have higher quality search results. You can check out the top-notch config archivy already uses by default [here](https://github.com/archivy/archivy/blob/master/archivy/config.py).
 
 Check out the [helper methods](search.md) archivy exposes for ES.
-
-## Daemon
-
-Since the DataObjs are stored on the filesystem, archivy runs a daemon to check for changes in the files.
-
-It has a simple function: if you have elasticsearch enabled, whenever you edit a file, it will sync the changes to ES.
-
 
 ## Auth
 
