@@ -43,6 +43,7 @@ def test_before_dataobj_creation_hook(test_app, hooks_cli_runner, note_fixture, 
     assert message in note_fixture.content
     assert message in bookmark_fixture.content
 
+
 def test_dataobj_edit_hook(test_app, hooks_cli_runner, note_fixture, client):
     client.put(f"/api/dataobjs/{note_fixture.id}", json={"content": "Updated note content"})
     

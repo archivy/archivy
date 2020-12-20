@@ -32,13 +32,12 @@ from archivy.search import add_to_index
 #     POCKET_BOOKMARK = 'bookmark imported from pocket'
 #     NOTE = 'note'
 #     PROCESSED_DATAOBJ = 'bookmark that has been processed'
-
 @attrs(kw_only=True)
 class DataObj:
     """
     Class that holds a data object (either a note or a bookmark).
 
-    Attrbutes:
+    Attributes:
 
     [Required to pass when creating a new object]
 

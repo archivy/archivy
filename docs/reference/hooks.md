@@ -1,0 +1,2 @@
+
+::: archivy.config.BaseHooks
