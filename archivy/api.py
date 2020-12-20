@@ -1,4 +1,4 @@
-from flask import Response, jsonify, request, Blueprint, current_app
+from flask import Response, jsonify, request, Blueprint
 from werkzeug.security import check_password_hash
 from flask_login import login_user
 from tinydb import Query
@@ -103,12 +103,6 @@ def get_dataobj(dataobj_id):
         content=dataobj.content,
         md_path=dataobj["fullpath"],
     ) if dataobj else Response(status=404)
-
-
-@api_bp.route("/bookmarks/<int:bookmark_id>", methods=["PUT"])
-def change_bookmark(bookmark_id):
-    current_app.logger.debug(f'Attempting to delete bookmark <{bookmark_id}>')
-    return Response(status=501)
 
 
 @api_bp.route("/dataobjs/<int:dataobj_id>", methods=["DELETE"])

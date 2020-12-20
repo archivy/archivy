@@ -121,6 +121,19 @@ def bookmark_fixture(test_app, mocked_responses):
         bookmark.insert()
     return bookmark
 
+
+@pytest.fixture()
+def user_fixture(test_app):
+    user = {
+        "username": "__username__",
+        "password": "__password__"
+    }
+
+    user = User(**user)
+    user.insert()
+    return user
+
+
 @pytest.fixture()
 def pocket_fixture(test_app, mocked_responses):
     """Sets up pocket key and mocked responses for testing pocket sync
