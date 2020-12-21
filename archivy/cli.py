@@ -81,6 +81,18 @@ def config():
     open_file(str(Path(app.config["INTERNAL_DIR"]) / "config.yml"))
 
 
+@cli.command("hooks", short_help="Creates hook file if it is not setup and opens it.")
+def hooks():
+    hook_path = Path(app.config["USER_DIR"]) / "hooks.py"  
+    if not hook_path.exists():
+        print("aaaa")
+        with hook_path.open("w") as f:
+            f.write("from archivy.config import BaseHooks\n"
+                    "class Hooks(BaseHooks):\n"
+                    "   # see available hooks at https://archivy.github.io/reference/hooks/")
+    open_file(hook_path)
+
+
 @cli.command("run", short_help="Runs archivy web application")
 def run():
     click.echo('Running archivy...')
