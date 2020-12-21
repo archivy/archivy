@@ -83,7 +83,7 @@ def config():
 
 @cli.command("hooks", short_help="Creates hook file if it is not setup and opens it.")
 def hooks():
-    hook_path = Path(app.config["USER_DIR"]) / "hooks.py"  
+    hook_path = Path(app.config["USER_DIR"]) / "hooks.py"
     if not hook_path.exists():
         print("aaaa")
         with hook_path.open("w") as f:
