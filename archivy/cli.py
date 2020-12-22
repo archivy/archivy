@@ -89,7 +89,9 @@ def hooks():
         with hook_path.open("w") as f:
             f.write("from archivy.config import BaseHooks\n"
                     "class Hooks(BaseHooks):\n"
-                    "   # see available hooks at https://archivy.github.io/reference/hooks/")
+                    "   # see available hooks at https://archivy.github.io/reference/hooks/\n"
+                    "   def on_dataobj_create(self, dataobj): # for example\n"
+                    "       pass")
     open_file(hook_path)
 
 
