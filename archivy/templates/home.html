@@ -5,7 +5,7 @@
 	<input type="text" id="searchBar">
 	<ul id="searchHits">
 	{% if lunr %}
-  		<script src="https://unpkg.com/lunr/lunr.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js"></script>
 	{% endif %}
 {% endif %}
 	
@@ -20,17 +20,16 @@
 {% set i = namespace(value=0) %}
 {{ draw_dir(dataobjs, 0, 1) }}
 
-{% if elasticsearch %}
-  {% include "markdown-parser.html" %}
-{% endif %}
+{% include "markdown-parser.html" %}
 <script>
   // search functionality
   {% if search_enabled %}  
-    async function createHit(hit) {
+    async function createHit(hit, query) {
       let hitsDiv = document.getElementById("searchHits");
       let hitLi = document.createElement("li");
+      let body = document.createElement("div");
+      let a = document.createElement("a");
 	  {% if elasticsearch %}
-      	let body = document.createElement("div");
         if ("highlight" in hit)
         {
           for(let i = 0; i < hit["highlight"].length; i++)
@@ -38,21 +37,47 @@
             body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);  
           }
         }
-        let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-        p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
-        hitLi.append(a);
-        hitLi.append(p);
-        hitLi.append(body);
+        a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
 	  {% elif lunr %}
 		let data = await fetch(`${SCRIPT_ROOT}/dataobjs/${hit["ref"]}`);
 		if (data.ok) {
-		  let title = document.createElement("a");
-		  title.href = `/dataobjs/${hit["ref"]}`;
+		  const sentenceRegex = /(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s/gm;
+		  a.href = `/dataobj/${hit["ref"]}`;
 		  let hitData = await data.json();
-		  title.textContent = hitData["title"];
-		  hitLi.append(title);
+		  // see https://github.com/olivernn/lunr.js/issues/97 for documentation on this fetching of positions
+		  // get match positions sorted by occurence in the content
+
+		  let matchIndexes = Object.values(hit.matchData.metadata)[0].body.position.sort((pos, len) => pos);
+		  if (matchIndexes.length)
+		  {
+		    let sentences = hitData["content"].substring(matchIndexes[0][0]).split(sentenceRegex);
+		    let currentCharIndex = 0, matchCounter = 0;
+		    // we want to get the sentences that match our query and add them to the results, to do this
+		    // we conserve a `currentCharIndex` and check if the index locations returned by lunr fall in the sentence.
+		    // we only return the first 5 matches for speed
+		    for(let i = 0; i < sentences.length && matchCounter < 6 && matchIndexes.length; i++)
+			{
+		  	  // sometimes we get multiple matches for the same sentence and we need to clear these from our sorted list
+			  // to find new results.
+		  	  // we substract by i because the splitting into sentences earlier brings a certain
+		      // shift we have to take into account in your character indexes.
+		 	  while (matchIndexes.length && matchIndexes[0][0] - i <= currentCharIndex) { matchIndexes.shift(); }
+		  	  if (matchIndexes.length && currentCharIndex <= matchIndexes[0][0] - i 
+				  && matchIndexes[0][0] - i <= currentCharIndex + sentences[i].length)
+			  {
+			    matchCounter++;
+			    // render sentence and highlight search term.
+			    body.innerHTML += "\n" + window.parser.render(sentences[i].replace(new RegExp(query, "ig"), `==${query}==`));
+			    matchIndexes.shift();
+			  }
+			  currentCharIndex += sentences[i].length;
+		    }
+		  }
+		  a.textContent = hitData["title"];
 		}
 	  {% endif %}
+      hitLi.append(a);
+	  hitLi.append(body);
 	  return hitLi;
     }
     {% if lunr %}
@@ -76,8 +101,9 @@
       if (input.value !== "")
       {
 		let searchResults;
+		let query = input.value;
 		{% if elasticsearch %}
-          let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
+          let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${query}`, {
             "method": "GET"
           });
           if (searchQuery.ok) {  
@@ -85,14 +111,14 @@
           }
 		{% elif lunr %}
 		  await loadLunrIndex();
-		  searchResults = await window.index.search(input.value);
+		  searchResults = await window.index.search(query);
 		  // TODO: optimize this
 		  // lunr doesn't return the fields in the result: https://github.com/olivernn/lunr.js/issues/88
 		  // return fifth first results
 		{% endif %}
 		// need to gather html hits and THEN add them because latency between async 'input' events can cause errors in output
 		// if results are not cleared right before adding new hits.
-		let htmlHits = await Promise.all(searchResults.slice(0, 5).map(async (hit) => await createHit(hit)))
+		let htmlHits = await Promise.all(searchResults.slice(0, 5).map(async (hit) => await createHit(hit, query)))
 	    searchHitsContainer.textContent = "";
 		htmlHits.forEach((hit) => searchHitsContainer.appendChild(hit));
      }
