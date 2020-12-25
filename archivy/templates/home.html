@@ -4,6 +4,9 @@
 {% if search_enabled %}
 	<input type="text" id="searchBar">
 	<ul id="searchHits">
+	{% if lunr %}
+  		<script src="https://unpkg.com/lunr/lunr.min.js"></script>
+	{% endif %}
 {% endif %}
 	
 </ul>
@@ -17,48 +20,94 @@
 {% set i = namespace(value=0) %}
 {{ draw_dir(dataobjs, 0, 1) }}
 
-{% include "markdown-parser.html" %}
+{% if elasticsearch %}
+  {% include "markdown-parser.html" %}
+{% endif %}
 <script>
   // search functionality
   {% if search_enabled %}  
-    function appendHit(hit) {
-      let hitsDiv = document.getElementById("searchHits");
-      let hitLi = document.createElement("li");
-      let body = document.createElement("div");
-      if ("highlight" in hit)
-      {
-        for(let i = 0; i < hit["highlight"].length; i++)
+	{% if elasticsearch %}
+      function appendESHit(hit) {
+        let hitsDiv = document.getElementById("searchHits");
+        let hitLi = document.createElement("li");
+        let body = document.createElement("div");
+        if ("highlight" in hit)
         {
-          body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);  
+          for(let i = 0; i < hit["highlight"].length; i++)
+          {
+            body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);  
+          }
         }
+        let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
+        p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
+        hitLi.append(a);
+        hitLi.append(p);
+        hitLi.append(body);
+        hitsDiv.appendChild(hitLi);
       }
-      let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-      p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
-      hitLi.append(a);
-      hitLi.append(p);
-      hitLi.append(body);
-      hitsDiv.appendChild(hitLi);
-    }
+    {% elif lunr %}
+	  window.index = undefined;
+	  async function loadLunrIndex() {
+		if (!window.index) {
+	      let loadIndex = await fetch(`${SCRIPT_ROOT}/search_index`, {
+	        "method": "GET"
+	      });
+	      if (loadIndex.ok) {
+			  let body = await loadIndex.text()
+	  		 window.index = lunr.Index.load(JSON.parse(body));
+	      }
+		}
+	  }
+		
+      async function appendLunrHit(hit) {
+        let hitsDiv = document.getElementById("searchHits");
+        let hitLi = document.createElement("li");
+		let data = await fetch(`${SCRIPT_ROOT}/dataobjs/${hit["ref"]}`);
+		if (data.ok) {
+		  let title = document.createElement("a");
+		  title.href = `/dataobjs/${hit["ref"]}`;
+		  let hitData = await data.json();
+		  title.textContent = hitData["title"];
+		  console.log(title.textContent);
+		  hitLi.append(title);
+		  hitsDiv.appendChild(hitLi);
+		}
+	  }
+	
+	{% endif %}
 
     let input = document.getElementById("searchBar");
     input.addEventListener('input', async function(e) {
       let query = input.value;
+	  document.getElementById("searchHits").innerHTML = "";
       if (input.value !== "")
       {
-        let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
-          "method": "GET"
-        });
-        if (searchQuery.ok && query == input.value) {  
-          let data = await searchQuery.json(), i = 0;
-		  document.getElementById("searchHits").innerHTML = "";
-          data.forEach(function(hit)
-          {
-            appendHit(hit);
-          })
-	
-        }
+		{% if elasticsearch %}
+          let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
+            "method": "GET"
+          });
+          if (searchQuery.ok && query == input.value) {  
+            let data = await searchQuery.json(), i = 0;
+            data.forEach(function(hit)
+            {
+              appendESHit(hit);
+            })
+          }
+		{% elif lunr %}
+		  if (input.value == query)
+		  {
+			await loadLunrIndex();
+		    let results = window.index.search(query);
+			// TODO: optimize this
+			// lunr doesn't return the fields in the result: https://github.com/olivernn/lunr.js/issues/88
+			// return fifth first results
+			results.slice(0, 5).forEach(hit => {
+			   appendLunrHit(hit);
+			})
+		  }
+		{% endif %}
       }
     });
-  {% endif %}
+  {% endif %}	
 </script>
 {% endblock %}

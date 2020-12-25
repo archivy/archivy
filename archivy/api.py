@@ -6,7 +6,7 @@ from tinydb import Query
 from archivy import data
 from archivy.search import query_index
 from archivy.models import DataObj, User
-from archivy.helpers import get_db
+from archivy.helpers import get_db, fetch_lunr_index
 
 
 api_bp = Blueprint('api', __name__)
@@ -191,3 +191,16 @@ def search_elastic():
     query = request.args.get("query")
     search_results = query_index(query)
     return jsonify(search_results)
+
+
+@api_bp.route("/search_index", methods=["GET"])
+def load_lunr_index():
+    """Gets the serialized lunr search index to be used in the frontend."""
+    try:
+        serialized_index = fetch_lunr_index() 
+        if serialized_index:
+            return serialized_index
+        else:
+            return Response("Installation not configured for lunr", status=405)
+    except FileNotFoundError:
+        return Response("Index not found", status=404)

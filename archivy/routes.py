@@ -38,7 +38,9 @@ def index():
             "home.html",
             title="Home",
             search_enabled=app.config["SEARCH_CONF"]["enabled"],
-            )
+            elasticsearch=app.config["SEARCH_CONF"]["engine"] == "elasticsearch",
+            lunr=app.config["SEARCH_CONF"]["engine"] == "lunr"
+        )
 
 
 # TODO: refactor two following methods

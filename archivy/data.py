@@ -8,7 +8,6 @@ import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
 
-from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
 
 
@@ -151,6 +150,7 @@ def update_item(dataobj_id, new_content):
     """
 
     from archivy.models import DataObj
+    from archivy.helpers import load_hooks
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
     dataobj.content = new_content

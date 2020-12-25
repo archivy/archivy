@@ -1,10 +1,11 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import elasticsearch
 import yaml
 from elasticsearch import Elasticsearch
 from flask import current_app, g
+from lunr.index import Index
 from tinydb import TinyDB, Query, operations
 
 from archivy.config import BaseHooks
@@ -65,7 +66,7 @@ def set_max_id(val):
 
 def get_elastic_client():
     """Returns the elasticsearch client you can use to search and insert / delete data"""
-    if not current_app.config["SEARCH_CONF"]["enabled"]:
+    if not current_app.config["SEARCH_CONF"]["enabled"] and current_app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
         return None
 
     es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
@@ -90,3 +91,11 @@ def get_elastic_client():
             "Elasticsearch by setting ELASTICSEARCH_ENABLED to 0."
         )
     return es
+
+
+def fetch_lunr_index():
+    """Fetches lunr JSON search index"""
+    if current_app.config["SEARCH_CONF"]["enabled"] and current_app.config["SEARCH_CONF"]["engine"] == "lunr":
+        with (Path(current_app.config["INTERNAL_DIR"]) / "index.json").open() as f:
+            return f.read()
+    return None

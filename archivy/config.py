@@ -19,6 +19,7 @@ class Config(object):
                 "enabled": 0,
                 "url": "http://localhost:9200",
                 "index_name": "dataobj",
+                "engine": "lunr",
                 "search_conf": {
                     "settings": {
                         "highlight": {
