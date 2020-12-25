@@ -26,11 +26,11 @@
 <script>
   // search functionality
   {% if search_enabled %}  
-	{% if elasticsearch %}
-      function appendESHit(hit) {
-        let hitsDiv = document.getElementById("searchHits");
-        let hitLi = document.createElement("li");
-        let body = document.createElement("div");
+    async function createHit(hit) {
+      let hitsDiv = document.getElementById("searchHits");
+      let hitLi = document.createElement("li");
+	  {% if elasticsearch %}
+      	let body = document.createElement("div");
         if ("highlight" in hit)
         {
           for(let i = 0; i < hit["highlight"].length; i++)
@@ -43,9 +43,19 @@
         hitLi.append(a);
         hitLi.append(p);
         hitLi.append(body);
-        hitsDiv.appendChild(hitLi);
-      }
-    {% elif lunr %}
+	  {% elif lunr %}
+		let data = await fetch(`${SCRIPT_ROOT}/dataobjs/${hit["ref"]}`);
+		if (data.ok) {
+		  let title = document.createElement("a");
+		  title.href = `/dataobjs/${hit["ref"]}`;
+		  let hitData = await data.json();
+		  title.textContent = hitData["title"];
+		  hitLi.append(title);
+		}
+	  {% endif %}
+	  return hitLi;
+    }
+    {% if lunr %}
 	  window.index = undefined;
 	  async function loadLunrIndex() {
 		if (!window.index) {
@@ -58,55 +68,34 @@
 	      }
 		}
 	  }
-		
-      async function appendLunrHit(hit) {
-        let hitsDiv = document.getElementById("searchHits");
-        let hitLi = document.createElement("li");
-		let data = await fetch(`${SCRIPT_ROOT}/dataobjs/${hit["ref"]}`);
-		if (data.ok) {
-		  let title = document.createElement("a");
-		  title.href = `/dataobjs/${hit["ref"]}`;
-		  let hitData = await data.json();
-		  title.textContent = hitData["title"];
-		  console.log(title.textContent);
-		  hitLi.append(title);
-		  hitsDiv.appendChild(hitLi);
-		}
-	  }
-	
 	{% endif %}
 
     let input = document.getElementById("searchBar");
     input.addEventListener('input', async function(e) {
-      let query = input.value;
-	  document.getElementById("searchHits").innerHTML = "";
+	  let searchHitsContainer = document.getElementById("searchHits");
       if (input.value !== "")
       {
+		let searchResults;
 		{% if elasticsearch %}
           let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
             "method": "GET"
           });
-          if (searchQuery.ok && query == input.value) {  
-            let data = await searchQuery.json(), i = 0;
-            data.forEach(function(hit)
-            {
-              appendESHit(hit);
-            })
+          if (searchQuery.ok) {  
+			searchResults = await searchQuery.json(), i = 0;
           }
 		{% elif lunr %}
-		  if (input.value == query)
-		  {
-			await loadLunrIndex();
-		    let results = window.index.search(query);
-			// TODO: optimize this
-			// lunr doesn't return the fields in the result: https://github.com/olivernn/lunr.js/issues/88
-			// return fifth first results
-			results.slice(0, 5).forEach(hit => {
-			   appendLunrHit(hit);
-			})
-		  }
+		  await loadLunrIndex();
+		  searchResults = await window.index.search(input.value);
+		  // TODO: optimize this
+		  // lunr doesn't return the fields in the result: https://github.com/olivernn/lunr.js/issues/88
+		  // return fifth first results
 		{% endif %}
-      }
+		// need to gather html hits and THEN add them because latency between async 'input' events can cause errors in output
+		// if results are not cleared right before adding new hits.
+		let htmlHits = await Promise.all(searchResults.slice(0, 5).map(async (hit) => await createHit(hit)))
+	    searchHitsContainer.textContent = "";
+		htmlHits.forEach((hit) => searchHitsContainer.appendChild(hit));
+     }
     });
   {% endif %}	
 </script>
