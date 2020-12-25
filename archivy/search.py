@@ -1,3 +1,4 @@
+from elasticsearch.exceptions import RequestError
 from flask import current_app
 
 from archivy.helpers import get_elastic_client
@@ -65,3 +66,30 @@ def query_index(query):
         hits.append(formatted_hit)
 
     return hits
+
+
+def create_es_index():
+    es = get_elastic_client()
+    try:
+        es.indices.create(
+            index=current_app.config["SEARCH_CONF"]["index_name"],
+            body=current_app.config["SEARCH_CONF"]["search_conf"])
+    except RequestError:
+        current_app.logger.info("Elasticsearch index already created")
+
+
+def create_lunr_index(documents):
+    """Creates and configures the Lunr index."""
+    from lunr.builder import Builder
+    from lunr.stemmer import stemmer
+    from lunr.trimmer import trimmer
+    from lunr.stop_word_filter import stop_word_filter
+    builder = Builder()
+    builder.pipeline.add(trimmer, stop_word_filter, stemmer)
+    builder.search_pipeline.add(stemmer)
+    builder.metadata_whitelist = ["position"]
+    builder.ref("id")
+    fields = [{"field_name": "title", "boost": 10}, {"field_name": "body", "extractor": lambda doc: doc.content}]
+    for field in fields: builder.field(**field)
+    for document in documents: builder.add(document)
+    return builder.build()

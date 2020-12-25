@@ -2,8 +2,6 @@ import logging
 from pathlib import Path
 from json import dumps
 
-import elasticsearch
-from lunr import lunr
 from flask import Flask
 from flask_compress import Compress
 from flask_login import LoginManager
@@ -14,6 +12,7 @@ from archivy.config import Config
 from archivy.data import get_items
 from archivy.models import User
 from archivy.helpers import load_config
+from archivy.search import create_lunr_index, create_es_index
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -31,23 +30,12 @@ app.config.from_object(config)
 if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
         if app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
-            es = helpers.get_elastic_client()
-            try:
-                es.indices.create(
-                    index=app.config["SEARCH_CONF"]["index_name"],
-                    body=app.config["SEARCH_CONF"]["search_conf"])
-            except elasticsearch.exceptions.RequestError:
-                app.logger.info("Elasticsearch index already created")
+            create_es_index()
         else:
-            index = lunr(
-                        ref="id",
-                        fields=[
-                            {"field_name": "title", "boost": 10},
-                            {"field_name": "body", "extractor": lambda doc: doc.content}],
-                        documents=get_items(structured=False)
-                    )
+            index = create_lunr_index(documents=get_items(structured=False))
             with (Path(app.config["INTERNAL_DIR"]) / "index.json").open("w") as f:
                 f.write(dumps(index.serialize()))
+
 
 # login routes / setup
 login_manager = LoginManager()
