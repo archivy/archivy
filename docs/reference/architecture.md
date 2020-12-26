@@ -35,11 +35,16 @@ Archivy uses the [python-frontmatter](https://python-frontmatter.readthedocs.io/
 
 ## Search
 
-Archivy uses [Elasticsearch](https://www.elastic.co/) to index and allow users to have full-text search on their knowledge bases. 
+Archivy supports two search engines:
+
+1. [Lunr](https://lunrjs.com), used by default, with a bit less flexibility but no effort to setup.
+2. [Elasticsearch](https://www.elastic.co/) - an incredibly powerful solution that is however harder to install.
+
+These allow archivy to to index and provide full-text search on their knowledge bases. 
 
 Elasticsearch requires configuration to have higher quality search results. You can check out the top-notch config archivy already uses by default [here](https://github.com/archivy/archivy/blob/master/archivy/config.py).
 
-Check out the [helper methods](search.md) archivy exposes for ES.
+Check out the [helper methods](search.md) archivy exposes for search.
 
 ## Auth
 

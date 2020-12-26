@@ -16,7 +16,7 @@ Features:
 - [Git integration](https://github.com/archivy/archivy-git)
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
-- Extensible search with Elasticsearch and its Query DSL
+- Extensible search
 - Dark Theme
 
 

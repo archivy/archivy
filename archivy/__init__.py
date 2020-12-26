@@ -32,9 +32,11 @@ if app.config["SEARCH_CONF"]["enabled"]:
         if app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
             create_es_index()
         else:
-            index = create_lunr_index(documents=get_items(structured=False))
-            with (Path(app.config["INTERNAL_DIR"]) / "index.json").open("w") as f:
-                f.write(dumps(index.serialize()))
+            documents = get_items(structured=False)
+            if documents:
+                index = create_lunr_index(documents=documents)
+                with (Path(app.config["INTERNAL_DIR"]) / "index.json").open("w") as f:
+                    f.write(dumps(index.serialize()))
 
 
 # login routes / setup
