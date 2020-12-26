@@ -14,9 +14,9 @@ Lunr comes already setup with your Archivy installation. It works out of the box
 
 ## Elasticsearch
 
-Elasticsearch, requires more effort but also for better results.
+Elasticsearch, requires more effort but also returns better results.
 
-Instructions to install and run the service which needs to be running when you use Archivy can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html).
+Instructions to install and run the service which needs to be running when you use Elasticsearch can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html).
 
 Append these two lines to your [elasticsearch.yml config file](https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html):
 

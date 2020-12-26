@@ -70,6 +70,8 @@ def query_index(query):
 
 def create_es_index():
     es = get_elastic_client()
+    if not es:
+        return None
     try:
         es.indices.create(
             index=current_app.config["SEARCH_CONF"]["index_name"],
