@@ -1,5 +1,4 @@
-
-## From pip
+## With pip
 
 You can easily install archivy with `pip`. (pip  is the default package installer for Python, you can use pip to install many packages and apps, see this [link](https://pypi.org/project/pip/) for more information if needed)
 
@@ -8,6 +7,11 @@ You can easily install archivy with `pip`. (pip  is the default package installe
 2. Install the python package with `pip install archivy`
 3. If you'd like to use search, follow [these docs](setup-search.md) first and then do this part. Either way, run `archivy init` to create a new user and use the setup wizard.
 4. There you go! You should be able to start the app by running `archivy run` in your terminal and then just login.
+
+## With Nix
+```ShellSession
+$ nix-env -i archivy
+```
 
 ## With docker
 
