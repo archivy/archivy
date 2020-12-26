@@ -29,7 +29,7 @@ app.config.from_object(config)
 
 if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
-        if app.config["SEARCH_CONF"]["engine"] != "elasticsearch":
+        if app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
             create_es_index()
         else:
             documents = get_items(structured=False)
