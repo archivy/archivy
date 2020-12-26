@@ -89,7 +89,10 @@ def create_lunr_index(documents):
     builder.search_pipeline.add(stemmer)
     builder.metadata_whitelist = ["position"]
     builder.ref("id")
-    fields = [{"field_name": "title", "boost": 10}, {"field_name": "body", "extractor": lambda doc: doc.content}]
-    for field in fields: builder.field(**field)
-    for document in documents: builder.add(document)
+    fields = [{"field_name": "title", "boost": 10},
+              {"field_name": "body", "extractor": lambda doc: doc.content}]
+    for field in fields:
+        builder.field(**field)
+    for document in documents:
+        builder.add(document)
     return builder.build()

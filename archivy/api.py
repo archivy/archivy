@@ -197,7 +197,7 @@ def search_elastic():
 def load_lunr_index():
     """Gets the serialized lunr search index to be used in the frontend."""
     try:
-        serialized_index = fetch_lunr_index() 
+        serialized_index = fetch_lunr_index()
         if serialized_index:
             return serialized_index
         else:
