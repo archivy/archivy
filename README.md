@@ -33,7 +33,7 @@ Upcoming:
 ## Quickstart
 
 
-Install archivy: `pip install archivy`.
+Install archivy with `pip install archivy`. Other installations methods are listed [here](https://archivy.github.io/install)
 
 Then run this and enter a password to create a new user:
 
