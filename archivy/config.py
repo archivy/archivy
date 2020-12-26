@@ -16,7 +16,7 @@ class Config(object):
         self.PANDOC_HIGHLIGHT_THEME = "pygments"
 
         self.SEARCH_CONF = {
-                "enabled": 0,
+                "enabled": 1,
                 "url": "http://localhost:9200",
                 "index_name": "dataobj",
                 "engine": "lunr",
