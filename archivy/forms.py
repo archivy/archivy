@@ -6,7 +6,6 @@ from wtforms.validators import DataRequired, URL
 class NewBookmarkForm(FlaskForm):
     url = StringField("url", validators=[DataRequired(), URL()])
     path = SelectField("Topic")
-    desc = StringField("desc")
     tags = StringField("tags")
     submit = SubmitField("Save")
 
@@ -14,7 +13,6 @@ class NewBookmarkForm(FlaskForm):
 class NewNoteForm(FlaskForm):
     title = StringField("title", validators=[DataRequired()])
     path = SelectField("Topic")
-    desc = StringField("desc")
     tags = StringField("tags")
     submit = SubmitField("Save")
 

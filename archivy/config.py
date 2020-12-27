@@ -48,7 +48,6 @@ class Config(object):
                             },
                             "tags": {"type": "text", "analyzer": "rebuilt_standard"},
                             "body": {"type": "text", "analyzer": "rebuilt_standard"},
-                            "desc": {"type": "text", "analyzer": "rebuilt_standard"}
                         }
                     }
                 }

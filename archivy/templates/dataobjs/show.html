@@ -7,8 +7,6 @@
 	<h2>{{ dataobj['title'] }}</h2>
     {{ ", ".join(dataobj['tags']) }}
 	<br>
-	{{ dataobj["desc"] }}
-    <br>
 	
     {{ dataobj['date'] }}
 	{% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}

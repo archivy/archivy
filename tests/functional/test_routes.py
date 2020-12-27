@@ -58,7 +58,6 @@ def test_create_new_bookmark(test_app, client: FlaskClient, mocked_responses: Re
     bookmark_data = {
         "url": "https://example.com",
         "tags": "testing,bookmark",
-        "desc": "",
         "path": "not classified",
         "submit": "true"
     }
@@ -78,7 +77,6 @@ def test_create_note(test_app, client: FlaskClient):
     note_data = {
         "title": "Testing the create route",
         "tags": "testing,note",
-        "desc": "random desc",
         "path": "not classified",
         "submit": "true"
     }

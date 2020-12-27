@@ -51,7 +51,6 @@ def new_bookmark():
         tags = form.tags.data.split(",") if form.tags.data != "" else []
         bookmark = DataObj(
             url=form.url.data,
-            desc=form.desc.data,
             tags=tags,
             path=path,
             type="bookmark")
@@ -75,7 +74,6 @@ def new_note():
         tags = form.tags.data.split(",") if form.tags.data != "" else []
         note = DataObj(
             title=form.title.data,
-            desc=form.desc.data,
             tags=tags,
             path=path,
             type="note")
