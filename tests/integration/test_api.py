@@ -1,10 +1,15 @@
+import json
 from base64 import b64encode
+from pathlib import Path
 
 import responses
 from flask import Flask
 from flask.testing import FlaskClient
+from lunr.index import Index
+
 from archivy.data import create_dir, get_items
 from archivy.models import DataObj
+from archivy.search import create_lunr_index
 
 def test_bookmark_not_found(test_app, client: FlaskClient):
     response: Flask.response_class = client.get("/api/dataobjs/1")
@@ -104,7 +109,7 @@ def test_update_dataobj(test_app, client: FlaskClient, note_fixture):
     assert resp.json["content"] == lorem
 
 
-def test_updating_inexistent_dataobj_returns(test_app, client: FlaskClient):
+def test_updating_inexistent_dataobj_returns_404(test_app, client: FlaskClient):
     resp = client.put("/api/dataobjs/1", json={
         "content": "test"
     })
@@ -128,3 +133,18 @@ def test_unlogged_in_api_fails(test_app, client: FlaskClient):
     resp = client.get("/api/dataobjs")
     assert resp.status_code == 302
 
+
+def test_loading_search_index(test_app, client: FlaskClient, note_fixture):
+    # create lunr index
+    index = create_lunr_index(documents=get_items(structured=False))
+    with (Path(test_app.config["INTERNAL_DIR"]) / "index.json").open("w") as f:
+        f.write(json.dumps(index.serialize()))
+
+    resp = client.get("/api/search_index")
+    assert resp.status_code == 200
+    index = Index.load(json.loads(resp.data.decode("ascii")))
+    
+    # search note
+    results = index.search("Test")
+    assert results
+    assert int(results[0]["ref"]) == note_fixture.id
