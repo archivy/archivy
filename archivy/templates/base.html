@@ -27,6 +27,8 @@
 					{{ dir.name }} 
 				</h3>
 				<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{SEP.join(path)}}', {{ extra }});">Expand</button>
+				<a href="/notes/new?path={{SEP.join(path)}}">New Note</a>
+				<a href="/notes/new?path={{SEP.join(path)}}">New Bookmark</a>
 
 				<ul class="items-{{i.value}}">
 					{% for dataobj in dir.child_files %}

@@ -46,6 +46,7 @@ def index():
 def new_bookmark():
     form = forms.NewBookmarkForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
+    form.path.data = request.args.get("path", "root")
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
         tags = form.tags.data.split(",") if form.tags.data != "" else []
@@ -69,6 +70,7 @@ def new_bookmark():
 def new_note():
     form = forms.NewNoteForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
+    form.path.data = request.args.get("path", "not classified")
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
         tags = form.tags.data.split(",") if form.tags.data != "" else []

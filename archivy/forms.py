@@ -5,14 +5,14 @@ from wtforms.validators import DataRequired, URL
 
 class NewBookmarkForm(FlaskForm):
     url = StringField("url", validators=[DataRequired(), URL()])
-    path = SelectField("Topic")
+    path = SelectField("Folder")
     tags = StringField("tags")
     submit = SubmitField("Save")
 
 
 class NewNoteForm(FlaskForm):
     title = StringField("title", validators=[DataRequired()])
-    path = SelectField("Topic")
+    path = SelectField("Folder")
     tags = StringField("tags")
     submit = SubmitField("Save")
 
