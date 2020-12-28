@@ -21,26 +21,32 @@
 		Plugins
 		<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M10.276 3.09a.25.25 0 01.192-.09h.782a.25.25 0 01.25.25v8.5a.25.25 0 01-.25.25h-.782a.25.25 0 01-.192-.09l-.95-1.14a.75.75 0 00-.483-.264l-3.124-.39a.25.25 0 01-.219-.249V5.133a.25.25 0 01.219-.248l3.124-.39a.75.75 0 00.483-.265l.95-1.14zM4 8v1.867a1.75 1.75 0 001.533 1.737l2.83.354.761.912c.332.4.825.63 1.344.63h.782A1.75 1.75 0 0013 11.75V11h2.25a.75.75 0 000-1.5H13v-4h2.25a.75.75 0 000-1.5H13v-.75a1.75 1.75 0 00-1.75-1.75h-.782c-.519 0-1.012.23-1.344.63l-.76.913-2.831.353A1.75 1.75 0 004 5.133V6.5H2.5A2.5 2.5 0 000 9v5.25a.75.75 0 001.5 0V9a1 1 0 011-1H4z"></path></svg>
 	</a>
-	<a class="btn m-1">
+	<a class="btn m-1" href="/notes/new?path={{current_path}}">
 		New Note
 		<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5zm1.75-.25a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-8.5a.25.25 0 00-.25-.25H1.75zM3.5 6.25a.75.75 0 01.75-.75h7a.75.75 0 010 1.5h-7a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5h4a.75.75 0 000-1.5h-4z"></path></svg>
 	</a>
-	<a class="btn m-1">
+	<a class="btn m-1" href="/notes/new?path={{current_path}}">
 		New Bookmark
 		<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M4.75 2.5a.25.25 0 00-.25.25v9.91l3.023-2.489a.75.75 0 01.954 0l3.023 2.49V2.75a.25.25 0 00-.25-.25h-6.5zM3 2.75C3 1.784 3.784 1 4.75 1h6.5c.966 0 1.75.784 1.75 1.75v11.5a.75.75 0 01-1.227.579L8 11.722l-3.773 3.107A.75.75 0 013 14.25V2.75z"></path></svg>
 	</a>
 </div>
-<div class="Box">
+<div class="Box m-2">
 	<div class="Box-header Box-header--blue d-flex">
 		<p class="mr-3 mb-0">{{dir.child_files | length}} file{{dir.child_files | length | pluralize()}}</p>
 		<p class="mb-0">{{dir.child_dirs | length}} child director{{dir.child_dirs | length | pluralize("y", "ies")}}</p>
 	</div>
 	<ul>
 		{% for subdir in dir.child_dirs.values() | sort(attribute="name") %}
-			<li class="Box-row link"><a class="Box-row-link" href="/?path={{current_path}}{{subdir.name}}/">{{ subdir.name }}</a></li>
+			<li class="Box-row link">
+				<svg class="octicon ml-2 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+				<a class="Box-row-link" href="/?path={{current_path}}{{subdir.name}}/">{{ subdir.name }}</a>
+			</li>
 		{% endfor %}
 		{% for file in dir.child_files | sort(attribute="title") %}
-			<li class="Box-row link"><a class="Box-row-link" href="/dataobj/{{file.id}}">{{ file.title }}</a></li>
+			<li class="Box-row link">
+				<svg class="octicon ml-2 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"></path></svg>
+				<a class="Box-row-link" href="/dataobj/{{file.id}}">{{ file.title }}</a>
+			</li>
 		{% endfor %}
 	</ul>
 </div>

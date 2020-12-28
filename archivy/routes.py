@@ -63,7 +63,7 @@ def new_bookmark():
         if bookmark_id:
             flash("Bookmark Saved!")
             return redirect(f"/dataobj/{bookmark_id}")
-    form.path.data = request.args.get("path", "root")
+    form.path.data = request.args.get("path", "not classified")
     return render_template(
         "dataobjs/new.html",
         title="New Bookmark",
@@ -74,7 +74,6 @@ def new_bookmark():
 def new_note():
     form = forms.NewNoteForm()
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
-    form.path.data = request.args.get("path", "not classified")
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
         tags = form.tags.data.split(",") if form.tags.data != "" else []
@@ -87,6 +86,7 @@ def new_note():
         if note_id:
             flash("Note Saved!")
             return redirect(f"/dataobj/{note_id}")
+    form.path.data = request.args.get("path", "not classified").strip('/')
     return render_template(
         "/dataobjs/new.html",
         title="New Note",

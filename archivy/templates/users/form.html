@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>{{ title }}</h1>
-	<form action="" method="post">
+<div id="login-cont">
+	<h1 class="mb-2">{{ title }}</h1>
+	<form class="p-4 Box bg-gray-light"" action="" method="post">
 		{{ form.hidden_tag() }}
-		<div class="d-block p-3">
-			{% for error in form.username.errors %}
-				<div class="flash mt-3 flash-error">{{ error }}</div>
-			{% endfor %}
-			{{ form.username(placeholder="Username", class="form-control input-lg") }}
-		</div>
+		{% for error in form.username.errors %}
+			<div class="flash mt-3 flash-error">{{ error }}</div>
+		{% endfor %}
+		{{ form.username.label(class="m-2") }}
+		{{ form.username(class="form-control input-lg input-block mb-3 mt-3") }}
 
-		<div class="d-block p-3">
-			{% for error in form.password.errors %}
-				<span style="color: red;">{{ error }}</span>
-			{% endfor %}
-			{{ form.password(placeholder="Password", class="form-control input-lg") }}
-		</div>
+		{% for error in form.password.errors %}
+			<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+		{{ form.password.label(class="") }}
+		{{ form.password(placeholder="Password", class="form-control input-lg input-block mb-3 mt-3") }}
 
-		{{ form.submit() }}
+		{{ form.submit(class="btn btn-primary btn-block") }}
 	</form>
+</div>
 
 {% endblock %}
