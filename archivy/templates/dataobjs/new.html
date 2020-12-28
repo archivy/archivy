@@ -9,10 +9,10 @@
 			{% if field.name != "csrf_token" and field.name != "submit" %}
 				<p>
 					{% for error in field.errors %}
-						<span style="color: red;">{{ error }}</span>
+						<div class="flash mt-3 flash-error">{{ error }}</div>
 					{% endfor %}
 					{{ field.label }}<br>
-					{{ field }}
+					{{ field(class="form-control") }}
 				</p>
 			{% endif %}
 		{% endfor %}

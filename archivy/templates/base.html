@@ -3,17 +3,12 @@
       <title>{{ title }} - Archivy</title>
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-	  <link rel="stylesheet" href="{{ url_for('static', filename='mvp.css') }}">
+	  <link rel="stylesheet" href="{{ url_for('static', filename='primer.css') }}">
 	  <style>
 
 	  </style>
     </head>
     <body>
-		<span class="toggle" style="font-size: 40px;
-		position: absolute;
-		right: 25px;
-		top: 10px;">
-		🌓</span>
 
 		{% set path = [] %}
 		{% set i = namespace(value=0) %}
@@ -50,15 +45,24 @@
 
 		<div class="sidebar">
 			{% if current_user.is_authenticated %}
-				<a href="/user/edit">
-					<img src="{{ url_for('static', filename='profile.svg') }}" alt="edit profile" id="pfp">
-				</a>
 				{{ draw_dir(dataobjs, 0, 0) }}
 			{% endif %}
 		</div>
-        <main class="content">
-            <div><a href="/index">Home</a></div>
-            <h1>Archivy</h1>
+		<div class="Header">
+			{% if current_user.is_authenticated %}
+
+				<a href="/user/edit" class="Header-item">
+					<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="30" height="30"><path fill-rule="evenodd" d="M10.5 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm.061 3.073a4 4 0 10-5.123 0 6.004 6.004 0 00-3.431 5.142.75.75 0 001.498.07 4.5 4.5 0 018.99 0 .75.75 0 101.498-.07 6.005 6.005 0 00-3.432-5.142z"></path></svg>
+				</a>
+			{% endif %}
+			<div class="Header-item Header-item--full">
+				<a class="Header-link" href="/">
+					<h3>Archivy</h3>
+				</a>
+			</div>
+			<div class="toggle Header-item mr-0" style="font-size: 30px">🌓</div>
+		</div>
+        <main class="content pt-3">
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     <ul>
