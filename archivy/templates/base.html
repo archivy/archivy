@@ -63,13 +63,11 @@
 			<div class="toggle Header-item mr-0" style="font-size: 30px">🌓</div>
 		</div>
         <main class="content pt-3">
-            {% with messages = get_flashed_messages() %}
+            {% with messages = get_flashed_messages(with_categories=True) %}
                 {% if messages %}
-                    <ul>
-                        {% for message in messages %}
-                            <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
+                    {% for category, message in messages %}
+						<div class="flash mt-3 mb-3 flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
                 {% endif %}
             {% endwith %}
             {% block content %}{% endblock %}

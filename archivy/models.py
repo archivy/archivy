@@ -94,7 +94,7 @@ class DataObj:
         try:
             url_request = requests.get(self.url)
         except Exception:
-            flash(f"Could not retrieve {self.url}\n")
+            flash(f"Could not retrieve {self.url}\n", "error")
             self.wipe()
             return
 
@@ -102,14 +102,14 @@ class DataObj:
             parsed_html = BeautifulSoup(url_request.text,
                                         features="html.parser")
         except Exception:
-            flash(f"Could not parse {self.url}\n")
+            flash(f"Could not parse {self.url}\n", "error")
             self.wipe()
             return
 
         try:
             self.content = self.extract_content(parsed_html)
         except Exception:
-            flash(f"Could not extract content from {self.url}\n")
+            flash(f"Could not extract content from {self.url}\n", "error")
             return
 
         parsed_title = parsed_html.title

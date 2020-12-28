@@ -61,7 +61,7 @@ def new_bookmark():
         bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
         if bookmark_id:
-            flash("Bookmark Saved!")
+            flash("Bookmark Saved!", "success")
             return redirect(f"/dataobj/{bookmark_id}")
     form.path.data = request.args.get("path", "not classified")
     return render_template(
@@ -84,7 +84,7 @@ def new_note():
             type="note")
         note_id = note.insert()
         if note_id:
-            flash("Note Saved!")
+            flash("Note Saved!", "success")
             return redirect(f"/dataobj/{note_id}")
     form.path.data = request.args.get("path", "not classified").strip('/')
     return render_template(
@@ -98,7 +98,7 @@ def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
 
     if not dataobj:
-        flash("Data could not be found!")
+        flash("Data could not be found!", "error")
         return redirect("/")
 
     if request.args.get("raw") == "1":
@@ -116,9 +116,9 @@ def delete_data(dataobj_id):
     try:
         data.delete_item(dataobj_id)
     except BaseException:
-        flash("Data could not be found!")
+        flash("Data could not be found!", "error")
         return redirect("/")
-    flash("Data deleted!")
+    flash("Data deleted!", "success")
     return redirect("/")
 
 
@@ -132,12 +132,12 @@ def login():
         if user and check_password_hash(user[0]["hashed_password"], form.password.data):
             user = User.from_db(user[0])
             login_user(user, remember=True)
-            flash("Login successful!")
+            flash("Login successful!", "success")
 
             next_url = request.args.get("next")
             return redirect(next_url or "/")
 
-        flash("Invalid credentials")
+        flash("Invalid credentials", "error")
         return redirect("/login")
     return render_template("users/form.html", form=form, title="Login")
 
@@ -146,7 +146,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Logged out successfully")
+    flash("Logged out successfully", "success")
     return redirect("/")
 
 
@@ -163,7 +163,7 @@ def edit_user():
             },
             doc_ids=[current_user.id]
         )
-        flash("Information saved!")
+        flash("Information saved!", "success")
         return redirect("/")
     form.username.data = current_user.username
     return render_template("users/form.html", title="Edit Profile", form=form)
