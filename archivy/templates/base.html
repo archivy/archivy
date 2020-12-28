@@ -23,7 +23,7 @@
 				</h3>
 				<button class="expand-btn" onclick="createInteractive(this, {{i.value}}, '{{SEP.join(path)}}', {{ extra }});">Expand</button>
 				<a href="/notes/new?path={{SEP.join(path)}}">New Note</a>
-				<a href="/notes/new?path={{SEP.join(path)}}">New Bookmark</a>
+				<a href="/bookmarks/new?path={{SEP.join(path)}}">New Bookmark</a>
 
 				<ul class="items-{{i.value}}">
 					{% for dataobj in dir.child_files %}
@@ -43,11 +43,11 @@
 			{% endif %}
 		{%- endmacro %}
 
-		<div class="sidebar">
-			{% if current_user.is_authenticated %}
-				{{ draw_dir(dataobjs, 0, 0) }}
-			{% endif %}
-		</div>
+		{% if current_user.is_authenticated %}
+			<div class="sidebar">
+					{{ draw_dir(dataobjs, 0, 0) }}
+			</div>
+		{% endif %}
 		<div class="Header">
 			{% if current_user.is_authenticated %}
 
