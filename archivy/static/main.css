@@ -1,5 +1,10 @@
+body {
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+  font-size: 14px;
+}
+
 .content {
-  width: 50%;
+  width: 60%;
   margin-left: 25%;
 }
 
@@ -75,6 +80,7 @@ body form {
   position: fixed;
   height: 100%;
   overflow: auto;
+  margin-top: 100px;
 }
 
 .sidebar form {
@@ -109,18 +115,6 @@ mark {
 
 #pfp {
 	margin: 15px;
-}
-
-/**
- * dark theme
- */
-
-.toggle {
-  font-size: 50px;
-  /* color: #ffffff; */
-  position: absolute;
-  right: 90px;
-  top: 10px;
 }
 
 .dark-theme {

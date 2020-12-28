@@ -34,11 +34,15 @@ def check_perms():
 @app.route("/")
 @app.route("/index")
 def index():
+    path = request.args.get("path", "")
+    files = data.get_items(path=path)
     return render_template(
             "home.html",
             title="Home",
             search_enabled=app.config["SEARCH_CONF"]["enabled"],
-            )
+            dir=files,
+            current_path=path
+        )
 
 
 # TODO: refactor two following methods
