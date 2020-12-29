@@ -139,7 +139,7 @@ def login():
 
         flash("Invalid credentials", "error")
         return redirect("/login")
-    return render_template("users/form.html", form=form, title="Login")
+    return render_template("users/login.html", form=form, title="Login")
 
 
 @app.route("/logout", methods=["DELETE"])
@@ -166,4 +166,4 @@ def edit_user():
         flash("Information saved!", "success")
         return redirect("/")
     form.username.data = current_user.username
-    return render_template("users/form.html", title="Edit Profile", form=form)
+    return render_template("users/edit.html", form=form, title="Edit Profile")
