@@ -3,8 +3,8 @@
 {% block content %}
 <br>
 <div id="user-cont">
-	<h1>Edit Profile</h1>
 	<form action="" method="post">
+		<h1>Edit Profile</h1>
 		{{ form.hidden_tag() }}
 		{% for error in form.username.errors %}
 			<div class="flash flash-error">{{ error }}</div>

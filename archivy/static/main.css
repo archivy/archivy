@@ -1,9 +1,9 @@
 body {
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
-  font-size: 14px;
-  margin: 0;
-  line-height: 1.5;
-  color: #24292e;
+	font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+	font-size: 14px;
+	margin: 0;
+	line-height: 1.5;
+	color: #24292e;
 }
 
 * {
@@ -20,9 +20,11 @@ a:hover {
 	text-decoration: underline;
 }
 
+#page {
+ display: flex;
+}
 .content {
-  width: 60%;
-  margin-left: 25%;
+	width: 60%;
 }
 
 #login-cont {
@@ -38,119 +40,102 @@ a:hover {
 	width: 300px;
 }
 
-#login-cont input, #user-cont input {
+input, select {
 	font-size: 17px;
 	transition: border-color 2s;
 	border: none;
 	border-bottom: 3px #f5f4f4 solid;
 	padding: 5px;
-	margin: 8px;
+	margin: 8px 0px;
 	background-color: white;
 }
+form {
+	margin: 10px;
+}
 
-#login-cont input:focus:not([type="submit"]), #login-cont input:hover:not([type="submit"]), #user-cont input:focus:not([type="submit"]), #user-cont input:hover:not([type="submit"]) {
+input:focus:not([type="submit"]), input:hover:not([type="submit"]), .path-select:hover, select:focus, select:hover {
 		border-color:#48BB78;
 }
 
 .hidden, .hidden * {
-  display: none !important;
+	display: none !important;
 }
 
 .fadein {
-  transition: opacity 1s;
-  opacity: 1;
-  display: flex !important;
+	transition: opacity 1s;
+	opacity: 1;
+	display: flex !important;
 }
 
 body form {
 	box-shadow: none;
 }
 .new-folder {
-  align-items: center;
-  flex-wrap: wrap;
-  border: none;
+	align-items: center;
+	flex-wrap: wrap;
+	border: none;
 }
 .new-folder > * {
-  margin: 0px 10px;
+	margin: 0px 10px;
 }
 .new-folder input {
-  margin: 0px;
+	margin: 0px;
 }
 .new-folder input[type="submit"] {
-  padding: 5px;
+	padding: 5px;
 }
 
 .delete-btn {
-  padding: 0;
-  border: none;
-  background: none;
+	padding: 0;
+	border: none;
+	background: none;
 }
 .delete-btn img {
-  height: 40px;
+	height: 40px;
 }
 
 .expand-btn {
-  background: none;
-  padding: 0;
-  border: none;
-  color: #920de9;
+	background: none;
+	padding: 0;
+	border: none;
+	color: #0366d6;
+	font-weight: bold;
 }
 
 .folder-cont {
-  border-left: 5px solid #ff4301;
-  padding: 0px 10px;
-  margin: 30px 0px;
-}
-.folder-cont h2,
-.folder-cont p {
-  margin: 5px;
+	border-left: 5px solid #48BB78;
+	padding: 0px 10px;
+	margin: 30px 0px;
 }
 .folder-cont ul {
-  display: none;
-  padding: 10px;
-}
-.folder-cont li {
-  list-style: none;
-  padding: 5px;
-}
-.folder-cont form {
-  display: none;
+	display: none;
+	list-style-type: none;
+	margin: 15px 0px;
+	padding: 0px;
 }
 
 .sidebar {
-  margin: 0;
-  padding: 0;
-  width: 22%;
-  position: absolute;
-  height: 100%;
-  overflow: auto;
-  margin-top: 100px;
+	margin: 0;
+	margin-right: 40px;
+	padding: 0;
+	width: 22%;
+	overflow: visible;
+	border-right: 5px solid #48BB78;
 }
 
-.sidebar form {
-  padding: 10px;
-}
-
-.sidebar form span {
-  display: none;
+.sidebar li {
+	margin: 5px 0px;
 }
 
 .sidebar input[type="text"] {
-  width: 40%;
-  margin: 10px 0px;
-}
-.sidebar li {
-  padding: 0;
-  margin: 0;
-}
-.sidebar li a {
-  margin: 0;
+	width: 40%;
+	margin: 10px 0px;
 }
 
 /* Active/current link */
 .sidebar a.active {
-  background-color: #4caf50;
-  color: white;
+	background-color: #4caf50;
+	color: white;
 }
 
 mark {
@@ -162,15 +147,15 @@ mark {
 }
 
 .dark-theme {
-  color: white;
-  background: #151515;
+	color: white;
+	background: #151515;
 }
 
 .dark-theme button{
 	color: #ed6663;
 }
-.dark-theme  a, .dark-theme code {
-  color: #ffffff;
+.dark-theme	a, .dark-theme code {
+	color: #ffffff;
 }
 
 .dark-theme blockquote {
@@ -183,7 +168,7 @@ mark {
 
 }
 .dark-theme a:hover, .dark-theme a:visited {
-  color: #ed6663;
+	color: #ed6663;
 }
 
 .dark-theme .matches {
@@ -191,8 +176,8 @@ mark {
 }
 
 .dark-theme img#pfp {
-    -webkit-filter: invert(100%);
-    filter: invert(100%);
+		-webkit-filter: invert(100%);
+		filter: invert(100%);
 }
 
 #pfp {
@@ -230,13 +215,16 @@ mark {
 
 
 @media only screen and (max-width: 500px) {
-  .content {
-    width: 90%;
-    margin: auto;
-  }
-  .sidebar {
-    display: none;
-  }
+	.content {
+		width: 90%;
+		margin: auto;
+	}
+	.sidebar {
+		display: none;
+	}
+	input:not([type="submit"]), select {
+	width: 100%;
+	}
 }
 
 
@@ -280,9 +268,13 @@ Partly inspired by Primer -> https://github.com/primer/css
 	border-style: solid;
 	border-width: 1px;
 	border-radius: 6px;
-	margin: 10px;
+	margin: 10px 0px;
 }
 
+.flash-error {
+	background-color: #ffe3e6;
+	border-color: rgba(158,28,35,0.2);
+}
 .flash-success {
 	background-color: #dcffe4;
 	border-color: rgba(23,111,44,0.2);
@@ -404,3 +396,71 @@ Partly inspired by Primer -> https://github.com/primer/css
 	border-left: 4px #7848bb solid;
 }
 
+#post-btns {
+	margin: 10px;
+}
+
+#post-btns form {
+	margin: 0;
+}
+#post-btns .btn-delete {
+	margin-left: 5px;
+	width: 100%;
+	height: 100%;
+}
+
+.error-wrapper {
+	margin-bottom: 65px;
+}
+.note-error::after, .note-error::before {
+	position: absolute;
+	left: 10px;
+	z-index: 15;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+	content: " ";
+	border: solid transparent;
+}
+
+.note-error::before {
+	margin-left: -1px;
+	border-width: 6px;
+	border-bottom-color: #f97583;
+	bottom: 100%;
+}
+.note-error::after
+{
+	border-width: 5px;
+}
+.note-error {
+	position: absolute;
+	z-index: 10;
+	display: block;
+	max-width: 450px;
+	padding: 4px 8px;
+	margin: 8px 0 0;
+	font-size: 12px;
+	font-weight: 400;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 6px;
+	background-color: #ffeef0;
+	border-color: #f97583;
+	min-height: 17px;
+	margin: 4px 0 2px;
+	font-size: 12px;
+	color: #586069;
+}
+
+label {
+	display: block;
+	font-size: 17px;
+	font-weight: bold;
+	padding: 0px 5px;
+	margin: 8px 0px;
+}
+select {
+	margin: 3px 0px;
+	padding: 1px 5px;
+}

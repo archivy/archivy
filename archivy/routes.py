@@ -63,7 +63,9 @@ def new_bookmark():
         if bookmark_id:
             flash("Bookmark Saved!", "success")
             return redirect(f"/dataobj/{bookmark_id}")
-    form.path.data = request.args.get("path", "not classified")
+    path = request.args.get("path", "not classified").strip('/')
+    # handle empty argument
+    form.path.data = path if path != "" else "not classified"
     return render_template(
         "dataobjs/new.html",
         title="New Bookmark",
@@ -86,7 +88,9 @@ def new_note():
         if note_id:
             flash("Note Saved!", "success")
             return redirect(f"/dataobj/{note_id}")
-    form.path.data = request.args.get("path", "not classified").strip('/')
+    path = request.args.get("path", "not classified").strip('/')
+    # handle empty argument
+    form.path.data = path if path != "" else "not classified"
     return render_template(
         "/dataobjs/new.html",
         title="New Note",
