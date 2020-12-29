@@ -15,18 +15,67 @@ a {
 	font-weight: 600;
 	text-decoration: none;
 }
-
 a:hover {
 	text-decoration: underline;
+}
+
+mark {
+	background-color: #f6efa6;
+}
+
+/* default form stylings */
+input, select {
+	font-size: 17px;
+	transition: border-color 2s;
+	border: none;
+	border-bottom: 3px #f5f4f4 solid;
+	padding: 5px;
+	margin: 8px 0px;
+	background-color: white;
+}
+label {
+	font-size: 17px;
+	font-weight: bold;
+	padding: 0px 5px;
+	margin: 8px 0px;
+}
+select {
+	margin: 3px 0px;
+	padding: 1px 5px;
+}
+input:not([type="checkbox"]):not([type="submit"]) {
+	display: block;
+}
+
+input:focus:not([type="submit"]), input:hover:not([type="submit"]), select:focus, select:hover {
+	border-color:#48BB78;
+}
+
+form {
+	margin: 10px;
+	box-shadow: none;
+}
+
+
+.hidden, .hidden * {
+	display: none !important;
+}
+
+.fadein {
+	transition: opacity 1s;
+	opacity: 1;
+	display: flex !important;
 }
 
 #page {
  display: flex;
 }
+
 .content {
 	width: 60%;
 }
 
+/* user login / edit forms */
 #login-cont {
 	position: absolute;
 	left: 0;
@@ -40,63 +89,7 @@ a:hover {
 	width: 300px;
 }
 
-input, select {
-	font-size: 17px;
-	transition: border-color 2s;
-	border: none;
-	border-bottom: 3px #f5f4f4 solid;
-	padding: 5px;
-	margin: 8px 0px;
-	background-color: white;
-}
-input:not([type="checkbox"]):not([type="submit"]) {
-	display: block;
-}
-form {
-	margin: 10px;
-}
-
-input:focus:not([type="submit"]), input:hover:not([type="submit"]), .path-select:hover, select:focus, select:hover {
-		border-color:#48BB78;
-}
-
-.hidden, .hidden * {
-	display: none !important;
-}
-
-.fadein {
-	transition: opacity 1s;
-	opacity: 1;
-	display: flex !important;
-}
-
-body form {
-	box-shadow: none;
-}
-.new-folder {
-	align-items: center;
-	flex-wrap: wrap;
-	border: none;
-}
-.new-folder > * {
-	margin: 0px 10px;
-}
-.new-folder input {
-	margin: 0px;
-}
-.new-folder input[type="submit"] {
-	padding: 5px;
-}
-
-.delete-btn {
-	padding: 0;
-	border: none;
-	background: none;
-}
-.delete-btn img {
-	height: 40px;
-}
-
+/* sidebar styles */
 .expand-btn {
 	background: none;
 	padding: 0;
@@ -141,14 +134,7 @@ body form {
 	color: white;
 }
 
-mark {
-	background-color: #f6efa6;
-}
-
-#pfp {
-	margin: 15px;
-}
-
+/*
 .dark-theme {
 	color: white;
 	background: #151515;
@@ -181,16 +167,7 @@ mark {
 .dark-theme img#pfp {
 		-webkit-filter: invert(100%);
 		filter: invert(100%);
-}
-
-#pfp {
-	margin: 15px;
-}
-
-#right-pane {
-	width: 100%;
-	margin: 0px;
-}
+}*/
 
 .script-output {
 	border: 3px;
@@ -216,25 +193,83 @@ mark {
 	border: 1px solid #dfe1e5; border-radius: 5px
 }
 
+/* homepage styles */
+#main-links {
+	margin-bottom: 15px;
+	align-items: center;
+}
 
-@media only screen and (max-width: 500px) {
-	.content {
-		width: 90%;
-		margin: auto;
-	}
-	.sidebar {
-		display: none;
-	}
-	input:not([type="submit"]), select {
+#main-links .btn {
+	margin: 3px;
+}
+
+#current-path {
+	flex: auto;
+	margin-right: 10px;
+	font-size: 16px;
+}
+
+#current-path a {
+	color: #0366d6;
+}
+
+#current-path span {
+	color: #48BB78;
+	text-decoration: none;
+}
+
+#files #dir-info {
+	align-items: center;
+}
+
+#files #dir-info > * {
+	padding: 18px 5px;
+}
+
+#files ul {
+	padding: 0px;
+}
+
+#files ul li {
 	width: 100%;
-	}
+	padding: 16px;
+	margin-top: -1px;
+	list-style-type: none;
+	border-top: 1px #e1e4e8 solid;
+}
+
+#files ul .octicon {
+	margin: 0px 10px;
+}
+
+#files ul a {
+	color: black;
+}
+
+#files .dir {
+	border-left: 4px #48BB78 solid;
+}
+
+#files .file {
+	border-left: 4px #7848bb solid;
+}
+
+/* dataobj styles */
+#post-btns {
+	margin: 10px;
+}
+
+#post-btns form {
+	margin: 0;
+}
+#post-btns .btn-delete {
+	margin-left: 5px;
+	width: 100%;
+	height: 100%;
 }
 
 
-/*
-New styles to make archivy look better
-Partly inspired by Primer -> https://github.com/primer/css
-*/
+/*Partly inspired by Primer -> https://github.com/primer/css*/
 .Header {
 	display: flex;
 	padding: 16px;
@@ -290,6 +325,7 @@ Partly inspired by Primer -> https://github.com/primer/css
 .btn {
 	color: #24292e;
 	font-weight: normal;
+	background-color: #fafbfc;
 	box-shadow: 0 1px 0 rgba(27,31,35,0.04),inset 0 1px 0 rgba(255,255,255,0.25);
 	transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
 	position: relative;
@@ -305,10 +341,12 @@ Partly inspired by Primer -> https://github.com/primer/css
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	border: 1px solid;
 	border-radius: 6px;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
+	border-color: rgba(27,31,35,0.15);
 }
 .btn-primary {
 	background-color: #7848bb;
@@ -336,78 +374,6 @@ Partly inspired by Primer -> https://github.com/primer/css
 	fill: currentColor;
 }
 
-#main-links {
-	margin-bottom: 15px;
-	align-items: center;
-}
-
-#main-links .btn {
-	margin: 3px;
-}
-
-#current-path {
-	flex: auto;
-	margin-right: 10px;
-	font-size: 16px;
-}
-
-#current-path a {
-	color: #0366d6;
-}
-
-#current-path span {
-	color: #48BB78;
-	text-decoration: none;
-}
-
-#files #dir-info {
-	align-items: center;
-}
-
-#files #dir-info > * {
-	padding: 5px;
-}
-
-#files ul {
-	padding: 0px;
-}
-
-#files ul li {
-	width: 100%;
-	padding: 16px;
-	margin-top: -1px;
-	list-style-type: none;
-	border-top: 1px #e1e4e8 solid;
-}
-
-#files ul .octicon {
-	margin: 0px 10px;
-}
-
-#files ul a {
-	color: black;
-}
-
-#files .dir {
-	border-left: 4px #48BB78 solid;
-}
-
-#files .file {
-	border-left: 4px #7848bb solid;
-}
-
-#post-btns {
-	margin: 10px;
-}
-
-#post-btns form {
-	margin: 0;
-}
-#post-btns .btn-delete {
-	margin-left: 5px;
-	width: 100%;
-	height: 100%;
-}
 
 .error-wrapper {
 	margin-bottom: 65px;
@@ -453,13 +419,17 @@ Partly inspired by Primer -> https://github.com/primer/css
 	color: #586069;
 }
 
-label {
-	font-size: 17px;
-	font-weight: bold;
-	padding: 0px 5px;
-	margin: 8px 0px;
-}
-select {
-	margin: 3px 0px;
-	padding: 1px 5px;
+
+/* mobile adjustements */
+@media only screen and (max-width: 500px) {
+	.content {
+		width: 90%;
+		margin: auto;
+	}
+	.sidebar {
+		display: none;
+	}
+	input:not([type="submit"]), select {
+	width: 100%;
+	}
 }
