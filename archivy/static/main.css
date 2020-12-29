@@ -49,6 +49,9 @@ input, select {
 	margin: 8px 0px;
 	background-color: white;
 }
+input:not([type="checkbox"]):not([type="submit"]) {
+	display: block;
+}
 form {
 	margin: 10px;
 }
@@ -287,7 +290,6 @@ Partly inspired by Primer -> https://github.com/primer/css
 .btn {
 	color: #24292e;
 	font-weight: normal;
-	background-color: #fafbfc;
 	box-shadow: 0 1px 0 rgba(27,31,35,0.04),inset 0 1px 0 rgba(255,255,255,0.25);
 	transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
 	position: relative;
@@ -303,15 +305,13 @@ Partly inspired by Primer -> https://github.com/primer/css
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	border: 1px solid;
 	border-radius: 6px;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	border-color: rgba(27,31,35,0.15);
 }
 .btn-primary {
-	background-color: #48BB78;
+	background-color: #7848bb;
 	color: white;
 }
 
@@ -454,7 +454,6 @@ Partly inspired by Primer -> https://github.com/primer/css
 }
 
 label {
-	display: block;
 	font-size: 17px;
 	font-weight: bold;
 	padding: 0px 5px;

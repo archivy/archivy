@@ -3,12 +3,12 @@
 {% block content %}
 <script src="{{ url_for('static', filename='open_form.js') }}"></script>
 <script src="{{ url_for('static', filename='post_and_read.js') }}"></script>
-<div class="mb-4">
-    <div class="command-tree" id="command-tree">
+<div>
+    <div class="command-tree" id="files">
 		<h1>Plugins</h1>
-        <ul class="Box">
+        <ul>
             {%- for command in tree.childs recursive %}
-                <li class="Box-row link" title="{{ command.help|replace('\b', '')|escape }}">
+                <li class="file" title="{{ command.help|replace('\b', '')|escape }}">
                     {% if command.is_group %}
 						<p>{{ command.name|title }} {% if command.short_help %} | {{ command.short_help }} {% endif %}</p>
                     {% else %}

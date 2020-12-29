@@ -11,25 +11,23 @@
       enctype="multipart/form-data">
     {% set command_list = [] %}
     {% for level in levels %}
-        <fieldset name="{{ level.command.name }}">
-            {% for field in level.fields %}
-                <div class="parameter {{ field.param }} {{ field.type }}">
-                    <div class="pure-control-group">
-                        {% if field.nargs == -1 %}
-                            {{ macros.add_variadic_field_input(field) }}
-                        {% else %}
-                            <label for="{{ field.name }}">
-                                {{ field.human_readable_name|capitalize }}
-                            </label>
-                            {% for arg in range(field.nargs) %}
-                                {{ macros.add_field_input(field) }}
-                            {% endfor %}
+		{% for field in level.fields %}
+			<div class="parameter {{ field.param }} {{ field.type }}">
+				<div class="pure-control-group">
+					{% if field.nargs == -1 %}
+						{{ macros.add_variadic_field_input(field) }}
+					{% else %}
+						<label for="{{ field.name }}">
+							{{ field.human_readable_name|capitalize }}
+						</label>
+						{% for arg in range(field.nargs) %}
+							{{ macros.add_field_input(field) }}
+						{% endfor %}
 
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
-        </fieldset>
+					{% endif %}
+				</div>
+			</div>
+		{% endfor %}
     {% endfor %}
     <button type="submit" id="submit_btn" class="btn btn-primary m-2">Run</button>
 </form>
