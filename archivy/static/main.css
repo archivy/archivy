@@ -147,41 +147,6 @@ form {
 	color: white;
 }
 
-/*
-.dark-theme {
-	color: white;
-	background: #151515;
-}
-
-.dark-theme button{
-	color: #ed6663;
-}
-.dark-theme	a, .dark-theme code {
-	color: #ffffff;
-}
-
-.dark-theme blockquote {
-	color: #d1cebd;
-}
-.dark-theme input, .dark-theme select, .dark-theme textarea {
-	border: none;
-	background: #1f1f1f;
-	color: white;
-
-}
-.dark-theme a:hover, .dark-theme a:visited {
-	color: #ed6663;
-}
-
-.dark-theme .matches {
-	background: #ed6663;
-}
-
-.dark-theme img#pfp {
-		-webkit-filter: invert(100%);
-		filter: invert(100%);
-}*/
-
 .script-output {
 	border: 3px;
 	border-style: dashed;
