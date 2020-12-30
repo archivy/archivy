@@ -32,12 +32,6 @@ beautifulsoup4 >= 4.8.2
 elasticsearch == 7.7.1
 
 
-# archivy/__init__.py: 8
-# archivy/check_changes.py: 6
-# archivy/models.py: 12
-# archivy/routes.py: 5
-pypandoc == 1.5
-
 # archivy/run.py: 1
 python_dotenv == 0.13.0
 
