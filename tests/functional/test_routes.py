@@ -5,6 +5,7 @@ from flask_login import current_user
 from responses import RequestsMock, GET
 from werkzeug.security import generate_password_hash
 from archivy.helpers import get_max_id, get_db
+from archivy.data import get_dirs, create_dir
 
 
 def test_get_index(test_app, client: FlaskClient):
@@ -130,3 +131,38 @@ def test_logging_out(test_app, client: FlaskClient):
 
     resp = client.get("/", follow_redirects=True)
     assert request.path == "/login"
+
+
+def test_create_dir(test_app, client: FlaskClient):
+    """Tests /folders/create endpoint"""
+
+    resp = client.post("/folders/create",
+                data={"parent_dir": "", "new_dir": "testing"},
+                follow_redirects=True)
+
+    assert resp.status_code == 200
+    assert request.args.get("path") == "testing"
+    assert "testing" in get_dirs()
+    assert b"Folder successfully created" in resp.data
+
+def test_creating_without_dirname_fails(test_app, client: FlaskClient):
+    resp = client.post("/folders/create",
+                data={"parent_dir": ""},
+                follow_redirects=True)
+
+    assert resp.status_code == 200
+    assert request.path == "/"
+    assert b"Could not create folder." in resp.data
+
+
+def test_deleting_dir(test_app, client: FlaskClient):
+    create_dir("testing")
+    assert "testing" in get_dirs()
+    resp = client.post("/folders/delete", data={"dir_name": "testing"}, follow_redirects=True)
+    assert not "testing" in get_dirs()
+    assert b"Folder successfully deleted." in resp.data
+
+
+def test_deleting_nonexisting_folder_fails(test_app, client: FlaskClient):
+    resp = client.post("/folders/delete", data={"dir_name": "testing"})
+    assert resp.status_code == 404

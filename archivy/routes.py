@@ -180,6 +180,7 @@ def create_folder():
     form = forms.NewFolderForm()
     if form.validate_on_submit():
         path = form.parent_dir.data + form.new_dir.data
+        print(path)
         data.create_dir(path)
         flash("Folder successfully created.", "success")
         return redirect(f"/?path={path}")
@@ -196,4 +197,6 @@ def delete_folder():
             return redirect("/")
         else:
             flash("Folder not found.", "error")
+            return redirect(request.referrer or "/", 404)
+    flash("Could not delete folder.", "error")
     return redirect(request.referrer or "/")

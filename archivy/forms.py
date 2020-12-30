@@ -18,7 +18,7 @@ class NewNoteForm(FlaskForm):
 
 
 class NewFolderForm(FlaskForm):
-    parent_dir = HiddenField(validators=[DataRequired()])
+    parent_dir = HiddenField()
     new_dir = StringField("New folder", validators=[DataRequired()])
     submit = SubmitField("Create sub directory")
 
