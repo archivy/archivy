@@ -320,6 +320,7 @@ form {
 
 .d-flex {
 	display: flex;
+	flex-wrap: wrap;
 }
 
 .btn {

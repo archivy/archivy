@@ -41,7 +41,9 @@ def index():
             title="Home",
             search_enabled=app.config["SEARCH_CONF"]["enabled"],
             dir=files,
-            current_path=path
+            current_path=path,
+            new_folder_form=forms.NewFolderForm(),
+            delete_form=forms.DeleteFolderForm()
         )
 
 
@@ -171,3 +173,27 @@ def edit_user():
         return redirect("/")
     form.username.data = current_user.username
     return render_template("users/edit.html", form=form, title="Edit Profile")
+
+
+@app.route("/folders/create", methods=["POST"])
+def create_folder():
+    form = forms.NewFolderForm()
+    if form.validate_on_submit():
+        path = form.parent_dir.data + form.new_dir.data
+        data.create_dir(path)
+        flash("Folder successfully created.", "success")
+        return redirect(f"/?path={path}")
+    flash("Could not create folder.", "error")
+    return redirect(request.referrer or "/")
+
+
+@app.route("/folders/delete", methods=["POST"])
+def delete_folder():
+    form = forms.DeleteFolderForm()
+    if form.validate_on_submit():
+        if data.delete_dir(form.dir_name.data):
+            flash("Folder successfully deleted.", "success")
+            return redirect("/")
+        else:
+            flash("Folder not found.", "error")
+    return redirect(request.referrer or "/")
