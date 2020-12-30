@@ -16,10 +16,12 @@ class NewNoteForm(FlaskForm):
     path = SelectField("Folder")
     submit = SubmitField("Save")
 
+
 class NewFolderForm(FlaskForm):
     parent_dir = HiddenField(validators=[DataRequired()])
     new_dir = StringField("New folder", validators=[DataRequired()])
     submit = SubmitField("Create sub directory")
+
 
 class DeleteDataForm(FlaskForm):
     submit = SubmitField("Delete")

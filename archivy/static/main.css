@@ -94,33 +94,46 @@ form {
 	background: none;
 	padding: 0;
 	border: none;
-	color: #0366d6;
 	font-weight: bold;
 }
 
 .folder-cont {
-	border-left: 5px solid #48BB78;
 	padding: 0px 10px;
-	margin: 30px 0px;
+	margin: 0px 5px;
+	border-left: 2px solid rgba(72, 187, 120, 0.5);
+}
+.folder-cont h3 {
+	margin: 0;
 }
 .folder-cont ul {
 	display: none;
 	list-style-type: none;
-	margin: 15px 0px;
+	margin: 0px;
 	padding: 0px;
 }
-
+.folder-cont svg {
+	color: #48BB78;
+}
+.folder-cont .folder-title {
+	align-items: center; 
+}
+.sidebar li svg {
+	min-width: 16px;
+}
 .sidebar {
 	margin: 0;
 	margin-right: 40px;
 	padding: 0;
+	padding-top: 30px;
 	width: 22%;
 	overflow: visible;
 	border-right: 5px solid #48BB78;
 }
 
 .sidebar li {
-	margin: 5px 0px;
+	margin: 5px 0px 0px 15px;
+	align-items: center;
+	flex-wrap: nowrap;
 }
 
 .sidebar input[type="text"] {

@@ -16,17 +16,23 @@
 			{% if depth %}
 				{% do path.append(dir.name) %}
 			{% endif %}
-			<div style="margin-left: 15px" id="cont-{{i.value}}" class="folder-cont">
-				<h3>
-					{{ dir.name }} 
-				</h3>
+			<div id="cont-{{i.value}}" class="folder-cont">
+				<div class="folder-title d-flex">
+					<button class="expand-btn" onclick="createInteractive(this, {{i.value}});">
+						<svg class="octicon closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20"><path fill-rule="evenodd" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"></path></svg>
+						<svg class="octicon open" style="display: none;" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"></path></svg>
+					</button>
+					<h3>
+						{{ dir.name }} 
+					</h3>
+				</div>
 				{% if dir.child_files | length %}
-					<button class="expand-btn" onclick="createInteractive(this, {{i.value}});">Expand</button>
 				{% endif %}
 
 				<ul class="items-{{i.value}}">
 					{% for dataobj in dir.child_files %}
-						<li>
+						<li class="d-flex">
+							<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M6.427 4.427l3.396 3.396a.25.25 0 010 .354l-3.396 3.396A.25.25 0 016 11.396V4.604a.25.25 0 01.427-.177z"></path></svg>
 							<a href="/dataobj/{{ dataobj["id"] }}">
 								{{ dataobj["title"] }}
 							</a>
@@ -78,51 +84,28 @@
 				{% block content %}{% endblock %}
 			</main>
 		</div>
-		
-
-		<!-- 
-			<script>
-			  /*-----------------------------------------------------*/
-			  /* Different color themes toggle
-			  ------------------------------------------------------ */
-			  const currentTheme = localStorage.getItem("theme");
-			  if (currentTheme == "dark")
-			  {
-				document.body.classList.toggle("dark-theme");
-			  }
-
-			  const tog = document.querySelector(".toggle");
-			  tog.addEventListener("click", function () {
-				let theme = "dark";
-				if (document.body.classList.contains("dark-theme"))
-				{
-				  theme = "light";
-				}
-				localStorage.setItem("theme", theme);
-				document.body.classList.toggle("dark-theme");
-			  });
-				
-			</script>
-		-->
 
 		<script>
 		  const SCRIPT_ROOT = {{ request.script_root|tojson|safe }} + "/api";
 		  let max_folder_id = document.querySelectorAll(".folder-cont").length;
-		  function createInteractive(prevElem, id) 
+		  function createInteractive(btn, id) 
 		  {
 			// expand
-			let parentDiv = prevElem.parentNode;
+			let parentDiv = btn.parentNode;
 			let childNotes = document.querySelector(".items-" + id);
 			// check if expanded
 			let expanded = window.getComputedStyle(childNotes).getPropertyValue("display") === "block";
+			let icons = btn.querySelectorAll("svg");
 			if (!expanded) {
 			  childNotes.style.display = "block";
-			  prevElem.innerHTML = 'Collapse'
+			  icons[1].style.display = "block";
+			  icons[0].style.display = "none";
 			}
 			// collapse
 			else {
-			  prevElem.innerHTML = 'Expand'
 			  childNotes.style.display = "none";
+			  icons[0].style.display = "block";
+			  icons[1].style.display = "none";
 			}
 
 		  }
