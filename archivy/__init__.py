@@ -57,8 +57,9 @@ def load_user(user_id):
 
 app.jinja_options["extensions"].append("jinja2.ext.do")
 
+
 @app.template_filter('pluralize')
-def pluralize(number, singular = '', plural = 's'):
+def pluralize(number, singular='', plural='s'):
     if number == 1:
         return singular
     else:
