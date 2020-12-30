@@ -5,7 +5,7 @@ Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC
 
 # Archivy
 
-Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content that contributes to your knowledge bank.
+Archivy is a self-hosted knowledge repository that allows you to safely preserve useful content that contributes to your own personal, searchable and extensible wiki.
 
 Features:
 
