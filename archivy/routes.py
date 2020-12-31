@@ -66,7 +66,7 @@ def new_bookmark():
             flash("Bookmark Saved!", "success")
             return redirect(f"/dataobj/{bookmark_id}")
     # for bookmarklet
-    form.url.data = request.args.get("url", "") 
+    form.url.data = request.args.get("url", "")
     path = request.args.get("path", "not classified").strip('/')
     # handle empty argument
     form.path.data = path if path != "" else "not classified"
