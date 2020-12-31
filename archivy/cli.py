@@ -38,6 +38,15 @@ def init(ctx):
     except FileNotFoundError:
         pass
 
+    # ask if to remove old users
+    try:
+        users_db = (Path(app.config['INTERNAL_DIR']) / 'db.json').resolve(strict=True)
+        remove_old_users = click.confirm("Found an existing user database. Do you want "
+                                         "to remove them?")
+        if remove_old_users:
+            users_db.unlink()
+    except FileNotFoundError:
+        pass
     # remove the old configuration, and add version to it
     write_config({"version": VERSION})
 
