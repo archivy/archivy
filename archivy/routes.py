@@ -2,7 +2,7 @@ import os
 
 import frontmatter
 from flask import render_template, flash, redirect, request, url_for
-from flask_login import login_user, login_required, current_user, logout_user
+from flask_login import login_user, current_user, logout_user
 from tinydb import Query
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -65,6 +65,8 @@ def new_bookmark():
         if bookmark_id:
             flash("Bookmark Saved!", "success")
             return redirect(f"/dataobj/{bookmark_id}")
+    # for bookmarklet
+    form.url.data = request.args.get("url", "") 
     path = request.args.get("path", "not classified").strip('/')
     # handle empty argument
     form.path.data = path if path != "" else "not classified"
@@ -149,7 +151,6 @@ def login():
 
 
 @app.route("/logout", methods=["DELETE"])
-@login_required
 def logout():
     logout_user()
     flash("Logged out successfully", "success")
@@ -157,7 +158,6 @@ def logout():
 
 
 @app.route("/user/edit", methods=["GET", "POST"])
-@login_required
 def edit_user():
     form = forms.UserForm()
     if form.validate_on_submit():
@@ -200,3 +200,8 @@ def delete_folder():
             return redirect(request.referrer or "/", 404)
     flash("Could not delete folder.", "error")
     return redirect(request.referrer or "/")
+
+
+@app.route("/bookmarklet")
+def bookmarklet():
+    return render_template("bookmarklet.html")
