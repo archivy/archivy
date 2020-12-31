@@ -69,7 +69,7 @@ def init(ctx):
     app.config["USER_DIR"] = data_dir
 
     # create data dir
-    (Path(data_dir) / "data").mkdir(exist_ok=True)
+    (Path(data_dir) / "data").mkdir(exist_ok=True, parents=True)
 
     write_config(vars(config))
     click.echo("Config successfully created at "
