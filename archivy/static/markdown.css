@@ -327,7 +327,6 @@
     font-size: 100%;
     word-break: normal;
     white-space: pre;
-    background: transparent;
     border: 0;
 }
 .markdown-body .highlight {
