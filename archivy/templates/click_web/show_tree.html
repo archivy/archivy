@@ -5,12 +5,12 @@
 <script src="{{ url_for('static', filename='post_and_read.js') }}"></script>
 <div>
     <div class="command-tree" id="files">
-		<h1>Plugins</h1>
+        <h1>Plugins</h1>
         <ul>
             {%- for command in tree.childs recursive %}
                 <li class="file" title="{{ command.help|replace('\b', '')|escape }}">
                     {% if command.is_group %}
-						<p>{{ command.name|title }} {% if command.short_help %} | {{ command.short_help }} {% endif %}</p>
+                        <p>{{ command.name|title }} {% if command.short_help %} | {{ command.short_help }} {% endif %}</p>
                     {% else %}
                         <a title="{{ command.help|replace('\b', '')|escape }}"
                            href="#" onclick="openCommand('{{ command.path }}', true, this);">{{ command.name }}</a>

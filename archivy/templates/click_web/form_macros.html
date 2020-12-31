@@ -12,8 +12,8 @@
         {% endif %}
         <input name="{{ field.name }}"
                id="{{ field.name }}"
-			   class="form-control input-lg {% if field.type != 'checkbox' %}d-block{% endif %} mt-2 mb-2"
-			   placeholder="{{ field.desc |default('', true)|capitalize}}"
+               class="form-control input-lg {% if field.type != 'checkbox' %}d-block{% endif %} mt-2 mb-2"
+               placeholder="{{ field.desc |default('', true)|capitalize}}"
                type="{{ field.type }}"
                 {% if field.step %} step="{{ field.step }}"{% endif %}
                 {% if field.accept %} accept="{{ field.accept }}"{% endif %}
