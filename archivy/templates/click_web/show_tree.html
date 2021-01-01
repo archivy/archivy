@@ -3,15 +3,14 @@
 {% block content %}
 <script src="{{ url_for('static', filename='open_form.js') }}"></script>
 <script src="{{ url_for('static', filename='post_and_read.js') }}"></script>
-<div id="left-pane">
-    <div class="command-tree" id="command-tree">
-		<h2>Plugins</h2>
+<div>
+    <div class="command-tree" id="files">
+        <h1>Plugins</h1>
         <ul>
             {%- for command in tree.childs recursive %}
-                <li title="{{ command.help|replace('\b', '')|escape }}">
+                <li class="file" title="{{ command.help|replace('\b', '')|escape }}">
                     {% if command.is_group %}
-                        {{ command.name|title }}
-                        <div class="help">{{ command.short_help }}</div>
+                        <p>{{ command.name|title }} {% if command.short_help %} | {{ command.short_help }} {% endif %}</p>
                     {% else %}
                         <a title="{{ command.help|replace('\b', '')|escape }}"
                            href="#" onclick="openCommand('{{ command.path }}', true, this);">{{ command.name }}</a>
@@ -25,8 +24,7 @@
     </div>
 </div>
 
-<div class="split content split-horizontal" id="right-pane">
-
+<div class="p-4">
     <div id="form-div">
         <p>Select a command to run above.</p>
     </div>

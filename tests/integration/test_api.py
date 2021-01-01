@@ -23,7 +23,6 @@ def test_create_bookmark(test_app, client: FlaskClient, mocked_responses):
     mocked_responses.add(responses.GET, "http://example.org", body="Example\n")
     response: Flask.response_class = client.post("/api/bookmarks", json={
         "url": "http://example.org",
-        "desc": "Example web page",
         "tags": ["test"],
         "path": "",
     })
@@ -72,7 +71,6 @@ def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
 
     note_dict = {
         "type": "note", "title": "Nested Test Note",
-        "desc": "A note to test nested paths",
         "tags": ["testing", "archivy"], "path": "t"
     }
 

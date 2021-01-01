@@ -1,6 +1,6 @@
 {% import 'click_web/form_macros.html' as macros %}
-<div class="command-title-parents">{{ levels[1:-1]| join(' - ', attribute='command.name')|title }}</div>
-<h1 class="command-title">{{ command.name|title }}</h1>
+<h2 class="command-title-parents">{{ levels[1:-1]| join(' - ', attribute='command.name')|title }}</h2>
+<h3 class="command-title">{{ command.name|title }}</h3>
 <div class="command-help">{{ command.html_help }}</div>
 
 <form id="inputform"
@@ -11,41 +11,25 @@
       enctype="multipart/form-data">
     {% set command_list = [] %}
     {% for level in levels %}
-        <fieldset name="{{ level.command.name }}">
-            {% if loop.index == 1 %}
-                {# do not print root command as it most likely is juse "cli" #}
-                <legend class="command-header"></legend>
-            {% elif not level.fields %}
-                {# It is just a command group without any options do not create it's own section #}
-                {% do command_list.append(level.command.name) %}
-            {% else %}
-                {% do command_list.append(level.command.name) %}
-                <legend class="command-header">{{ command_list | join('&ensp;') }}</legend>
-                {% do command_list.clear() %}
-            {% endif %}
+        {% for field in level.fields %}
+            <div class="parameter {{ field.param }} {{ field.type }}">
+                <div class="pure-control-group">
+                    {% if field.nargs == -1 %}
+                        {{ macros.add_variadic_field_input(field) }}
+                    {% else %}
+                        <label for="{{ field.name }}">
+                            {{ field.human_readable_name|capitalize }}
+                        </label>
+                        {% for arg in range(field.nargs) %}
+                            {{ macros.add_field_input(field) }}
+                        {% endfor %}
 
-            {% for field in level.fields %}
-                <div class="parameter {{ field.param }} {{ field.type }}">
-                    <div class="pure-control-group">
-                        {% if field.nargs == -1 %}
-                            {{ macros.add_variadic_field_input(field) }}
-                        {% else %}
-                            <label for="{{ field.name }}">
-                                {{ field.human_readable_name|capitalize }}
-                            </label>
-                            {% for arg in range(field.nargs) %}
-                                {{ macros.add_field_input(field) }}
-                            {% endfor %}
-                            <div class="help" style="display: inline-block">
-                                {{ field.desc|default('', true)|capitalize }}</div>
-
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        </fieldset>
+            </div>
+        {% endfor %}
     {% endfor %}
-    <button type="submit" id="submit_btn" class="pure-button pure-button-primary">Run</button>
+    <button type="submit" id="submit_btn" class="btn btn-primary m-2">Run</button>
 </form>
 
 <div id="output-header" hidden="true"></div>
