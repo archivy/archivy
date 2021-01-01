@@ -166,3 +166,8 @@ def test_deleting_dir(test_app, client: FlaskClient):
 def test_deleting_nonexisting_folder_fails(test_app, client: FlaskClient):
     resp = client.post("/folders/delete", data={"dir_name": "testing"})
     assert resp.status_code == 404
+
+
+def test_bookmarklet(test_app, client: FlaskClient):
+    resp = client.get("/bookmarklet")
+    assert resp.status_code == 200
