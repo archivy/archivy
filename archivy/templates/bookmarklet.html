@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Bookmarklet</h2>
+
+Using the bookmarklet allows you to quickly add bookmarks to archivy.
+
+All you need to do is drage the link below to your browser toolbar. Then, when you find an interesting link, just click the button on your toolbar named "Add to archivy".
+
+<h3><a href="javascript:window.location = `{{ request.host_url | safe  }}bookmarks/new?url=${window.location}`;">Add to Archivy</a></h3>
+
+{% endblock %}

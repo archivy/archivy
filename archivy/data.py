@@ -48,11 +48,11 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     - **json_format**: boolean value used internally to pre-process dataobjs
       to send back a json response.
     """
-    datacont = Directory("root") if structured else []
-    home_dir = get_data_dir()
-    for filename in home_dir.rglob(path + "*"):
+    datacont = Directory(path or "root") if structured else []
+    root_dir = get_data_dir() / path
+    for filename in root_dir.rglob("*"):
         if structured:
-            paths = filename.relative_to(home_dir)
+            paths = filename.relative_to(root_dir)
             current_dir = datacont
 
             # iterate through paths

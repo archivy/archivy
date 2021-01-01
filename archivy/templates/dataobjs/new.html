@@ -2,20 +2,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>{{ title }}</h1>
     <form action="" method="post" novalidate>
+        <h1>{{ title }}</h1>
         {{ form.hidden_tag() }}
-		{% for field in form %}
-			{% if field.name != "csrf_token" and field.name != "submit" %}
-				<p>
-					{% for error in field.errors %}
-						<span style="color: red;">{{ error }}</span>
-					{% endfor %}
-					{{ field.label }}<br>
-					{{ field }}
-				</p>
-			{% endif %}
-		{% endfor %}
+        {% for field in form %}
+            {% if field.name != "csrf_token" and field.name != "submit" %}
+                <p>
+                    {% if field.name == "path" %}
+                        {{ field.label }}
+                    {% endif %}
+                    {{ field(placeholder=field.name, **{"aria-describedby":"username-input-validation"}) }}
+
+                    {% for error in field.errors %}
+                        <div class="error-wrapper">
+                            <p class="note-error" id="validation-{{ field.name }}">{{ error }}</p>
+                        </div>
+                    {% endfor %}
+                </p>
+            {% endif %}
+        {% endfor %}
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

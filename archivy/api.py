@@ -41,14 +41,12 @@ def create_bookmark():
 
     All parameters are sent through the JSON body.
     - **url** (required)
-    - **desc**
     - **tags**
     - **path**
     """
     json_data = request.get_json()
     bookmark = DataObj(
         url=json_data['url'],
-        desc=json_data.get('desc'),
         tags=json_data.get('tags'),
         path=json_data.get("path", ""),
         type="bookmark",
@@ -72,7 +70,6 @@ def create_note():
     All parameters are sent through the JSON body.
     - **title** (required)
     - **content** (required)
-    - **desc**
     - **tags**
     - **path**
     """
@@ -80,7 +77,6 @@ def create_note():
     note = DataObj(
         title=json_data["title"],
         content=json_data["content"],
-        desc=json_data.get("desc"),
         tags=json_data.get("tags"),
         path=json_data.get("path", ""),
         type="note"

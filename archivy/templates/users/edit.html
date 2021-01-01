@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+{% block content %}
+<br>
+<div id="user-cont">
+    <form action="" method="post">
+        <h1>Edit Profile</h1>
+        {{ form.hidden_tag() }}
+        {% for error in form.username.errors %}
+            <div class="flash flash-error">{{ error }}</div>
+        {% endfor %}
+        {{ form.username(placeholder="Username") }}
+
+        {% for error in form.password.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.password(placeholder="New Password") }}
+
+        {{ form.submit(class="btn") }}
+    </form>
+</div>
+
+{% endblock %}
