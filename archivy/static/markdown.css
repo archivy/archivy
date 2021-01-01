@@ -328,6 +328,7 @@
     word-break: normal;
     white-space: pre;
     border: 0;
+	background: transparent;
 }
 .markdown-body .highlight {
     margin-bottom: 16px;
@@ -342,7 +343,6 @@
     overflow: auto;
     font-size: 85%;
     line-height: 1.45;
-    background-color: #f6f8fa;
     border-radius: 6px;
 }
 .markdown-body pre code,
