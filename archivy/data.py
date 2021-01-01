@@ -26,12 +26,12 @@ class Directory:
         self.child_dirs = {}
 
 
-FILE_GLOB = "-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
+FILE_GLOB = "[0-9]*-*.md"
 
 
 def get_by_id(dataobj_id):
     """Returns filename of dataobj of given id"""
-    results = list(get_data_dir().rglob(f"{dataobj_id}{FILE_GLOB}"))
+    results = list(get_data_dir().rglob(f"{dataobj_id}-*.md"))
     return results[0] if results else None
 
 
@@ -50,7 +50,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     """
     datacont = Directory("root") if structured else []
     home_dir = get_data_dir()
-    for filename in home_dir.rglob(path + "*"):
+    for filename in home_dir.rglob(path + FILE_GLOB):
         if structured:
             paths = filename.relative_to(home_dir)
             current_dir = datacont

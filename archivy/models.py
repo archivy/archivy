@@ -192,8 +192,7 @@ class DataObj:
             dataobj.metadata = data
             self.fullpath = create(
                                 frontmatter.dumps(dataobj),
-                                str(self.id) + "-" +
-                                dataobj["date"] + "-" + dataobj["title"],
+                                f"{self.id}-{dataobj['title']}",
                                 path=self.path,
                                 )
 
