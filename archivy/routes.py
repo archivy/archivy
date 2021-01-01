@@ -204,4 +204,4 @@ def delete_folder():
 
 @app.route("/bookmarklet")
 def bookmarklet():
-    return render_template("bookmarklet.html")
+    return render_template("bookmarklet.html", title="Bookmarklet")
