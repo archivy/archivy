@@ -5,6 +5,7 @@ from pkg_resources import iter_entry_points
 import click
 from click_plugins import with_plugins
 from flask.cli import FlaskGroup, load_dotenv, shell_command
+import gunicorn.app.base
 
 from archivy import app
 from archivy.config import Config
@@ -26,6 +27,7 @@ def cli():
 
 # add built in commands:
 cli.add_command(shell_command)
+
 
 
 @cli.command("init", short_help="Initialise your archivy application")
@@ -85,7 +87,6 @@ def config():
 def hooks():
     hook_path = Path(app.config["USER_DIR"]) / "hooks.py"
     if not hook_path.exists():
-        print("aaaa")
         with hook_path.open("w") as f:
             f.write("from archivy.config import BaseHooks\n"
                     "class Hooks(BaseHooks):\n"
@@ -101,7 +102,30 @@ def run():
     load_dotenv()
     environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
-    app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
+
+    class GunicornApp(gunicorn.app.base.BaseApplication):
+        """Application used to run the gunicorn server"""
+        def __init__(self, app, options=None):
+            self.options = options or {}
+            self.application = app
+            super().__init__()
+
+        def load_config(self):
+            config = {key: value for key, value in self.options.items()
+                      if key in self.cfg.settings and value is not None}
+            for key, value in config.items():
+                self.cfg.set(key.lower(), value)
+
+        def load(self):
+            return self.application
+
+    options = {
+        "bind": f"{app.config['HOST']}:{app.config['PORT']}"
+    }
+
+    GunicornApp(app_with_cli, options).run()
+
+        
 
 
 @cli.command(short_help="Creates a new admin user")
@@ -153,3 +177,5 @@ def index():
             click.echo(f"Indexed {dataobj.title}...")
         else:
             click.echo(f"Failed to index {dataobj.title}")
+
+
