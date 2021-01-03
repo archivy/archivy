@@ -104,6 +104,7 @@ form {
 }
 .folder-cont h3 {
 	margin: 0;
+	color: black;
 }
 .folder-cont ul {
 	display: none;
