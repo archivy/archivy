@@ -27,7 +27,6 @@ Upcoming:
 
 - Links between different knowledge base items
 - Multi User System with permission setup.
-- Major improvements in UI
 - Option to compile data to a static site.
 
 ## Quickstart
