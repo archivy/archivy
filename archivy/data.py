@@ -50,24 +50,24 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     """
     datacont = Directory(path or "root") if structured else []
     root_dir = get_data_dir() / path
-    for filename in root_dir.rglob("*"):
+    for filepath in root_dir.rglob("*"):
         if structured:
-            paths = filename.relative_to(root_dir)
+            paths = filepath.relative_to(root_dir)
             current_dir = datacont
 
-            # iterate through paths
-            for segment in paths.parts:
-                if segment.endswith(".md"):
-                    data = frontmatter.load(filename)
-                    current_dir.child_files.append(data)
-                else:
-                    # directory has not been saved in tree yet
-                    if segment not in current_dir.child_dirs:
-                        current_dir.child_dirs[segment] = Directory(segment)
-                    current_dir = current_dir.child_dirs[segment]
+            # iterate through parent directories
+            for segment in paths.parts[:-1]:
+                # directory has not been saved in tree yet
+                if segment not in current_dir.child_dirs:
+                    current_dir.child_dirs[segment] = Directory(segment)
+                current_dir = current_dir.child_dirs[segment]
+
+            if paths.parts[-1].endswith(".md"):
+                data = frontmatter.load(filepath)
+                current_dir.child_files.append(data)
         else:
-            if filename.parts[-1].endswith(".md"):
-                data = frontmatter.load(filename)
+            if filepath.parts[-1].endswith(".md"):
+                data = frontmatter.load(filepath)
                 if len(collections) == 0 or \
                         any([collection == data["type"]
                             for collection in collections]):
