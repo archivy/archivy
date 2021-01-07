@@ -197,11 +197,11 @@ form {
 	text-decoration: none;
 }
 
-#files #dir-info {
+#dir-info {
 	align-items: center;
 }
 
-#files #dir-info > * {
+#dir-info > * {
 	padding: 18px 5px;
 }
 
