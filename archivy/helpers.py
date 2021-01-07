@@ -14,7 +14,7 @@ def load_config(path=""):
     """Loads `config.yml` file and deserializes it to a python dict."""
     path = path or current_app.config["INTERNAL_DIR"]
     with (Path(path) / "config.yml").open() as f:
-        return yaml.load(f.read(), Loader=yaml.FullLoader)
+        return yaml.load(f.read(), Loader=yaml.SafeLoader)
 
 
 def write_config(config: dict):
