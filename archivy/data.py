@@ -104,6 +104,7 @@ def get_item(dataobj_id):
     if file:
         data = frontmatter.load(file)
         data["fullpath"] = str(file)
+        data["dir"] = str(file.parent.relative_to(get_data_dir()))
         return data
     return None
 

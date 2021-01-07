@@ -8,20 +8,6 @@
 
 
 <div id="files">
-    {% set split_path = current_path.strip(SEP).split(SEP) %}
-    <div class="d-flex" id="dir-info">
-        <div id="current-path">
-            <a href="/?path=">root</a></li>
-            {% if split_path[0] != '' %}
-                {% for i in range(split_path | length) %}
-                    <span> → </span>
-                    <a href="/?path={{SEP.join(split_path[0:i + 1])}}">{{split_path[i]}}</a></li>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <p>{{dir.child_files | length}} file{{dir.child_files | length | pluralize()}}</p>
-        <p>{{dir.child_dirs | length}} child director{{dir.child_dirs | length | pluralize("y", "ies")}}</p>
-    </div>
 
     <div class="d-flex" id="main-links">
         <a class="btn" href="/notes/new?path={{current_path}}">

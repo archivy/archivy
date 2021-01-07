@@ -83,9 +83,31 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                {% block content %}{% endblock %}
-            </main>
-        </div>
+
+			{% if current_path is defined %}
+    			<div class="d-flex" id="dir-info">
+					<!-- shows current path on navigation or on dataobjs -->
+					<div id="current-path">
+
+						<a href="/?path=">root</a></li>
+						{% set split_path = current_path.strip(SEP).split(SEP) %}
+						{% if split_path[0] != '' %}
+							{% for i in range(split_path | length) %}
+								<span> → </span>
+								<a href="/?path={{SEP.join(split_path[0:i + 1])}}">{{split_path[i]}}</a></li>
+							{% endfor %}
+						{% endif %}
+					</div>
+					{% if dir is defined %}
+						<!-- show child file / dir counts on nav -->
+						<p>{{dir.child_files | length}} file{{dir.child_files | length | pluralize()}}</p>
+						<p>{{dir.child_dirs | length}} child director{{dir.child_dirs | length | pluralize("y", "ies")}}</p>
+					{% endif %}
+    			</div>
+			{% endif %}
+			{% block content %}{% endblock %}
+			</main>
+		</div>
 
         <script>
           const SCRIPT_ROOT = {{ request.script_root|tojson|safe }} + "/api";
