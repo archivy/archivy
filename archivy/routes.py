@@ -2,7 +2,7 @@ import os
 
 import frontmatter
 from flask import render_template, flash, redirect, request, url_for
-from flask_login import login_user, login_required, current_user, logout_user
+from flask_login import login_user, current_user, logout_user
 from tinydb import Query
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -34,11 +34,17 @@ def check_perms():
 @app.route("/")
 @app.route("/index")
 def index():
+    path = request.args.get("path", "")
+    files = data.get_items(path=path)
     return render_template(
             "home.html",
             title="Home",
             search_enabled=app.config["SEARCH_CONF"]["enabled"],
-            )
+            dir=files,
+            current_path=path,
+            new_folder_form=forms.NewFolderForm(),
+            delete_form=forms.DeleteFolderForm()
+        )
 
 
 # TODO: refactor two following methods
@@ -51,15 +57,19 @@ def new_bookmark():
         tags = form.tags.data.split(",") if form.tags.data != "" else []
         bookmark = DataObj(
             url=form.url.data,
-            desc=form.desc.data,
             tags=tags,
             path=path,
             type="bookmark")
         bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
         if bookmark_id:
-            flash("Bookmark Saved!")
+            flash("Bookmark Saved!", "success")
             return redirect(f"/dataobj/{bookmark_id}")
+    # for bookmarklet
+    form.url.data = request.args.get("url", "")
+    path = request.args.get("path", "not classified").strip('/')
+    # handle empty argument
+    form.path.data = path if path != "" else "not classified"
     return render_template(
         "dataobjs/new.html",
         title="New Bookmark",
@@ -75,14 +85,16 @@ def new_note():
         tags = form.tags.data.split(",") if form.tags.data != "" else []
         note = DataObj(
             title=form.title.data,
-            desc=form.desc.data,
             tags=tags,
             path=path,
             type="note")
         note_id = note.insert()
         if note_id:
-            flash("Note Saved!")
+            flash("Note Saved!", "success")
             return redirect(f"/dataobj/{note_id}")
+    path = request.args.get("path", "not classified").strip('/')
+    # handle empty argument
+    form.path.data = path if path != "" else "not classified"
     return render_template(
         "/dataobjs/new.html",
         title="New Note",
@@ -94,7 +106,7 @@ def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
 
     if not dataobj:
-        flash("Data could not be found!")
+        flash("Data could not be found!", "error")
         return redirect("/")
 
     if request.args.get("raw") == "1":
@@ -104,6 +116,7 @@ def show_dataobj(dataobj_id):
         "dataobjs/show.html",
         title=dataobj["title"],
         dataobj=dataobj,
+        current_path=dataobj["dir"],
         form=forms.DeleteDataForm())
 
 
@@ -112,9 +125,9 @@ def delete_data(dataobj_id):
     try:
         data.delete_item(dataobj_id)
     except BaseException:
-        flash("Data could not be found!")
+        flash("Data could not be found!", "error")
         return redirect("/")
-    flash("Data deleted!")
+    flash("Data deleted!", "success")
     return redirect("/")
 
 
@@ -128,26 +141,24 @@ def login():
         if user and check_password_hash(user[0]["hashed_password"], form.password.data):
             user = User.from_db(user[0])
             login_user(user, remember=True)
-            flash("Login successful!")
+            flash("Login successful!", "success")
 
             next_url = request.args.get("next")
             return redirect(next_url or "/")
 
-        flash("Invalid credentials")
+        flash("Invalid credentials", "error")
         return redirect("/login")
-    return render_template("users/form.html", form=form, title="Login")
+    return render_template("users/login.html", form=form, title="Login")
 
 
 @app.route("/logout", methods=["DELETE"])
-@login_required
 def logout():
     logout_user()
-    flash("Logged out successfully")
+    flash("Logged out successfully", "success")
     return redirect("/")
 
 
 @app.route("/user/edit", methods=["GET", "POST"])
-@login_required
 def edit_user():
     form = forms.UserForm()
     if form.validate_on_submit():
@@ -159,7 +170,39 @@ def edit_user():
             },
             doc_ids=[current_user.id]
         )
-        flash("Information saved!")
+        flash("Information saved!", "success")
         return redirect("/")
     form.username.data = current_user.username
-    return render_template("users/form.html", title="Edit Profile", form=form)
+    return render_template("users/edit.html", form=form, title="Edit Profile")
+
+
+@app.route("/folders/create", methods=["POST"])
+def create_folder():
+    form = forms.NewFolderForm()
+    if form.validate_on_submit():
+        path = form.parent_dir.data + form.new_dir.data
+        print(path)
+        data.create_dir(path)
+        flash("Folder successfully created.", "success")
+        return redirect(f"/?path={path}")
+    flash("Could not create folder.", "error")
+    return redirect(request.referrer or "/")
+
+
+@app.route("/folders/delete", methods=["POST"])
+def delete_folder():
+    form = forms.DeleteFolderForm()
+    if form.validate_on_submit():
+        if data.delete_dir(form.dir_name.data):
+            flash("Folder successfully deleted.", "success")
+            return redirect("/")
+        else:
+            flash("Folder not found.", "error")
+            return redirect(request.referrer or "/", 404)
+    flash("Could not delete folder.", "error")
+    return redirect(request.referrer or "/")
+
+
+@app.route("/bookmarklet")
+def bookmarklet():
+    return render_template("bookmarklet.html", title="Bookmarklet")

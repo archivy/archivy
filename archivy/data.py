@@ -48,26 +48,26 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     - **json_format**: boolean value used internally to pre-process dataobjs
       to send back a json response.
     """
-    datacont = Directory("root") if structured else []
-    home_dir = get_data_dir()
-    for filename in home_dir.rglob(path + FILE_GLOB):
+    datacont = Directory(path or "root") if structured else []
+    root_dir = get_data_dir() / path
+    for filepath in root_dir.rglob("*"):
         if structured:
-            paths = filename.relative_to(home_dir)
+            paths = filepath.relative_to(root_dir)
             current_dir = datacont
 
-            # iterate through paths
-            for segment in paths.parts:
-                if segment.endswith(".md"):
-                    data = frontmatter.load(filename)
-                    current_dir.child_files.append(data)
-                else:
-                    # directory has not been saved in tree yet
-                    if segment not in current_dir.child_dirs:
-                        current_dir.child_dirs[segment] = Directory(segment)
-                    current_dir = current_dir.child_dirs[segment]
+            # iterate through parent directories
+            for segment in paths.parts[:-1]:
+                # directory has not been saved in tree yet
+                if segment not in current_dir.child_dirs:
+                    current_dir.child_dirs[segment] = Directory(segment)
+                current_dir = current_dir.child_dirs[segment]
+
+            if paths.parts[-1].endswith(".md"):
+                data = frontmatter.load(filepath)
+                current_dir.child_files.append(data)
         else:
-            if filename.parts[-1].endswith(".md"):
-                data = frontmatter.load(filename)
+            if filepath.parts[-1].endswith(".md"):
+                data = frontmatter.load(filepath)
                 if len(collections) == 0 or \
                         any([collection == data["type"]
                             for collection in collections]):
@@ -104,6 +104,7 @@ def get_item(dataobj_id):
     if file:
         data = frontmatter.load(file)
         data["fullpath"] = str(file)
+        data["dir"] = str(file.parent.relative_to(get_data_dir()))
         return data
     return None
 

@@ -86,7 +86,6 @@ def mocked_responses():
 def note_fixture(test_app):
     note_dict = {
         "type": "note", "title": "Test Note",
-        "desc": "A note to test model functionality",
         "tags": ["testing", "archivy"], "path": ""
     }
 
@@ -110,7 +109,6 @@ def bookmark_fixture(test_app, mocked_responses):
 
     datapoints = {
         "type": "bookmark", "title": "Test Bookmark",
-        "desc": "",
         "tags": ["testing", "archivy"], "path": "",
         "url": "https://example.com/"
     }

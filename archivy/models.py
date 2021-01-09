@@ -52,7 +52,6 @@ class DataObj:
 
     [Optional attrs that if passed, will be set by the class]
 
-    - desc
     - tags
     - content
     - path
@@ -69,15 +68,13 @@ class DataObj:
     the db with their contents.
     """
 
-    __searchable__ = ["title", "content", "desc", "tags"]
+    __searchable__ = ["title", "content", "tags"]
 
     id: Optional[int] = attrib(validator=optional(instance_of(int)),
                                default=None)
     type: str = attrib(validator=instance_of(str))
     title: str = attrib(validator=instance_of(str), default="")
     content: str = attrib(validator=instance_of(str), default="")
-    desc: Optional[str] = attrib(validator=optional(instance_of(str)),
-                                 default=None)
     tags: List[str] = attrib(validator=instance_of(list), default=[])
     url: Optional[str] = attrib(validator=optional(instance_of(str)),
                                 default=None)
@@ -97,7 +94,7 @@ class DataObj:
         try:
             url_request = requests.get(self.url)
         except Exception:
-            flash(f"Could not retrieve {self.url}\n")
+            flash(f"Could not retrieve {self.url}\n", "error")
             self.wipe()
             return
 
@@ -105,14 +102,14 @@ class DataObj:
             parsed_html = BeautifulSoup(url_request.text,
                                         features="html.parser")
         except Exception:
-            flash(f"Could not parse {self.url}\n")
+            flash(f"Could not parse {self.url}\n", "error")
             self.wipe()
             return
 
         try:
             self.content = self.extract_content(parsed_html)
         except Exception:
-            flash(f"Could not extract content from {self.url}\n")
+            flash(f"Could not extract content from {self.url}\n", "error")
             return
 
         parsed_title = parsed_html.title
@@ -122,7 +119,6 @@ class DataObj:
     def wipe(self):
         """Resets and invalidates dataobj"""
         self.title = ""
-        self.desc = None
         self.content = ""
 
     def extract_content(self, beautsoup):
@@ -177,7 +173,6 @@ class DataObj:
             hooks.before_dataobj_create(self)
             data = {
                 "type": self.type,
-                "desc": self.desc,
                 "title": str(self.title),
                 "date": self.date.strftime("%x").replace("/", "-"),
                 "tags": self.tags,
@@ -219,7 +214,7 @@ class DataObj:
         data = frontmatter.loads(md_content)
         dataobj = {}
         dataobj["content"] = data.content
-        for pair in ["tags", "desc", "id", "title", "path"]:
+        for pair in ["tags", "id", "title", "path"]:
             try:
                 dataobj[pair] = data[pair]
             except KeyError:

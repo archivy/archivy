@@ -12,6 +12,8 @@
         {% endif %}
         <input name="{{ field.name }}"
                id="{{ field.name }}"
+               class="form-control input-lg {% if field.type != 'checkbox' %}d-block{% endif %} mt-2 mb-2"
+               placeholder="{{ field.desc |default('', true)|capitalize}}"
                type="{{ field.type }}"
                 {% if field.step %} step="{{ field.step }}"{% endif %}
                 {% if field.accept %} accept="{{ field.accept }}"{% endif %}
@@ -44,7 +46,7 @@
     {% if field.type == 'option' or field.type == "checkbox" %}
         VARIARDIC OPTIONS OR CHECKBOXES ARE NOT SUPPORTED
     {% else %}
-        <textarea name="{{ field.name }}" id="{{ field.name }}" cols="40" rows="5"></textarea>
+        <textarea class="d-block mt-2 mb-2" name="{{ field.name }}" id="{{ field.name }}" cols="40" rows="5"></textarea>
     {% endif %}
     <div class="help" style="display: inline-block">
         (Each line will be passed as separate argument)

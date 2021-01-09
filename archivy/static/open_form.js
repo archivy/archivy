@@ -23,6 +23,7 @@ function openCommand(cmdUrl, updateState, menuItem) {
         })
         .then(function(theFormHtml) {
             formDiv.innerHTML = theFormHtml;
+			formDiv.scrollIntoView();
         });
 }
 

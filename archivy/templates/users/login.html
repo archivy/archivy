@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<br>
+<div id="login-cont">
+    <img src="https://archivy.github.io/img/logo-2.png" width="100" height="100">
+    <form action="" method="post">
+        <h1>Sign in with Archivy</h1>
+        {{ form.hidden_tag() }}
+        {% for error in form.username.errors %}
+            <div class="flash flash-error">{{ error }}</div>
+        {% endfor %}
+        {{ form.username(placeholder="Username") }}
+
+
+        {% for error in form.password.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.password(placeholder="Password") }}
+
+        {{ form.submit(class="btn") }}
+    </form>
+</div>
+
+{% endblock %}

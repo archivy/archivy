@@ -6,29 +6,29 @@
 <script src="/static/highlight.js"></script> 
 <script src="/static/parser.js"></script>
 <script>
-	//window.onload = () => {
-	  window.parser = window.markdownit(
-	    {
-		  linkify: true,
-		    highlight: function (str, lang) {
-			  if (lang && hljs.getLanguage(lang))
-			  {
-			    try {
-        	      return '<pre class="hljs"><code>' +
+    //window.onload = () => {
+      window.parser = window.markdownit(
+        {
+          linkify: true,
+            highlight: function (str, lang) {
+              if (lang && hljs.getLanguage(lang))
+              {
+                try {
+                  return '<pre class="hljs"><code>' +
                     hljs.highlight(lang, str, true).value +
-               	    '</code></pre>';
-      		    } catch (__) {}
-		      }
-		    }
+                       '</code></pre>';
+                  } catch (__) {}
+              }
+            }
         })
 
-		.use(texmath.use(katex), { engine: katex,
-		  delimiters:'dollars',
-		  katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
-		})
-	    .use(window.markdownitFootnote)
-	    .use(window.markdownitMark)
-	    .use(window.markdownItAnchor, {permalink: true, permalinkSymbol: '¶'})
-	    .use(window.markdownItTocDoneRight);
-	//}
+        .use(texmath.use(katex), { engine: katex,
+          delimiters:'dollars',
+          katexOptions: { macros: {"\\RR": "\\mathbb{R}"} }
+        })
+        .use(window.markdownitFootnote)
+        .use(window.markdownitMark)
+        .use(window.markdownItAnchor, {permalink: true, permalinkSymbol: '¶'})
+        .use(window.markdownItTocDoneRight);
+    //}
 </script>
