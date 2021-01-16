@@ -36,16 +36,21 @@ def check_perms():
 @app.route("/index")
 def index():
     path = request.args.get("path", "")
-    files = data.get_items(path=path)
+    try:
+        files = data.get_items(path=path)
+    except FileNotFoundError:
+        flash("Directory does not exist.", "error")
+        return redirect("/")
+    
     return render_template(
-            "home.html",
-            title="Home",
-            search_enabled=app.config["SEARCH_CONF"]["enabled"],
-            dir=files,
-            current_path=path,
-            new_folder_form=forms.NewFolderForm(),
-            delete_form=forms.DeleteFolderForm()
-        )
+        "home.html",
+        title="Home",
+        search_enabled=app.config["SEARCH_CONF"]["enabled"],
+        dir=files,
+        current_path=path,
+        new_folder_form=forms.NewFolderForm(),
+        delete_form=forms.DeleteFolderForm()
+    )
 
 
 # TODO: refactor two following methods
