@@ -50,6 +50,8 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     """
     datacont = Directory(path or "root") if structured else []
     root_dir = get_data_dir() / path.strip("/")
+    if not root_dir.exists():
+        raise FileNotFoundError
     for filepath in root_dir.rglob("*"):
         if structured:
             paths = filepath.relative_to(root_dir)
