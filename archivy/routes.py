@@ -41,7 +41,7 @@ def index():
     except FileNotFoundError:
         flash("Directory does not exist.", "error")
         return redirect("/")
-    
+
     return render_template(
         "home.html",
         title="Home",
