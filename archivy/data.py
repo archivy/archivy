@@ -49,7 +49,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
       to send back a json response.
     """
     datacont = Directory(path or "root") if structured else []
-    root_dir = get_data_dir() / path
+    root_dir = get_data_dir() / path.strip("/")
     for filepath in root_dir.rglob("*"):
         if structured:
             paths = filepath.relative_to(root_dir)
@@ -91,7 +91,7 @@ def create(contents, title, path=""):
     - **title** - title used for filename
     - **path**
     """
-    path_to_md_file = get_data_dir() / path / f"{secure_filename(title)}.md"
+    path_to_md_file = get_data_dir() / path.strip("/") / f"{secure_filename(title)}.md"
     with open(path_to_md_file, "w", encoding="utf-8") as file:
         file.write(contents)
 
@@ -179,7 +179,7 @@ def get_dirs():
 def create_dir(name):
     """Create dir of given name"""
     home_dir = get_data_dir()
-    new_path = home_dir / name
+    new_path = home_dir / name.strip("/")
     new_path.mkdir(parents=True, exist_ok=True)
     return str(new_path.relative_to(home_dir))
 
