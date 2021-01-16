@@ -1,4 +1,5 @@
-import os
+from pathlib import Path
+from os.path import sep
 
 import frontmatter
 from flask import render_template, flash, redirect, request, url_for
@@ -14,11 +15,11 @@ from archivy.helpers import get_db
 @app.context_processor
 def pass_defaults():
     dataobjs = data.get_items()
-    SEP = os.path.sep
+    SEP = sep
     # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
     if SEP == "\\":
         SEP += "\\"
-    return dict(dataobjs=dataobjs, SEP=os.path.sep)
+    return dict(dataobjs=dataobjs, SEP=SEP)
 
 
 @app.before_request
@@ -180,11 +181,10 @@ def edit_user():
 def create_folder():
     form = forms.NewFolderForm()
     if form.validate_on_submit():
-        path = form.parent_dir.data + form.new_dir.data
-        print(path)
-        data.create_dir(path)
+        path = Path(form.parent_dir.data.strip("/")) / form.new_dir.data
+        new_path = data.create_dir(str(path))
         flash("Folder successfully created.", "success")
-        return redirect(f"/?path={path}")
+        return redirect(f"/?path={new_path}")
     flash("Could not create folder.", "error")
     return redirect(request.referrer or "/")
 
