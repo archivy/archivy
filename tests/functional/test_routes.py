@@ -155,6 +155,11 @@ def test_creating_without_dirname_fails(test_app, client: FlaskClient):
     assert b"Could not create folder." in resp.data
 
 
+def test_visiting_nonexistent_dir_fails(test_app, client: FlaskClient):
+    resp = client.get("/?path=nonexistent_dir", follow_redirects=True)
+    assert b"Directory does not exist." in resp.data
+
+
 def test_deleting_dir(test_app, client: FlaskClient):
     create_dir("testing")
     assert "testing" in get_dirs()
