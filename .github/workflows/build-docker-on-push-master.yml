@@ -13,7 +13,6 @@ jobs:
   dockerBuildPush:
     name: Build and push image with release version tag
     runs-on: ubuntu-latest
-    needs: [ContainerTestAndScan]
     steps:
       - name: Checkout files from repository
         uses: actions/checkout@v2
