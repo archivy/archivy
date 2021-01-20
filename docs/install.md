@@ -17,6 +17,6 @@ $ nix-env -i archivy
 
 You can also use archivy with Docker. 
 
-See [Installing with docker](docker.md) for instructions on this.
+See [the docker documentation](https://github.com/archivy/archivy-docker) for instructions on this.
 
 We might implement an AppImage install. Comment [here](https://github.com/archivy/archivy/issues/44) if you'd like to see that happen.

@@ -28,7 +28,6 @@ nav:
     - Contributing: "CONTRIBUTING.md"
   - Getting Started:
       - Installing Archivy: "install.md"
-      - Installing with Docker: "docker.md"
       - Usage: "usage.md"
       - Search: "setup-search.md"
       - Config: "config.md"
