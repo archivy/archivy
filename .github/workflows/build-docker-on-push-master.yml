@@ -7,7 +7,7 @@ on:
       - 'master'
     paths:
       - 'archivy/**'
-      - '.github/workflows/build-on-push-master.yml'
+      - '.github/workflows/build-docker-on-push-master.yml'
 
 jobs:
   dockerBuildPush:
@@ -53,4 +53,4 @@ jobs:
             --build-arg BUILD_DATE="$( cat TIMESTAMP )" --build-arg VCS_REF="$( cat SHORT_SHA )" \
             --tag "$( cat DOCKER_IMAGE ):$( cat IMAGE_TAG )" \
             --tag "$( cat DOCKER_IMAGE ):$( cat SHORT_SHA )" \
-            --file ./Dockerfile .
+            --file ./Dockerfile.source .
