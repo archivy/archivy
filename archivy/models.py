@@ -186,10 +186,10 @@ class DataObj:
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
             self.fullpath = str(create(
-                                frontmatter.dumps(dataobj),
-                                f"{self.id}-{dataobj['title']}",
-                                path=self.path,
-                            ))
+                                    frontmatter.dumps(dataobj),
+                                    f"{self.id}-{dataobj['title']}",
+                                    path=self.path,
+                                ))
 
             hooks.on_dataobj_create(self)
             self.index()
