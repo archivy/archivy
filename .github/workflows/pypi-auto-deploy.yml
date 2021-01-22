@@ -3,7 +3,7 @@ name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI and create Git
 on:
   push:
     # remove branchname otherwise github actions will trigger event regardless of tag.
-    tags: v[0-9]+.[0-9]+.[0-9]+
+    tags: v[0-9]+.[0-9]+.[0-9]+*
 
 jobs:
   builds-n-publish:
