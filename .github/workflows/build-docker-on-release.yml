@@ -9,7 +9,6 @@ jobs:
   dockerBuildPush:
     name: Build and push image with release version tag
     runs-on: ubuntu-latest
-    needs: [ContainerTestAndScan]
     steps:
       - name: Checkout files from repository
         uses: actions/checkout@v2
@@ -22,8 +21,6 @@ jobs:
           date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
           echo "${GITHUB_SHA}" | cut -c1-8 > SHORT_SHA
           echo "${GITHUB_REF/refs\/tags\//}" > VERSION
-          echo "${GITHUB_REF/refs\/tags\//}" | awk -F'.' '{print $1}' > MAJOR_VERSION
-          echo "${GITHUB_REF/refs\/tags\//}" | awk -F'.' '{print $2}' > MINOR_VERSION
           echo "uzayg" > DOCKER_USERNAME
           echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
@@ -58,8 +55,4 @@ jobs:
             --build-arg VERSION="$( cat VERSION )" --build-arg BUILD_DATE="$( cat TIMESTAMP )" \
             --build-arg VCS_REF="$( cat SHORT_SHA )" \
             --tag "$( cat DOCKER_IMAGE ):$( cat VERSION )" \
-            --tag "$( cat DOCKER_IMAGE ):$( cat MAJOR_VERSION ).$( cat MINOR_VERSION )" \
-            --tag "$( cat DOCKER_IMAGE ):$( cat SHORT_SHA )" \
-            --tag "$( cat DOCKER_IMAGE ):stable" \
-            --tag "$( cat DOCKER_IMAGE ):latest" \
             --file ./Dockerfile .
