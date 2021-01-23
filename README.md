@@ -21,12 +21,14 @@ Features:
 
 [demo video](https://www.uzpg.me/assets/images/archivy.mov)
 
+[Roadmap](https://github.com/archivy/archivy/issues/74#issuecomment-764828063)
 
 Upcoming:
 
-- Links between different knowledge base items
+- Links / tagging between different knowledge base items
+- Image Upload
+- Annotations
 - Multi User System with permission setup.
-- Option to compile data to a static site.
 
 ## Quickstart
 
@@ -45,7 +47,10 @@ You can then use archivy to create notes, bookmarks and then organize and store 
 
 See the [official docs](https://archivy.github.io) for information on other installation methods.
 
-## License
+## Community
 
-This project is licensed under the MIT License. See [LICENSE](./LICENSE) for more information.
-The Archivy Logo is designed by [Roy Quilor](https://www.quilor.com/), licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
+Archivy is dedicated at building **open and quality knowledge base software** through collaboration and community discussion.
+
+You can interact with us through the [issue board](https://github.com/archivy/archivy/issues) and the more casual [discord server](https://discord.gg/uQsqyxB).
+
+
