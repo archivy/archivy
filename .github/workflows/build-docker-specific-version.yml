@@ -1,8 +1,15 @@
-name: Building and Pushing Archivy Container Image On Version Release
+
+name: Building and Pushing Archivy Container to DockerHub on manual workflow dispatch
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy to Dockerhub
+        required: true
+      version_commit:
+        description: Commit of the version
+        required: true
 
 jobs:
   dockerBuildPush:
@@ -16,10 +23,13 @@ jobs:
 
       - name: Setting variables
         if: success()
+        env:
+          VERSION: ${{ github.events.inputs.version }}
+          COMMIT_SHA: ${{ github.events.inputs.version_commit }}
         run: |
           date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
-          echo "$GITHUB_SHA" | cut -c1-8 > SHORT_SHA
-          echo "$GITHUB_REF" > VERSION
+          echo "$COMMIT_SHA" | cut -c1-8 > SHORT_SHA
+          echo "$VERSION" > VERSION
           echo "uzayg" > DOCKER_USERNAME
           echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
