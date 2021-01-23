@@ -25,8 +25,8 @@ jobs:
         if: success()
         run: |
           date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
-          echo "${{ github.events.inputs.version_commit }}" | cut -c1-8 > SHORT_SHA
-          echo "${{ github.events.inputs.version }}" > VERSION
+          echo "${{ github.event.inputs.version_commit }}" | cut -c1-8 > SHORT_SHA
+          echo "${{ github.event.inputs.version }}" > VERSION
           echo "uzayg" > DOCKER_USERNAME
           echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
