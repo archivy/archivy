@@ -1,6 +1,5 @@
 ![logo](docs/img/logo.png)
 
-Logo design by [Roy Quilor](https://www.quilor.com/) is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
 
 # Archivy
 
@@ -45,3 +44,8 @@ Finally, execute `archivy run` to serve the app. You can open it at https://loca
 You can then use archivy to create notes, bookmarks and then organize and store information.
 
 See the [official docs](https://archivy.github.io) for information on other installation methods.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for more information.
+The Archivy Logo is designed by [Roy Quilor](https://www.quilor.com/), licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0)
