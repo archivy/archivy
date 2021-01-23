@@ -153,3 +153,7 @@ def index():
             click.echo(f"Indexed {dataobj.title}...")
         else:
             click.echo(f"Failed to index {dataobj.title}")
+
+
+if __name__ == "__main__":
+    cli()
