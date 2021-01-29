@@ -94,7 +94,7 @@
 						{% if split_path[0] != '' %}
 							{% for i in range(split_path | length) %}
 								<span> → </span>
-								<a href="/?path={{SEP.join(split_path[0:i + 1])}}">{{split_path[i]}}</a></li>
+								<a href="/?path={{SEP.join(split_path[0:i + 1])}}{{SEP}}">{{split_path[i]}}</a></li>
 							{% endfor %}
 						{% endif %}
 					</div>
