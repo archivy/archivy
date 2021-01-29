@@ -70,6 +70,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
         else:
             if filepath.parts[-1].endswith(".md"):
                 data = frontmatter.load(filepath)
+                data["fullpath"] = str(filepath.parent.relative_to(root_dir))
                 if len(collections) == 0 or \
                         any([collection == data["type"]
                             for collection in collections]):
