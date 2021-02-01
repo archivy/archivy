@@ -1,3 +1,4 @@
+Archivy v1.0 just launched!!! Check out the [release notes](https://github.com/archivy/archivy/releases/tag/v1.0.0) for more details. We're overjoyed with the amazing community and contributions that have allowed us to do so much since August and plan on making Archivy better and better!
 
 ![logo](img/logo.png)
 
