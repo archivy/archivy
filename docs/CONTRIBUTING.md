@@ -6,7 +6,7 @@ This is a short guide on the things you should know if you'd like to contribute 
 - Fork the [archivy repo](https://github.com/archivy/archivy) and then clone the fork on your local machine.
 - Create a virtual environment by running `python -m venv venv/`. This will hold all archivy dependencies.
 - Run `source venv/bin/activate` to activate this new environment.
-- Run `pip install requirements.txt` to download all dependencies.
+- Run `pip install -r requirements.txt` to download all dependencies.
 
 
 If you'd like to work on an [existing issue](https://github.com/archivy/archivy/issues), please comment on the github thread for the issue to notify that you're working on it, and then create a new branch with a suitable name.
