@@ -52,35 +52,41 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     root_dir = get_data_dir() / path.strip("/")
     if not root_dir.exists():
         raise FileNotFoundError
-    for filepath in root_dir.rglob("*"):
-        if structured:
-            paths = filepath.relative_to(root_dir)
+    if structured:
+        for filepath in root_dir.rglob("*"):
+            current_path = filepath.relative_to(root_dir)
             current_dir = datacont
 
             # iterate through parent directories
-            for segment in paths.parts[:-1]:
+            for segment in current_path.parts[:-1]:
                 # directory has not been saved in tree yet
                 if segment not in current_dir.child_dirs:
                     current_dir.child_dirs[segment] = Directory(segment)
                 current_dir = current_dir.child_dirs[segment]
 
-            if paths.parts[-1].endswith(".md"):
+            # handle last part of current_path
+            last_seg = current_path.parts[-1]
+            if filepath.is_dir():
+                if last_seg not in current_dir.child_dirs:
+                    current_dir.child_dirs[last_seg] = Directory(last_seg)
+                current_dir = current_dir.child_dirs[last_seg]
+            elif last_seg.endswith(".md"):
                 data = frontmatter.load(filepath)
                 current_dir.child_files.append(data)
-        else:
-            if filepath.parts[-1].endswith(".md"):
-                data = frontmatter.load(filepath)
-                data["fullpath"] = str(filepath.parent.relative_to(root_dir))
-                if len(collections) == 0 or \
-                        any([collection == data["type"]
-                            for collection in collections]):
-                    if json_format:
-                        dict_dataobj = data.__dict__
-                        # remove unnecessary yaml handler
-                        dict_dataobj.pop("handler")
-                        datacont.append(dict_dataobj)
-                    else:
-                        datacont.append(data)
+    else:
+        for filepath in root_dir.rglob("*.md"):
+            data = frontmatter.load(filepath)
+            data["fullpath"] = str(filepath.parent.relative_to(root_dir))
+            if len(collections) == 0 or \
+                    any([collection == data["type"]
+                        for collection in collections]):
+                if json_format:
+                    dict_dataobj = data.__dict__
+                    # remove unnecessary yaml handler
+                    dict_dataobj.pop("handler")
+                    datacont.append(dict_dataobj)
+                else:
+                    datacont.append(data)
     return datacont
 
 
