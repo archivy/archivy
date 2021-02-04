@@ -30,7 +30,7 @@
                 {% endif %}
 
                 <ul class="items-{{i.value}}">
-                    {% for dataobj in dir.child_files %}
+                    {% for dataobj in dir.child_files | sort(attribute="title") %}
                         <li class="d-flex">
                             <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M6.427 4.427l3.396 3.396a.25.25 0 010 .354l-3.396 3.396A.25.25 0 016 11.396V4.604a.25.25 0 01.427-.177z"></path></svg>
                             <a href="/dataobj/{{ dataobj["id"] }}">
@@ -39,7 +39,7 @@
                         </li>
                     {% endfor %}
                 </ul>
-                {% for child_dir in dir.child_dirs.values() %}
+                {% for child_dir in dir.child_dirs.values() | sort(attribute="name") %}
                     {{ draw_dir(child_dir, depth + 1) }}
                 {% endfor %}
             </div>
