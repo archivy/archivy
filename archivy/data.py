@@ -17,6 +17,17 @@ def get_data_dir():
     """Returns the directory where dataobjs are stored"""
     return Path(current_app.config['USER_DIR']) / "data"
 
+def is_relative_to(a, b):
+    try:
+        a.relative_to(b)
+        return True
+    except ValueError:
+        return False
+
+def is_sub_datadir(path: Path):
+    #Not implemented in python < 3.8 
+    #return path.resolve().is_relative_to(get_data_dir().resolve())
+    return is_relative_to(path.resolve(), get_data_dir().resolve())
 
 class Directory:
     """Tree like file-structure used to build file navigation in Archiv"""
@@ -195,8 +206,11 @@ def create_dir(name):
 
 def delete_dir(name):
     """Deletes dir of given name"""
+    delete_dir = get_data_dir() / name
+    if not is_sub_datadir(delete_dir):
+        return False
     try:
-        rmtree(get_data_dir() / name.strip("/"))
+        rmtree(delete_dir)
         return True
     except FileNotFoundError:
         return False
