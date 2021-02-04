@@ -17,17 +17,6 @@ def get_data_dir():
     """Returns the directory where dataobjs are stored"""
     return Path(current_app.config['USER_DIR']) / "data"
 
-def is_relative_to(a, b):
-    try:
-        a.relative_to(b)
-        return True
-    except ValueError:
-        return False
-
-def is_sub_datadir(path: Path):
-    #Not implemented in python < 3.8 
-    #return path.resolve().is_relative_to(get_data_dir().resolve())
-    return is_relative_to(path.resolve(), get_data_dir().resolve())
 
 class Directory:
     """Tree like file-structure used to build file navigation in Archiv"""
@@ -60,8 +49,9 @@ def get_items(collections=[], path="", structured=True, json_format=False):
       to send back a json response.
     """
     datacont = Directory(path or "root") if structured else []
-    root_dir = get_data_dir() / path.strip("/")
-    if not root_dir.exists():
+    data_dir = get_data_dir()
+    root_dir = data_dir / path
+    if not root_dir.is_relative_to(data_dir) or not root_dir.exists():
         raise FileNotFoundError
     if structured:
         for filepath in root_dir.rglob("*"):
@@ -198,16 +188,19 @@ def get_dirs():
 
 def create_dir(name):
     """Create dir of given name"""
-    home_dir = get_data_dir()
-    new_path = home_dir / name.strip("/")
-    new_path.mkdir(parents=True, exist_ok=True)
-    return str(new_path.relative_to(home_dir))
+    root_dir = get_data_dir()
+    new_path = root_dir / name.strip("/")
+    if new_path.is_relative_to(root_dir):
+        new_path.mkdir(parents=True, exist_ok=True)
+        return str(new_path.relative_to(root_dir))
+    return False
 
 
 def delete_dir(name):
     """Deletes dir of given name"""
-    delete_dir = get_data_dir() / name
-    if not is_sub_datadir(delete_dir):
+    root_dir = get_data_dir()
+    delete_dir = root_dir / name
+    if not delete_dir.is_relative_to(root_dir) or delete_dir == root_dir:
         return False
     try:
         rmtree(delete_dir)

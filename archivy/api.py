@@ -155,6 +155,8 @@ def create_folder():
     directory = request.json.get("path")
     try:
         sanitized_name = data.create_dir(directory)
+        if not sanitized_name:
+            return Response("Invalid dirname", satus=401)
     except FileExistsError:
         return Response("Directory already exists", status=401)
     return Response(sanitized_name, status=200)
@@ -173,7 +175,7 @@ def delete_folder():
         return Response("Cannot delete root dir", status=401)
     if data.delete_dir(directory):
         return Response("Successfully deleted", status=200)
-    return Response("Not found", status=404)
+    return Response("Could not delete directory", status=404)
 
 
 @api_bp.route("/search", methods=["GET"])
