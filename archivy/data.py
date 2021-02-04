@@ -196,7 +196,7 @@ def create_dir(name):
 def delete_dir(name):
     """Deletes dir of given name"""
     try:
-        rmtree(get_data_dir() / name)
+        rmtree(get_data_dir() / name.strip("/"))
         return True
     except FileNotFoundError:
         return False
