@@ -126,3 +126,13 @@ def test_unlogged_in_api_fails(test_app, client: FlaskClient):
     resp = client.get("/api/dataobjs")
     assert resp.status_code == 302
 
+
+def test_deleting_unrelated_user_dir_fails(test_app, client: FlaskClient):
+    resp = client.delete("/api/folders/delete", json={"path": "/dev/null"})
+    assert resp.status_code == 400
+
+
+
+def test_path_injection_fails(test_app, client: FlaskClient):
+    resp = client.post("/api/folders/new", json={"path": "../../"})
+    assert resp.status_code == 400
