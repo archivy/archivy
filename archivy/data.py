@@ -18,6 +18,15 @@ def get_data_dir():
     return Path(current_app.config['USER_DIR']) / "data"
 
 
+def is_relative_to(sub_path, parent):
+    """Implement pathlib `is_relative_to` only available in python 3.9"""
+    try:
+        sub_path.resolve().relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
 class Directory:
     """Tree like file-structure used to build file navigation in Archiv"""
     def __init__(self, name):
@@ -49,8 +58,9 @@ def get_items(collections=[], path="", structured=True, json_format=False):
       to send back a json response.
     """
     datacont = Directory(path or "root") if structured else []
-    root_dir = get_data_dir() / path.strip("/")
-    if not root_dir.exists():
+    data_dir = get_data_dir()
+    root_dir = data_dir / path
+    if not is_relative_to(root_dir, data_dir) or not root_dir.exists():
         raise FileNotFoundError
     if structured:
         for filepath in root_dir.rglob("*"):
@@ -187,16 +197,22 @@ def get_dirs():
 
 def create_dir(name):
     """Create dir of given name"""
-    home_dir = get_data_dir()
-    new_path = home_dir / name.strip("/")
-    new_path.mkdir(parents=True, exist_ok=True)
-    return str(new_path.relative_to(home_dir))
+    root_dir = get_data_dir()
+    new_path = root_dir / name.strip("/")
+    if is_relative_to(new_path, root_dir):
+        new_path.mkdir(parents=True, exist_ok=True)
+        return str(new_path.relative_to(root_dir))
+    return False
 
 
 def delete_dir(name):
     """Deletes dir of given name"""
+    root_dir = get_data_dir()
+    target_dir = root_dir / name
+    if not is_relative_to(target_dir, root_dir) or target_dir == root_dir:
+        return False
     try:
-        rmtree(get_data_dir() / name.strip("/"))
+        rmtree(target_dir)
         return True
     except FileNotFoundError:
         return False
