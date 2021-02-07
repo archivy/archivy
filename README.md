@@ -16,7 +16,6 @@ Features:
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
 - Extensible search with Elasticsearch and its Query DSL
-- Dark Theme
 
 
 [demo video](https://www.uzpg.me/assets/images/archivy.mov)
@@ -33,7 +32,9 @@ Upcoming:
 ## Quickstart
 
 
-Install archivy with `pip install archivy`. Other installations methods are listed [here](https://archivy.github.io/install)
+Install archivy with `pip install archivy`. Other installations methods are listed [here](https://archivy.github.io/install), including Docker.
+
+Run the `archivy init` command to setup you installation.
 
 Then run this and enter a password to create a new user:
 
