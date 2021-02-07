@@ -43,7 +43,7 @@ Check out the [helper methods](search.md) archivy exposes for ES.
 
 ## Auth
 
-Archivy uses [flask-login](https://flask-login.readthedocs.io/en/latest/) for auth. All endpoints require to be authenticated. When you run archivy for the first time, it creates an admin user for you and outputs a temporary password.
+Archivy uses [flask-login](https://flask-login.readthedocs.io/en/latest/) for auth. All endpoints require to be authenticated. You can create an admin user with the `create-admin` command.
 
 In our roadmap we plan to extend our permission framework to have a multi-user system, and define configuration for the permissions of non-logged in users. In general we want to make things more flexible on the auth side.
 
