@@ -27,7 +27,8 @@ jobs:
         user: __token__
         password: ${{ secrets.pypi_password }}
     - name: Upload to release
-      uses: meeDamian/github-release@2.0
+      uses: marvinpinto/action-automatic-releases@latest
       with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          draft: true
           files: dist/
