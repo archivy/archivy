@@ -235,7 +235,7 @@ def format_file(path: str):
             format_file(filename)
 
     else:
-        new_file = path.open()
+        new_file = path.open("r", encoding="utf-8")
         file_contents = new_file.read()
         new_file.close()
         try:
