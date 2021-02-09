@@ -35,7 +35,7 @@ def check_perms():
 @app.route("/")
 @app.route("/index")
 def index():
-    path = request.args.get("path", "")
+    path = request.args.get("path", "").lstrip("/")
     try:
         files = data.get_items(path=path)
     except FileNotFoundError:
@@ -44,7 +44,7 @@ def index():
 
     return render_template(
         "home.html",
-        title="Home",
+        title=path or "root",
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
         dir=files,
         current_path=path,
@@ -157,7 +157,7 @@ def login():
     return render_template("users/login.html", form=form, title="Login")
 
 
-@app.route("/logout", methods=["DELETE"])
+@app.route("/logout", methods=["DELETE", "GET"])
 def logout():
     logout_user()
     flash("Logged out successfully", "success")
