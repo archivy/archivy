@@ -70,25 +70,24 @@ class DataObj:
 
     __searchable__ = ["title", "content", "tags"]
 
-    id: Optional[int] = attrib(validator=optional(instance_of(int)),
-                               default=None)
+    id: Optional[int] = attrib(validator=optional(instance_of(int)), default=None)
     type: str = attrib(validator=instance_of(str))
     title: str = attrib(validator=instance_of(str), default="")
     content: str = attrib(validator=instance_of(str), default="")
     tags: List[str] = attrib(validator=instance_of(list), default=[])
-    url: Optional[str] = attrib(validator=optional(instance_of(str)),
-                                default=None)
+    url: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     date: Optional[datetime] = attrib(
         validator=optional(instance_of(datetime)),
         default=None,
     )
     path: str = attrib(validator=instance_of(str), default="")
-    fullpath: Optional[str] = attrib(validator=optional(instance_of(str)),
-                                     default=None)
+    fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
 
     def process_bookmark_url(self):
         """Process url to get content for bookmark"""
-        if self.type not in ("bookmark", "pocket_bookmark") or not validators.url(self.url):
+        if self.type not in ("bookmark", "pocket_bookmark") or not validators.url(
+            self.url
+        ):
             return None
 
         try:
@@ -99,8 +98,7 @@ class DataObj:
             return
 
         try:
-            parsed_html = BeautifulSoup(url_request.text,
-                                        features="html.parser")
+            parsed_html = BeautifulSoup(url_request.text, features="html.parser")
         except Exception:
             flash(f"Could not parse {self.url}\n", "error")
             self.wipe()
@@ -113,8 +111,7 @@ class DataObj:
             return
 
         parsed_title = parsed_html.title
-        self.title = (parsed_title.string if parsed_title is not None
-                      else self.url)
+        self.title = parsed_title.string if parsed_title is not None else self.url
 
     def wipe(self):
         """Resets and invalidates dataobj"""
@@ -142,8 +139,11 @@ class DataObj:
                     # delete tag
                     tag.decompose()
 
-            elif tag.name == "img" and tag.has_attr("src") and (tag["src"].startswith("/")
-                                                                or tag["src"].startswith("./")):
+            elif (
+                tag.name == "img"
+                and tag.has_attr("src")
+                and (tag["src"].startswith("/") or tag["src"].startswith("./"))
+            ):
 
                 tag["src"] = urljoin(url, tag["src"])
 
@@ -153,11 +153,13 @@ class DataObj:
     def validate(self):
         """Verifies that the content matches required validation constraints"""
         valid_url = (self.type != "bookmark" or self.type != "pocket_bookmark") or (
-                    isinstance(self.url, str) and validators.url(self.url))
+            isinstance(self.url, str) and validators.url(self.url)
+        )
 
         valid_title = isinstance(self.title, str) and self.title != ""
-        valid_content = (self.type not in ("bookmark", "pocket_bookmark")
-                         or isinstance(self.content, str))
+        valid_content = self.type not in ("bookmark", "pocket_bookmark") or isinstance(
+            self.content, str
+        )
         return valid_url and valid_title and valid_content
 
     def insert(self):
@@ -177,7 +179,7 @@ class DataObj:
                 "date": self.date.strftime("%x").replace("/", "-"),
                 "tags": self.tags,
                 "id": self.id,
-                "path": self.path
+                "path": self.path,
             }
             if self.type == "bookmark" or self.type == "pocket_bookmark":
                 data["url"] = self.url
@@ -185,11 +187,13 @@ class DataObj:
             # convert to markdown file
             dataobj = frontmatter.Post(self.content)
             dataobj.metadata = data
-            self.fullpath = str(create(
-                                    frontmatter.dumps(dataobj),
-                                    f"{self.id}-{dataobj['title']}",
-                                    path=self.path,
-                                ))
+            self.fullpath = str(
+                create(
+                    frontmatter.dumps(dataobj),
+                    f"{self.id}-{dataobj['title']}",
+                    path=self.path,
+                )
+            )
 
             hooks.on_dataobj_create(self)
             self.index()
@@ -243,7 +247,9 @@ class User(UserMixin):
 
     username: str = attrib(validator=instance_of(str))
     password: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
-    is_admin: Optional[bool] = attrib(validator=optional(instance_of(bool)), default=None)
+    is_admin: Optional[bool] = attrib(
+        validator=optional(instance_of(bool)), default=None
+    )
     id: Optional[int] = attrib(validator=optional(instance_of(int)), default=False)
 
     def insert(self):
@@ -260,7 +266,7 @@ class User(UserMixin):
             "username": self.username,
             "hashed_password": hashed_password,
             "is_admin": self.is_admin,
-            "type": "user"
+            "type": "user",
         }
 
         helpers.load_hooks().on_user_create(self)

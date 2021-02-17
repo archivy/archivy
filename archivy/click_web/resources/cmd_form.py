@@ -16,10 +16,12 @@ def get_form_for(command_path: str):
         return abort(404, str(err))
 
     levels = _generate_form_data(ctx_and_commands)
-    return render_template('click_web/command_form.html',
-                           levels=levels,
-                           command=levels[-1]['command'],
-                           command_path=command_path)
+    return render_template(
+        "click_web/command_form.html",
+        levels=levels,
+        command=levels[-1]["command"],
+        command_path=command_path,
+    )
 
 
 def _get_commands_by_path(command_path: str) -> Tuple[click.Context, click.Command]:
@@ -29,13 +31,15 @@ def _get_commands_by_path(command_path: str) -> Tuple[click.Context, click.Comma
     :return: Return a list from root to leaf commands.
     """
     command_path = "cli/" + command_path
-    command_path_items = command_path.split('/')
+    command_path_items = command_path.split("/")
     command_name, *command_path_items = command_path_items
     command = click_web.click_root_cmd
     if command.name != command_name:
         raise CommandNotFound(
-                'Failed to find root command {}. There is a root commande named: {}'
-                .format(command_name, command.name))
+            "Failed to find root command {}. There is a root commande named: {}".format(
+                command_name, command.name
+            )
+        )
     result = []
     with click.Context(command, info_name=command, parent=None) as ctx:
         result.append((ctx, command))
@@ -48,11 +52,12 @@ def _get_commands_by_path(command_path: str) -> Tuple[click.Context, click.Comma
                 ctx = click.Context(command, info_name=command, parent=ctx)
                 parent_command = command
             else:
-                raise CommandNotFound("""Failed to find command for path "{}".
-                                       Command "{}" not found. Must be one of {}"""
-                                      .format(command_path,
-                                              command_name,
-                                              parent_command.list_commands(ctx)))
+                raise CommandNotFound(
+                    """Failed to find command for path "{}".
+                                       Command "{}" not found. Must be one of {}""".format(
+                        command_path, command_name, parent_command.list_commands(ctx)
+                    )
+                )
             result.append((ctx, command))
     return result
 
@@ -69,9 +74,11 @@ def _generate_form_data(ctx_and_commands: List[Tuple[click.Context, click.Comman
         command.add_help_option = False
         command.html_help = _process_help(command.help)
 
-        input_fields = [get_input_field(ctx, param, command_index, param_index)
-                        for param_index, param in enumerate(command.get_params(ctx))]
-        levels.append({'command': command, 'fields': input_fields})
+        input_fields = [
+            get_input_field(ctx, param, command_index, param_index)
+            for param_index, param in enumerate(command.get_params(ctx))
+        ]
+        levels.append({"command": command, "fields": input_fields})
 
     return levels
 
@@ -87,7 +94,7 @@ def _process_help(help_text):
     """
     help = []
     in_pre = False
-    html_help = ''
+    html_help = ""
     if not help_text:
         return html_help
 
@@ -98,20 +105,20 @@ def _process_help(help_text):
             if in_pre and not line.strip():
                 # end of code block
                 in_pre = False
-                html_help += '\n'.join(help)
+                html_help += "\n".join(help)
                 help = []
-                help.append('</pre>')
+                help.append("</pre>")
                 continue
-            elif line.strip() == '\b':
+            elif line.strip() == "\b":
                 # start of code block
                 in_pre = True
-                html_help += '<br>\n'.join(help)
+                html_help += "<br>\n".join(help)
                 help = []
-                help.append('<pre>')
+                help.append("<pre>")
                 continue
             help.append(escape(line))
         except StopIteration:
             break
 
-    html_help += '\n'.join(help) if in_pre else '<br>\n'.join(help)
+    html_help += "\n".join(help) if in_pre else "<br>\n".join(help)
     return html_help

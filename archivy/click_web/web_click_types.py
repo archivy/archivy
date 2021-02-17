@@ -19,14 +19,14 @@ import click
 
 
 class EmailParamType(click.ParamType):
-    name = 'email'
+    name = "email"
     EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
     def convert(self, value, param, ctx):
         if self.EMAIL_REGEX.match(value):
             return value
         else:
-            self.fail(f'{value} is not a valid email', param, ctx)
+            self.fail(f"{value} is not a valid email", param, ctx)
 
 
 class PasswordParamType(click.ParamType):

@@ -41,7 +41,7 @@ def get_db(force_reconnect=False):
     Returns the database object that you can use to
     store data persistently
     """
-    if 'db' not in g or force_reconnect:
+    if "db" not in g or force_reconnect:
         g.db = TinyDB(str(Path(current_app.config["INTERNAL_DIR"]) / "db.json"))
 
     return g.db

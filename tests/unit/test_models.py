@@ -33,8 +33,7 @@ def test_new_note(test_app, note_fixture):
         assert getattr(note_fixture, attr) == saved_file[attr]
 
 
-def test_bookmark_sanitization(test_app, client, mocked_responses,
-                               bookmark_fixture):
+def test_bookmark_sanitization(test_app, client, mocked_responses, bookmark_fixture):
     """Test that bookmark content is correctly saved as correct Markdown"""
 
     with test_app.app_context():
@@ -43,11 +42,11 @@ def test_bookmark_sanitization(test_app, client, mocked_responses,
     saved_file = frontmatter.load(bookmark_fixture.fullpath)
     for attr in attributes:
         assert getattr(bookmark_fixture, attr) == saved_file[attr]
-    assert bookmark_fixture.url == saved_file["url"] 
+    assert bookmark_fixture.url == saved_file["url"]
 
     # remove buggy newlines that interfere with checks:
     bookmark_fixture.content = bookmark_fixture.content.replace("\n", "")
-    # test script is sanitized 
+    # test script is sanitized
     assert bookmark_fixture.content.find("<script>") == -1
     # test relative urls in the HTML are remapped to an absolute urls
     assert "example.com/images/image1.png" in bookmark_fixture.content
@@ -55,5 +54,3 @@ def test_bookmark_sanitization(test_app, client, mocked_responses,
 
     # check empty link has been cleared
     assert "[](empty-link)" not in bookmark_fixture.content
-
-
