@@ -9,7 +9,7 @@ from archivy.models import DataObj, User
 from archivy.helpers import get_db
 
 
-api_bp = Blueprint('api', __name__)
+api_bp = Blueprint("api", __name__)
 
 
 @api_bp.route("/login", methods=["POST"])
@@ -21,10 +21,9 @@ def login():
     """
     db = get_db()
     user = db.search(Query().username == request.authorization["username"])
-    if (user and
-            check_password_hash(
-                user[0]["hashed_password"],
-                request.authorization["password"])):
+    if user and check_password_hash(
+        user[0]["hashed_password"], request.authorization["password"]
+    ):
         # user is verified so we can log him in from the db
         user = User.from_db(user[0])
         login_user(user, remember=True)
@@ -46,8 +45,8 @@ def create_bookmark():
     """
     json_data = request.get_json()
     bookmark = DataObj(
-        url=json_data['url'],
-        tags=json_data.get('tags'),
+        url=json_data["url"],
+        tags=json_data.get("tags"),
         path=json_data.get("path", ""),
         type="bookmark",
     )
@@ -79,7 +78,7 @@ def create_note():
         content=json_data["content"],
         tags=json_data.get("tags"),
         path=json_data.get("path", ""),
-        type="note"
+        type="note",
     )
 
     note_id = note.insert()
@@ -93,12 +92,16 @@ def get_dataobj(dataobj_id):
     """Returns dataobj of given id"""
     dataobj = data.get_item(dataobj_id)
 
-    return jsonify(
-        dataobj_id=dataobj_id,
-        title=dataobj["title"],
-        content=dataobj.content,
-        md_path=dataobj["fullpath"],
-    ) if dataobj else Response(status=404)
+    return (
+        jsonify(
+            dataobj_id=dataobj_id,
+            title=dataobj["title"],
+            content=dataobj.content,
+            md_path=dataobj["fullpath"],
+        )
+        if dataobj
+        else Response(status=404)
+    )
 
 
 @api_bp.route("/dataobjs/<int:dataobj_id>", methods=["DELETE"])

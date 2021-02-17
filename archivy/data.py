@@ -15,7 +15,7 @@ from archivy.search import remove_from_index
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
     """Returns the directory where dataobjs are stored"""
-    return Path(current_app.config['USER_DIR']) / "data"
+    return Path(current_app.config["USER_DIR"]) / "data"
 
 
 def is_relative_to(sub_path, parent):
@@ -29,6 +29,7 @@ def is_relative_to(sub_path, parent):
 
 class Directory:
     """Tree like file-structure used to build file navigation in Archiv"""
+
     def __init__(self, name):
         self.name = name
         self.child_files = []
@@ -87,9 +88,9 @@ def get_items(collections=[], path="", structured=True, json_format=False):
         for filepath in root_dir.rglob("*.md"):
             data = frontmatter.load(filepath)
             data["fullpath"] = str(filepath.parent.relative_to(root_dir))
-            if len(collections) == 0 or \
-                    any([collection == data["type"]
-                        for collection in collections]):
+            if len(collections) == 0 or any(
+                [collection == data["type"] for collection in collections]
+            ):
                 if json_format:
                     dict_dataobj = data.__dict__
                     # remove unnecessary yaml handler
@@ -171,6 +172,7 @@ def update_item(dataobj_id, new_content):
     """
 
     from archivy.models import DataObj
+
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
     dataobj.content = new_content
@@ -179,7 +181,9 @@ def update_item(dataobj_id, new_content):
         f.write(md)
 
     converted_dataobj = DataObj.from_md(md)
-    converted_dataobj.fullpath = str(filename.relative_to(current_app.config["USER_DIR"]))
+    converted_dataobj.fullpath = str(
+        filename.relative_to(current_app.config["USER_DIR"])
+    )
     converted_dataobj.index()
     load_hooks().on_edit(converted_dataobj)
 
@@ -187,8 +191,11 @@ def update_item(dataobj_id, new_content):
 def get_dirs():
     """Gets all dir names where dataobjs are stored"""
     # join glob matchers
-    dirnames = [str(dir_path.relative_to(get_data_dir())) for dir_path
-                in get_data_dir().rglob("*") if dir_path.is_dir()]
+    dirnames = [
+        str(dir_path.relative_to(get_data_dir()))
+        for dir_path in get_data_dir().rglob("*")
+        if dir_path.is_dir()
+    ]
 
     # append name for root dir
     dirnames.append("not classified")
@@ -225,6 +232,7 @@ def format_file(path: str):
     """
 
     from archivy.models import DataObj
+
     data_dir = get_data_dir()
     path = Path(path)
     if not path.exists():
@@ -245,18 +253,19 @@ def format_file(path: str):
             datapath = Path()
 
         note_dataobj = {
-                "title": path.name.replace(".md", ""),
-                "content": file_contents,
-                "type": "note",
-                "path": str(datapath)
-            }
+            "title": path.name.replace(".md", ""),
+            "content": file_contents,
+            "type": "note",
+            "path": str(datapath),
+        }
 
         dataobj = DataObj(**note_dataobj)
         dataobj.insert()
 
         path.unlink()
         current_app.logger.info(
-                f"Formatted and moved {str(datapath / path.name)} to {dataobj.fullpath}")
+            f"Formatted and moved {str(datapath / path.name)} to {dataobj.fullpath}"
+        )
 
 
 def unformat_file(path: str, out_dir: str):
@@ -291,7 +300,9 @@ def unformat_file(path: str, out_dir: str):
         with new_path.open("w") as f:
             f.write(dataobj.content)
 
-        current_app.logger.info(f"Unformatted and moved {str(path)} to {str(new_path.resolve())}")
+        current_app.logger.info(
+            f"Unformatted and moved {str(path)} to {str(new_path.resolve())}"
+        )
         path.unlink()
 
 

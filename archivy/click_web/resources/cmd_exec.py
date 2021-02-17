@@ -27,7 +27,7 @@ def exec(command_path):
     logger = click_web.logger
 
     omitted = ["shell", "run", "routes", "create-admin"]
-    root_command, *commands = command_path.split('/')
+    root_command, *commands = command_path.split("/")
     cmd = ["archivy"]
     req_to_args = RequestToCommandArgs()
     # root command_index should not add a command
@@ -48,32 +48,32 @@ def exec(command_path):
             yield traceback.format_exc()
             raise
 
-    return Response(_generate_output(),
-                    mimetype='text/plain')
+    return Response(_generate_output(), mimetype="text/plain")
 
 
-def _run_script_and_generate_stream(req_to_args: 'RequestToCommandArgs', cmd: List[str]):
+def _run_script_and_generate_stream(
+    req_to_args: "RequestToCommandArgs", cmd: List[str]
+):
     """
     Execute the command the via Popen and yield output
     """
-    logger.info('Executing archivy command')
-    if not os.environ.get('PYTHONIOENCODING'):
+    logger.info("Executing archivy command")
+    if not os.environ.get("PYTHONIOENCODING"):
         # Fix unicode on windows
-        os.environ['PYTHONIOENCODING'] = 'UTF-8'
+        os.environ["PYTHONIOENCODING"] = "UTF-8"
 
-    process = subprocess.Popen(cmd,
-                               shell=False,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT)
-    logger.info('script running Pid: %d', process.pid)
+    process = subprocess.Popen(
+        cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    logger.info("script running Pid: %d", process.pid)
 
     encoding = sys.getdefaultencoding()
     with process.stdout:
-        for line in iter(process.stdout.readline, b''):
+        for line in iter(process.stdout.readline, b""):
             yield line.decode(encoding)
 
     process.wait()  # wait for the subprocess to exit
-    logger.info('script finished Pid: %d', process.pid)
+    logger.info("script finished Pid: %d", process.pid)
     for fi in req_to_args.field_infos:
         fi.after_script_executed()
 
@@ -87,40 +87,43 @@ def _create_cmd_header(commands: List[str]):
     """
 
     def generate():
-        yield '<!-- CLICK_WEB START HEADER -->'
-        yield '<div class="command-line">Executing: {}</div>'.format('/'.join(commands))
-        yield '<!-- CLICK_WEB END HEADER -->'
+        yield "<!-- CLICK_WEB START HEADER -->"
+        yield '<div class="command-line">Executing: {}</div>'.format("/".join(commands))
+        yield "<!-- CLICK_WEB END HEADER -->"
 
     # important yield this block as one string so it pushed to client in one go.
     # so the whole block can be treated as html.
-    html_str = '\n'.join(generate())
+    html_str = "\n".join(generate())
     return html_str
 
 
-def _create_result_footer(req_to_args: 'RequestToCommandArgs'):
+def _create_result_footer(req_to_args: "RequestToCommandArgs"):
     """
     Generate a footer.
     Note:
         here we always allow to generate HTML as long as we have it between CLICK-WEB comments.
         This way the JS frontend can insert it in the correct place in the DOM.
     """
-    to_download = [fi for fi in req_to_args.field_infos
-                   if fi.generate_download_link and fi.link_name]
+    to_download = [
+        fi
+        for fi in req_to_args.field_infos
+        if fi.generate_download_link and fi.link_name
+    ]
     # important yield this block as one string so it pushed to client in one go.
     # This is so the whole block can be treated as html if JS frontend.
     lines = []
-    lines.append('<!-- CLICK_WEB START FOOTER -->')
+    lines.append("<!-- CLICK_WEB START FOOTER -->")
     if to_download:
-        lines.append('<b>Result files:</b><br>')
+        lines.append("<b>Result files:</b><br>")
         for fi in to_download:
-            lines.append('<ul> ')
-            lines.append(f'<li>{_get_download_link(fi)}<br>')
-            lines.append('</ul>')
+            lines.append("<ul> ")
+            lines.append(f"<li>{_get_download_link(fi)}<br>")
+            lines.append("</ul>")
 
     else:
-        lines.append('<b>DONE</b>')
-    lines.append('<!-- CLICK_WEB END FOOTER -->')
-    html_str = '\n'.join(lines)
+        lines.append("<b>DONE</b>")
+    lines.append("<!-- CLICK_WEB END FOOTER -->")
+    html_str = "\n".join(lines)
     yield html_str
 
 
@@ -128,15 +131,16 @@ def _get_download_link(field_info):
     """Hack as url_for need request context"""
 
     rel_file_path = Path(field_info.file_path).relative_to(click_web.OUTPUT_FOLDER)
-    uri = f'/static/results/{rel_file_path.as_posix()}'
+    uri = f"/static/results/{rel_file_path.as_posix()}"
     return f'<a href="{uri}">{field_info.link_name}</a>'
 
 
 class RequestToCommandArgs:
-
     def __init__(self):
-        field_infos = [FieldInfo.factory(key) for key in
-                       list(request.form.keys()) + list(request.files.keys())]
+        field_infos = [
+            FieldInfo.factory(key)
+            for key in list(request.form.keys()) + list(request.files.keys())
+        ]
         # important to sort them so they will be in expected order on command line
         self.field_infos = list(sorted(field_infos))
 
@@ -150,8 +154,9 @@ class RequestToCommandArgs:
         args = []
 
         # only include relevant fields for this command index
-        commands_field_infos = [fi for fi in self.field_infos
-                                if fi.param.command_index == command_index]
+        commands_field_infos = [
+            fi for fi in self.field_infos if fi.param.command_index == command_index
+        ]
         commands_field_infos = sorted(commands_field_infos)
 
         for fi in commands_field_infos:
@@ -159,7 +164,7 @@ class RequestToCommandArgs:
             # must be called mostly for saving and preparing file output.
             fi.before_script_execute()
 
-            if fi.cmd_opt.startswith('--'):
+            if fi.cmd_opt.startswith("--"):
                 # it's an option
                 args.extend(self._process_option(fi))
 
@@ -171,7 +176,7 @@ class RequestToCommandArgs:
                     args.append(fi.file_path)
                 else:
                     arg_values = request.form.getlist(fi.key)
-                    has_values = bool(''.join(arg_values))
+                    has_values = bool("".join(arg_values))
                     if has_values:
                         if fi.param.nargs == -1:
                             # Variadic argument, in html form each argument
@@ -179,7 +184,9 @@ class RequestToCommandArgs:
                             # treat each line we get from text area as a separate argument.
                             for value in arg_values:
                                 values = value.splitlines()
-                                logger.info(f'variadic arguments, split into: "{values}"')
+                                logger.info(
+                                    f'variadic arguments, split into: "{values}"'
+                                )
                                 args.extend(values)
                         else:
                             logger.info(f'arg_value: "{arg_values}"')
@@ -193,7 +200,7 @@ class RequestToCommandArgs:
                 # it's a file, append the file path
                 yield field_info.cmd_opt
                 yield field_info.file_path
-        elif field_info.param.param_type == 'flag':
+        elif field_info.param.param_type == "flag":
             # To work with flag that is default True
             # a hidden field with same name is also sent by form.
             # This is to detect if checkbox was not checked as then
@@ -207,7 +214,7 @@ class RequestToCommandArgs:
                 flag_on_cmd_line = on_flag
 
             yield flag_on_cmd_line
-        elif ''.join(vals):
+        elif "".join(vals):
             # opt with value, if option was given multiple times get the values for each.
             # flag options should always be set if we get them
             # for normal options they must have a non empty value
@@ -233,8 +240,8 @@ class FieldInfo:
     @staticmethod
     def factory(key):
         field_id = FieldId.from_string(key)
-        is_file = field_id.click_type.startswith('file')
-        is_path = field_id.click_type.startswith('path')
+        is_file = field_id.click_type.startswith("file")
+        is_path = field_id.click_type.startswith("path")
         is_uploaded = key in request.files
         if is_file:
             if is_uploaded:
@@ -254,10 +261,10 @@ class FieldInfo:
         self.param = param
         self.key = param.key
 
-        'Type of option (file, text)'
-        self.is_file = self.param.click_type.startswith('file')
+        "Type of option (file, text)"
+        self.is_file = self.param.click_type.startswith("file")
 
-        'The actual command line option (--debug)'
+        "The actual command line option (--debug)"
         self.cmd_opt = param.name
 
         self.generate_download_link = False
@@ -273,8 +280,10 @@ class FieldInfo:
 
     def __lt__(self, other):
         "Make class sortable"
-        return (self.param.command_index, self.param.param_index) < \
-               (other.param.command_index, other.param.param_index)
+        return (self.param.command_index, self.param.param_index) < (
+            other.param.command_index,
+            other.param.param_index,
+        )
 
     def __eq__(self, other):
         return self.key == other.key
@@ -285,17 +294,18 @@ class FieldFileInfo(FieldInfo):
     Use for processing input fields of file type.
     Saves the posted data to a temp file.
     """
-    'temp dir is on class in order to be uniqe for each request'
+
+    "temp dir is on class in order to be uniqe for each request"
     _temp_dir = None
 
     def __init__(self, fimeta):
         super().__init__(fimeta)
         # Extract the file mode that is in the type e.g file[rw]
-        self.mode = self.param.click_type.split('[')[1][:-1]
-        self.generate_download_link = True if 'w' in self.mode else False
-        self.link_name = f'{self.cmd_opt}.out'
+        self.mode = self.param.click_type.split("[")[1][:-1]
+        self.generate_download_link = True if "w" in self.mode else False
+        self.link_name = f"{self.cmd_opt}.out"
 
-        logger.info(f'File mode for {self.key} is {self.mode}')
+        logger.info(f"File mode for {self.key} is {self.mode}")
 
     def before_script_execute(self):
         self.save()
@@ -304,32 +314,34 @@ class FieldFileInfo(FieldInfo):
     def temp_dir(cls):
         if not cls._temp_dir:
             cls._temp_dir = tempfile.mkdtemp(dir=click_web.OUTPUT_FOLDER)
-        logger.info(f'Temp dir: {cls._temp_dir}')
+        logger.info(f"Temp dir: {cls._temp_dir}")
         return cls._temp_dir
 
     def save(self):
-        logger.info('Saving...')
+        logger.info("Saving...")
 
-        logger.info('field value is a file! %s', self.key)
+        logger.info("field value is a file! %s", self.key)
         file = request.files[self.key]
         # if user does not select file, browser also
         # submit a empty part without filename
-        if file.filename == '':
-            raise ValueError('No selected file')
+        if file.filename == "":
+            raise ValueError("No selected file")
         elif file and file.filename:
             filename = secure_filename(file.filename)
             name, suffix = os.path.splitext(filename)
 
-            fd, filename = tempfile.mkstemp(dir=self.temp_dir(), prefix=name, suffix=suffix)
+            fd, filename = tempfile.mkstemp(
+                dir=self.temp_dir(), prefix=name, suffix=suffix
+            )
             self.file_path = filename
-            logger.info(f'Saving {self.key} to {filename}')
+            logger.info(f"Saving {self.key} to {filename}")
             file.save(filename)
 
     def __str__(self):
 
         res = [super().__str__()]
-        res.append(f'file_path: {self.file_path}')
-        return ', '.join(res)
+        res.append(f"file_path: {self.file_path}")
+        return ", ".join(res)
 
 
 class FieldOutFileInfo(FieldFileInfo):
@@ -340,20 +352,22 @@ class FieldOutFileInfo(FieldFileInfo):
 
     def __init__(self, fimeta):
         super().__init__(fimeta)
-        if self.param.form_type == 'text':
+        if self.param.form_type == "text":
             self.link_name = request.form[self.key]
             # set the postfix to name name provided from form
             # this way it will at least have the same extension when downloaded
             self.file_suffix = request.form[self.key]
         else:
             # hidden no preferred file name can be provided by user
-            self.file_suffix = '.out'
+            self.file_suffix = ".out"
 
     def save(self):
         name = secure_filename(self.key)
 
-        filename = tempfile.mkstemp(dir=self.temp_dir(), prefix=name, suffix=self.file_suffix)
-        logger.info(f'Creating empty file for {self.key} as {filename}')
+        filename = tempfile.mkstemp(
+            dir=self.temp_dir(), prefix=name, suffix=self.file_suffix
+        )
+        logger.info(f"Creating empty file for {self.key} as {filename}")
         self.file_path = filename
 
 
@@ -368,8 +382,8 @@ class FieldPathInfo(FieldFileInfo):
         super().save()
         zip_extract_dir = tempfile.mkdtemp(dir=self.temp_dir())
 
-        logger.info(f'Extracting: {self.file_path} to {zip_extract_dir}')
-        shutil.unpack_archive(self.file_path, zip_extract_dir, 'zip')
+        logger.info(f"Extracting: {self.file_path} to {zip_extract_dir}")
+        shutil.unpack_archive(self.file_path, zip_extract_dir, "zip")
         self.file_path = zip_extract_dir
 
     def after_script_executed(self):
@@ -378,9 +392,9 @@ class FieldPathInfo(FieldFileInfo):
         folder_path = self.file_path
         self.file_path = filename
 
-        logger.info(f'Zipping {self.key} to {filename}')
-        self.file_path = shutil.make_archive(self.file_path, 'zip', folder_path)
-        logger.info(f'Zip file created {self.file_path}')
+        logger.info(f"Zipping {self.key} to {filename}")
+        self.file_path = shutil.make_archive(self.file_path, "zip", folder_path)
+        logger.info(f"Zip file created {self.file_path}")
         self.generate_download_link = True
 
 
@@ -400,7 +414,7 @@ class FieldPathOutInfo(FieldOutFileInfo):
         fd, filename = tempfile.mkstemp(dir=self.temp_dir(), prefix=self.key)
         folder_path = self.file_path
         self.file_path = filename
-        logger.info(f'Zipping {self.key} to {filename}')
-        self.file_path = shutil.make_archive(self.file_path, 'zip', folder_path)
-        logger.info(f'Zip file created {self.file_path}')
+        logger.info(f"Zipping {self.key} to {filename}")
+        self.file_path = shutil.make_archive(self.file_path, "zip", folder_path)
+        logger.info(f"Zip file created {self.file_path}")
         self.generate_download_link = True

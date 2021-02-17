@@ -31,7 +31,8 @@ if app.config["SEARCH_CONF"]["enabled"]:
         try:
             es.indices.create(
                 index=app.config["SEARCH_CONF"]["index_name"],
-                body=app.config["SEARCH_CONF"]["search_conf"])
+                body=app.config["SEARCH_CONF"]["search_conf"],
+            )
         except elasticsearch.exceptions.RequestError:
             app.logger.info("Elasticsearch index already created")
 
@@ -40,7 +41,7 @@ if app.config["SEARCH_CONF"]["enabled"]:
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
-app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(api_bp, url_prefix="/api")
 
 # compress files
 Compress(app)
@@ -58,11 +59,12 @@ def load_user(user_id):
 app.jinja_options["extensions"].append("jinja2.ext.do")
 
 
-@app.template_filter('pluralize')
-def pluralize(number, singular='', plural='s'):
+@app.template_filter("pluralize")
+def pluralize(number, singular="", plural="s"):
     if number == 1:
         return singular
     else:
         return plural
+
 
 from archivy import routes  # noqa:

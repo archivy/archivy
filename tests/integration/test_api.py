@@ -6,6 +6,7 @@ from flask.testing import FlaskClient
 from archivy.data import create_dir, get_items
 from archivy.models import DataObj
 
+
 def test_bookmark_not_found(test_app, client: FlaskClient):
     response: Flask.response_class = client.get("/api/dataobjs/1")
     assert response.status_code == 404
@@ -21,11 +22,14 @@ def test_get_dataobj(test_app, client: FlaskClient, bookmark_fixture):
 
 def test_create_bookmark(test_app, client: FlaskClient, mocked_responses):
     mocked_responses.add(responses.GET, "http://example.org", body="Example\n")
-    response: Flask.response_class = client.post("/api/bookmarks", json={
-        "url": "http://example.org",
-        "tags": ["test"],
-        "path": "",
-    })
+    response: Flask.response_class = client.post(
+        "/api/bookmarks",
+        json={
+            "url": "http://example.org",
+            "tags": ["test"],
+            "path": "",
+        },
+    )
     assert response.status_code == 200
 
     response: Flask.response_class = client.get("/api/dataobjs/1")
@@ -34,14 +38,18 @@ def test_create_bookmark(test_app, client: FlaskClient, mocked_responses):
     assert response.json["dataobj_id"] == 1
     assert response.json["content"] == "Example"
 
+
 def test_create_note(test_app, client: FlaskClient, mocked_responses):
     mocked_responses.add(responses.GET, "http://example.org", body="Example\n")
-    response: Flask.response_class = client.post("/api/notes", json={
-        "title": "Test Note created with api",
-        "content": "Example",
-        "tags": ["test"],
-        "path": "",
-    })
+    response: Flask.response_class = client.post(
+        "/api/notes",
+        json={
+            "title": "Test Note created with api",
+            "content": "Example",
+            "tags": ["test"],
+            "path": "",
+        },
+    )
     assert response.status_code == 200
 
     response: Flask.response_class = client.get("/api/dataobjs/1")
@@ -70,8 +78,10 @@ def test_get_bookmarks_with_empty_db(test_app, client: FlaskClient):
 def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
 
     note_dict = {
-        "type": "note", "title": "Nested Test Note",
-        "tags": ["testing", "archivy"], "path": "t"
+        "type": "note",
+        "title": "Nested Test Note",
+        "tags": ["testing", "archivy"],
+        "path": "t",
     }
 
     create_dir("t")
@@ -92,9 +102,7 @@ def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
 
 def test_update_dataobj(test_app, client: FlaskClient, note_fixture):
     lorem = "Updated note content"
-    resp = client.put("/api/dataobjs/1", json={
-        "content": lorem
-    })
+    resp = client.put("/api/dataobjs/1", json={"content": lorem})
 
     assert resp.status_code == 200
 
@@ -103,9 +111,7 @@ def test_update_dataobj(test_app, client: FlaskClient, note_fixture):
 
 
 def test_updating_inexistent_dataobj_returns(test_app, client: FlaskClient):
-    resp = client.put("/api/dataobjs/1", json={
-        "content": "test"
-    })
+    resp = client.put("/api/dataobjs/1", json={"content": "test"})
 
     assert resp.status_code == 404
 
@@ -114,12 +120,15 @@ def test_api_login(test_app, client: FlaskClient):
     # logout
     client.delete("/logout")
     # requires converting to base64 for http basic auth
-    authorization = "Basic " + b64encode('halcyon:password'.encode('ascii')).decode('ascii')
+    authorization = "Basic " + b64encode("halcyon:password".encode("ascii")).decode(
+        "ascii"
+    )
     resp = client.post("/api/login", headers={"Authorization": authorization})
-    
+
     assert resp.status_code == 200
     resp = client.get("/api/dataobjs")
     assert resp.status_code == 200
+
 
 def test_unlogged_in_api_fails(test_app, client: FlaskClient):
     client.delete("/logout")
@@ -130,7 +139,6 @@ def test_unlogged_in_api_fails(test_app, client: FlaskClient):
 def test_deleting_unrelated_user_dir_fails(test_app, client: FlaskClient):
     resp = client.delete("/api/folders/delete", json={"path": "/dev/null"})
     assert resp.status_code == 400
-
 
 
 def test_path_injection_fails(test_app, client: FlaskClient):
