@@ -18,7 +18,9 @@ def add_to_index(model):
     payload = {}
     for field in model.__searchable__:
         payload[field] = getattr(model, field)
-    es.index(index=current_app.config["SEARCH_CONF"]["index_name"], id=model.id, body=payload)
+    es.index(
+        index=current_app.config["SEARCH_CONF"]["index_name"], id=model.id, body=payload
+    )
     return True
 
 
@@ -42,7 +44,7 @@ def query_index(query):
                 "multi_match": {
                     "query": query,
                     "fields": ["*"],
-                    "analyzer": "rebuilt_standard"
+                    "analyzer": "rebuilt_standard",
                 }
             },
             "highlight": {
@@ -52,9 +54,9 @@ def query_index(query):
                         "pre_tags": "==",
                         "post_tags": "==",
                     }
-                }
-            }
-        }
+                },
+            },
+        },
     )
 
     hits = []

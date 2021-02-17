@@ -18,7 +18,7 @@ def create_app():
     return app
 
 
-@with_plugins(iter_entry_points('archivy.plugins'))
+@with_plugins(iter_entry_points("archivy.plugins"))
 @click.group(cls=FlaskGroup, create_app=create_app)
 def cli():
     pass
@@ -33,8 +33,11 @@ cli.add_command(shell_command)
 def init(ctx):
     try:
         load_config()
-        click.confirm("Config already found. Do you wish to reset it? "
-                      "Otherwise run `archivy config`", abort=True)
+        click.confirm(
+            "Config already found. Do you wish to reset it? "
+            "Otherwise run `archivy config`",
+            abort=True,
+        )
     except FileNotFoundError:
         pass
 
@@ -42,14 +45,17 @@ def init(ctx):
     delattr(config, "SECRET_KEY")
 
     click.echo("This is the archivy installation initialization wizard.")
-    data_dir = click.prompt("Enter the full path of the "
-                            "directory where you'd like us to store data.",
-                            type=str,
-                            default=str(Path(".").resolve()))
+    data_dir = click.prompt(
+        "Enter the full path of the " "directory where you'd like us to store data.",
+        type=str,
+        default=str(Path(".").resolve()),
+    )
 
-    es_enabled = click.confirm("Would you like to enable Elasticsearch? For this to work "
-                               "when you run archivy, you must have ES installed."
-                               "See https://archivy.github.io/setup-search/ for more info.")
+    es_enabled = click.confirm(
+        "Would you like to enable Elasticsearch? For this to work "
+        "when you run archivy, you must have ES installed."
+        "See https://archivy.github.io/setup-search/ for more info."
+    )
     if es_enabled:
         config.SEARCH_CONF["enabled"] = 1
     else:
@@ -62,8 +68,12 @@ def init(ctx):
         if not ctx.invoke(create_admin, username=username, password=password):
             return
 
-    config.HOST = click.prompt("Host [localhost (127.0.0.1)]",
-                               type=str, default="127.0.0.1", show_default=False)
+    config.HOST = click.prompt(
+        "Host [localhost (127.0.0.1)]",
+        type=str,
+        default="127.0.0.1",
+        show_default=False,
+    )
 
     config.override({"USER_DIR": data_dir})
     app.config["USER_DIR"] = data_dir
@@ -72,8 +82,10 @@ def init(ctx):
     (Path(data_dir) / "data").mkdir(exist_ok=True, parents=True)
 
     write_config(vars(config))
-    click.echo("Config successfully created at "
-               + str((Path(app.config['INTERNAL_DIR']) / 'config.yml').resolve()))
+    click.echo(
+        "Config successfully created at "
+        + str((Path(app.config["INTERNAL_DIR"]) / "config.yml").resolve())
+    )
 
 
 @cli.command("config", short_help="Open archivy config.")
@@ -87,17 +99,19 @@ def hooks():
     if not hook_path.exists():
         print("aaaa")
         with hook_path.open("w") as f:
-            f.write("from archivy.config import BaseHooks\n"
-                    "class Hooks(BaseHooks):\n"
-                    "   # see available hooks at https://archivy.github.io/reference/hooks/\n"
-                    "   def on_dataobj_create(self, dataobj): # for example\n"
-                    "       pass")
+            f.write(
+                "from archivy.config import BaseHooks\n"
+                "class Hooks(BaseHooks):\n"
+                "   # see available hooks at https://archivy.github.io/reference/hooks/\n"
+                "   def on_dataobj_create(self, dataobj): # for example\n"
+                "       pass"
+            )
     open_file(hook_path)
 
 
 @cli.command("run", short_help="Runs archivy web application")
 def run():
-    click.echo('Running archivy...')
+    click.echo("Running archivy...")
     load_dotenv()
     environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)

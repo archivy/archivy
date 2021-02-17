@@ -13,6 +13,7 @@ from archivy.models import DataObj, User
 
 _app = None
 
+
 @pytest.fixture
 def test_app():
     """Instantiate the app for each test with its own temporary data directory
@@ -23,7 +24,7 @@ def test_app():
     # create a temporary file to isolate the database for each test
     global _app
     if _app is None:
-        _app = create_click_web_app(cli, cli.cli, app) 
+        _app = create_click_web_app(cli, cli.cli, app)
     app_dir = tempfile.mkdtemp()
     _app.config["INTERNAL_DIR"] = app_dir
     _app.config["USER_DIR"] = app_dir
@@ -40,10 +41,7 @@ def test_app():
     # information.
     with _app.app_context():
         _ = get_db()
-        user = {
-            "username": "halcyon",
-            "password": "password"
-        }
+        user = {"username": "halcyon", "password": "password"}
 
         User(**user).insert()
         yield _app
@@ -85,8 +83,10 @@ def mocked_responses():
 @pytest.fixture
 def note_fixture(test_app):
     note_dict = {
-        "type": "note", "title": "Test Note",
-        "tags": ["testing", "archivy"], "path": ""
+        "type": "note",
+        "title": "Test Note",
+        "tags": ["testing", "archivy"],
+        "path": "",
     }
 
     with test_app.app_context():
@@ -97,7 +97,10 @@ def note_fixture(test_app):
 
 @pytest.fixture
 def bookmark_fixture(test_app, mocked_responses):
-    mocked_responses.add(responses.GET, "https://example.com/", body="""<html>
+    mocked_responses.add(
+        responses.GET,
+        "https://example.com/",
+        body="""<html>
         <head><title>Example</title></head><body><p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit
         <script>console.log("this should be sanitized")</script>
@@ -105,12 +108,15 @@ def bookmark_fixture(test_app, mocked_responses):
         <a href="/testing-absolute-url">link</a>
         <a href"/empty-link"></a>
         </p></body></html>
-    """)
+    """,
+    )
 
     datapoints = {
-        "type": "bookmark", "title": "Test Bookmark",
-        "tags": ["testing", "archivy"], "path": "",
-        "url": "https://example.com/"
+        "type": "bookmark",
+        "title": "Test Bookmark",
+        "tags": ["testing", "archivy"],
+        "path": "",
+        "url": "https://example.com/",
     }
 
     with test_app.app_context():
@@ -122,10 +128,7 @@ def bookmark_fixture(test_app, mocked_responses):
 
 @pytest.fixture()
 def user_fixture(test_app):
-    user = {
-        "username": "__username__",
-        "password": "__password__"
-    }
+    user = {"username": "__username__", "password": "__password__"}
 
     user = User(**user)
     user.insert()
@@ -147,19 +150,28 @@ def pocket_fixture(test_app, mocked_responses):
         "https://getpocket.com/v3/oauth/authorize",
         json={
             "access_token": "5678defg-5678-defg-5678-defg56",
-            "username": "test_user"
-        })
+            "username": "test_user",
+        },
+    )
 
     # fake /get response from pocket API
-    mocked_responses.add(responses.POST, "https://getpocket.com/v3/get", json={
-        'status': 1, 'complete': 1, 'list': {
-            '3088163616': {
-                'given_url': 'https://example.com', 'status': '0',
-                'resolved_url': 'https://example.com',
-                'excerpt': 'Lorem ipsum', 'is_article': '1',
+    mocked_responses.add(
+        responses.POST,
+        "https://getpocket.com/v3/get",
+        json={
+            "status": 1,
+            "complete": 1,
+            "list": {
+                "3088163616": {
+                    "given_url": "https://example.com",
+                    "status": "0",
+                    "resolved_url": "https://example.com",
+                    "excerpt": "Lorem ipsum",
+                    "is_article": "1",
+                },
             },
         },
-    })
+    )
 
     pocket_key = {
         "type": "pocket_key",
@@ -169,14 +181,17 @@ def pocket_fixture(test_app, mocked_responses):
     db.insert(pocket_key)
     return pocket_key
 
+
 @pytest.fixture()
 def click_cli():
     yield cli.cli
+
 
 @pytest.fixture()
 def ctx(click_cli):
     with click.Context(click_cli, info_name=click_cli, parent=None) as ctx:
         yield ctx
+
 
 @pytest.fixture()
 def cli_runner():
