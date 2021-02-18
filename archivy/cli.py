@@ -24,10 +24,6 @@ def cli():
     pass
 
 
-# add built in commands:
-cli.add_command(shell_command)
-
-
 @cli.command("init", short_help="Initialise your archivy application")
 @click.pass_context
 def init(ctx):
@@ -97,7 +93,6 @@ def config():
 def hooks():
     hook_path = Path(app.config["USER_DIR"]) / "hooks.py"
     if not hook_path.exists():
-        print("aaaa")
         with hook_path.open("w") as f:
             f.write(
                 "from archivy.config import BaseHooks\n"
