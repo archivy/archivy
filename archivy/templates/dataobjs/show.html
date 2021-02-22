@@ -2,10 +2,12 @@
 
 {% block content %}
     {% include "markdown-parser.html" %}
+    {% if not view_only %}
     <link rel="stylesheet" href="/static/editor.css">
-    <link rel="stylesheet" href="/static/markdown.css">
     <link rel="stylesheet" href="/static/accessibility.css">
     <script async src="/static/editor.js"></script>
+    {% endif %}
+    <link rel="stylesheet" href="/static/markdown.css">
     <h2 id="post-title">{{ dataobj['title'] }}</h2>
     {{ ", ".join(dataobj['tags']) }}
     <br>
@@ -17,6 +19,7 @@
         </a>
     {% endif %}
     <br>
+    {% if not view_only %}
     <div class="d-flex" id="post-btns">
         <button onclick="toggleEditor(this)" class="btn">
                 <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.249.249 0 00.108-.064l6.286-6.286z"></path></svg>
@@ -34,13 +37,18 @@
           screenreader mode
         </label>
     </div>
+    {% endif %}
     <div id="content-cont" class="markdown-body">
         <div id="content">
         </div>
-        <textarea id="original-textarea" aria-label="Text editor">
-        </textarea>
+	{% if not view_only %}
+        	<textarea id="original-textarea" aria-label="Text editor">
+        	</textarea>
+	{% endif %}
     </div>
-    <button class="sr-only" type="button" id="sr-savebutton">Save</button>
+    {% if not view_only %}
+    	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
+    {% endif %}
     <script>
         // escape text for template literal - double slashes for python rendering and js rendering
         /* {% set content = dataobj["content"]
@@ -50,10 +58,9 @@
                             | safe
         %} */
         document.getElementById("content").innerHTML = window.parser.render(`\${toc}\n{{ content }}`)
-
+	{% if not view_only %}
         let editorDiv, oldContent;
         window.addEventListener("load", function() {
-          console.log("aaa")
           let editor = new EasyMDE({
             autofocus: true,
             previewRender: function(content) {
@@ -164,5 +171,6 @@
           else { btnText.textContent = "Edit"; }
           oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
         }
+	{% endif %}
     </script>
 {% endblock %}

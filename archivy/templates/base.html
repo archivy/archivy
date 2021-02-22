@@ -1,6 +1,7 @@
 <html>
     <head>
       <title>{{ title }} - Archivy</title>
+      <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
       <style>
@@ -56,7 +57,7 @@
                 </a>
             </div>
 
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and not view_only %}
                 <a href="/plugins" class="Header-link Header-item">
                     <h3>Plugins</h3>
                 </a>
