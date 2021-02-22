@@ -19,7 +19,7 @@ jobs:
         run: |
           date -u +'%Y-%m-%dT%H:%M:%SZ' > TIMESTAMP
           echo "$GITHUB_SHA" | cut -c1-8 > SHORT_SHA
-          echo "$GITHUB_REF" > VERSION
+          echo "$GITHUB_REF" | cut -d / -f 3 > VERSION
           echo "uzayg" > DOCKER_USERNAME
           echo "docker.io/uzayg/archivy" > DOCKER_IMAGE
 
@@ -45,4 +45,5 @@ jobs:
             --build-arg VERSION="$( cat VERSION )" --build-arg BUILD_DATE="$( cat TIMESTAMP )" \
             --build-arg VCS_REF="$( cat SHORT_SHA )" \
             --tag "$( cat DOCKER_IMAGE ):$( cat VERSION )" \
+            --tag "$( cat DOCKER_IMAGE ):latest" \
             --file ./Dockerfile .
