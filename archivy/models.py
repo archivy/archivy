@@ -3,6 +3,7 @@ from typing import List, Optional
 from urllib.parse import urljoin
 
 import frontmatter
+import locale
 import requests
 import validators
 from attr import attrs, attrib
@@ -91,7 +92,15 @@ class DataObj:
             return None
 
         try:
-            url_request = requests.get(self.url)
+            try:
+                lc = locale.getdefaultlocale()[0].replace('_', '-')
+                if lc == "C":
+                    # fall back to en-US
+                    lc == "en-US"
+                headers = {"Accept-Language": lc}
+            except Exception:
+                headers = None
+            url_request = requests.get(self.url, headers=headers)
         except Exception:
             flash(f"Could not retrieve {self.url}\n", "error")
             self.wipe()
