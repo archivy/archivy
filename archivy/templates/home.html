@@ -8,7 +8,7 @@
 
 
 <div id="files">
-
+    {% if not view_only %}
     <div class="d-flex" id="main-links">
         <a class="btn" href="/notes/new?path={{current_path}}">
             New Note
@@ -33,6 +33,7 @@
             {{ new_folder_form.submit() }}
         </form>
     </div>
+    {% endif %}
     <ul>
         {% for subdir in dir.child_dirs.values() | sort(attribute="name") %}
             <li class="dir">

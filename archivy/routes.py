@@ -52,6 +52,7 @@ def index():
         current_path=path,
         new_folder_form=forms.NewFolderForm(),
         delete_form=forms.DeleteFolderForm(),
+        view_only=0,
     )
 
 
@@ -112,6 +113,7 @@ def show_dataobj(dataobj_id):
         dataobj=dataobj,
         current_path=dataobj["dir"],
         form=forms.DeleteDataForm(),
+        view_only=0,
     )
 
 
