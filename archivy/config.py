@@ -1,9 +1,14 @@
 import os
 import appdirs
 
+# version of archivy configuration file
+VERSION = 1
+
 
 class Config(object):
     """Configuration object for the application"""
+
+    VERSION = VERSION
 
     def __init__(self):
         self.SECRET_KEY = os.urandom(32)
