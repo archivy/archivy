@@ -1,4 +1,5 @@
 from datetime import datetime
+from pkg_resources import require
 from typing import List, Optional
 from urllib.parse import urljoin
 
@@ -91,7 +92,10 @@ class DataObj:
             return None
 
         try:
-            url_request = requests.get(self.url)
+            url_request = requests.get(
+                self.url,
+                headers={"User-agent": f"Archivy/v{require('archivy')[0].version}"},
+            )
         except Exception:
             flash(f"Could not retrieve {self.url}\n", "error")
             self.wipe()
