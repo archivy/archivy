@@ -8,6 +8,22 @@ This is a short guide on the things you should know if you'd like to contribute 
 - Run `source venv/bin/activate` to activate this new environment.
 - Run `pip install -r requirements.txt` to download all dependencies.
 
+## Running the dev server.
+```
+# after sourcing the virtualenv
+
+$ export FLASK_APP=archivy/__init__.py
+$ export FLASK_ENV=development
+$ flask run
+```
+
+## Running cli commands
+```
+# after sourcing the virtualenv
+
+$ python -m archivy.cli --help
+```
+
 
 If you'd like to work on an [existing issue](https://github.com/archivy/archivy/issues), please comment on the github thread for the issue to notify that you're working on it, and then create a new branch with a suitable name.
 
