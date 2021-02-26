@@ -1,0 +1,32 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+appdirs = "==1.4.4"
+attrs = "==20.2.0"
+beautifulsoup4 = ">=4.8.2"
+elasticsearch = "==7.7.1"
+python-dotenv = "==0.13.0"
+python-frontmatter = "==0.5.0"
+requests = "==2.24.0"
+tinydb = "==4.1.1"
+validators = "==0.15.0"
+click-plugins = "*"
+html2text = "*"
+Flask = "==1.1.2"
+Flask-WTF = "==0.14.3"
+WTForms = "==2.3.1"
+Werkzeug = "==1.0.1"
+Flask-Login = "==0.5.0"
+Flask-Compress = "*"
+
+[dev-packages]
+pytest = "==6.0.2"
+pytest-cov = "*"
+# for mocking out requests HTTP calls
+responses = "==0.12.0"
+
+[requires]
+python_version = "3.8"

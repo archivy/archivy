@@ -1,16 +1,31 @@
 
 This is a short guide on the things you should know if you'd like to contribute to Archivy.
 
-## Setting up a dev environment.
+## Setting up a dev environment
 
-- Fork the [archivy repo](https://github.com/archivy/archivy) and then clone the fork on your local machine.
-- Create a virtual environment by running `python -m venv venv/`. This will hold all archivy dependencies.
-- Run `source venv/bin/activate` to activate this new environment.
-- Run `pip install -r requirements.txt` to download all dependencies.
+1. Fork the [archivy repo](https://github.com/archivy/archivy) and then clone the fork on your local machine.
+2. ensure you have python 3.8 and pip3 installed. Check with `python3.8 --version` and `python3.8 -m pip --version`
+3. install pipenv: `python3.8 -m pip install --user pipenv`
+4. At the root of the archivy repo, run `python3.8 -m pipenv install --deploy`
+5. You can now use your virtualenv with `python3.8 -m pipenv shell`
+6. You can exit the shell by running `exit`
 
-## Running the dev server.
+## Adding new pip packages
+
+1. ensure your current working directory is at the root of the archivy repo
+2. ensure you're not in pipenv shell. That is, you're not in the virtual environment
+
+```bash
+# to install a pip package that is a dependency for archivy
+$ python3.8 -m pipenv install <package name>==<version>
+
+# to install a pip package used for testing or dev work
+$ python3.8 -m pipenv install --dev <package name>==<version>
 ```
-# after sourcing the virtualenv
+
+## Running the dev server
+```bash
+# in the pipenv shell
 
 $ export FLASK_APP=archivy/__init__.py
 $ export FLASK_ENV=development
@@ -18,8 +33,8 @@ $ flask run
 ```
 
 ## Running cli commands
-```
-# after sourcing the virtualenv
+```bash
+# in the pipenv shell
 
 $ python -m archivy.cli --help
 ```
