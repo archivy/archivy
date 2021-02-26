@@ -21,6 +21,7 @@ WTForms = "==2.3.1"
 Werkzeug = "==1.0.1"
 Flask-Login = "==0.5.0"
 Flask-Compress = "*"
+gunicorn = "==20.0.4"
 
 [dev-packages]
 pytest = "==6.0.2"

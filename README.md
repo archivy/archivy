@@ -53,5 +53,3 @@ See the [official docs](https://archivy.github.io) for information on other inst
 Archivy is dedicated at building **open and quality knowledge base software** through collaboration and community discussion.
 
 You can interact with us through the [issue board](https://github.com/archivy/archivy/issues) and the more casual [discord server](https://discord.gg/uQsqyxB).
-
-
