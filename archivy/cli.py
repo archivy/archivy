@@ -104,13 +104,16 @@ def hooks():
     open_file(hook_path)
 
 
-@cli.command("run", short_help="Runs archivy web application")
-def run():
+def create_app_with_cli():
     click.echo("Running archivy...")
     load_dotenv()
     environ["FLASK_RUN_FROM_CLI"] = "false"
-    app_with_cli = create_click_web_app(click, cli, app)
-    app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
+    return create_click_web_app(click, cli, app)
+
+
+@cli.command("run", short_help="Runs archivy web application")
+def run():
+    create_app_with_cli().run(host=app.config["HOST"], port=app.config["PORT"])
 
 
 @cli.command(short_help="Creates a new admin user")

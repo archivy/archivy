@@ -12,8 +12,8 @@ You can easily install archivy with `pip`. (pip  is the default package installe
 
 1. Follow steps 1 to 3 from the above "With pip" Section.
 2. install gunicorn with `pip install gunicorn`
-3. Once archivy has been initialized, you can run it using gunicorn by running `gunicorn archivy:app`
-4. If you wish, you can use the file `gunicorn.conf.py` at the root of the Archivy git repo as a good configuration starting point. You can explicitly use it by running `gunicorn -c gunicorn.conf.py archivy:app`
+3. Once archivy has been initialized, you can run it using gunicorn by running `gunicorn 'archivy.cli:create_app_with_cli()'`
+4. If you wish, you can use the file `gunicorn.conf.py` at the root of the Archivy git repo as a good configuration starting point. You can explicitly use it by running `gunicorn -c gunicorn.conf.py 'archivy.cli:create_app_with_cli()'`
 
 ## With Nix
 ```ShellSession
