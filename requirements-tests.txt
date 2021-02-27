@@ -1,6 +1,0 @@
--r requirements.txt
-
-pytest==6.0.2
-pytest-cov
-# for mocking out requests HTTP calls
-responses==0.12.0
