@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+elasticsearch = "*"
+flask-compress = "*"
+flask-login = "*"
+pyyaml = "*"
+tinydb = "*"
+appdirs = "*"
+requests = "*"
+validators = "*"
+attrs = "*"
+beautifulsoup4 = "*"
+html2text = "*"
+flask-wtf = "*"
+click-plugins = "*"
+python-frontmatter = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
+
+
+[scripts]
+archivy = "python3 -m archivy.cli"
+lint = "black ."
