@@ -24,3 +24,8 @@ python-frontmatter = "*"
 
 [requires]
 python_version = "3.9"
+
+
+[scripts]
+archivy = "python3 -m archivy.cli"
+lint = "black ."
