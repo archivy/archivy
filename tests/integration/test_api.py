@@ -153,5 +153,3 @@ def test_search_using_ripgrep(test_app, client: FlaskClient, note_fixture):
     resp = client.get("/api/search?query=test")
     assert resp.status_code == 200
     assert resp.json[0]["id"] == note_fixture.id
-
-
