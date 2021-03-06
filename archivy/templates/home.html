@@ -60,8 +60,8 @@
       let hitsDiv = document.getElementById("searchHits");
 	  let hitLi = document.createElement("li");
 	  let a = document.createElement("a");
-	  a.href = `/dataobjs/${hit["id"]}`, a.textContent = hit["title"];
-	  {% if engine == "elasticsearch" %}
+	  a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
+	  {% if search_engine == "elasticsearch" %}
 		let body = document.createElement("div");
 		if ("highlight" in hit)
 		{
