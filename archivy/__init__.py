@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from shutil import which
 
 import elasticsearch
 from flask import Flask
@@ -25,19 +26,42 @@ app.config.from_object(config)
 
 (Path(app.config["USER_DIR"]) / "data").mkdir(parents=True, exist_ok=True)
 
-if (
-    app.config["SEARCH_CONF"]["enabled"]
-    and app.config["SEARCH_CONF"]["engine"] == "elasticsearch"
-):
+if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
-        es = helpers.get_elastic_client()
-        try:
-            es.indices.create(
-                index=app.config["SEARCH_CONF"]["index_name"],
-                body=app.config["SEARCH_CONF"]["search_conf"],
+        search_engines = ["elasticsearch", "ripgrep"]
+        es = None
+        if (
+            "engine" not in app.config["SEARCH_CONF"]
+            or app.config["SEARCH_CONF"]["engine"] not in search_engines
+        ):
+            # try to guess desired search engine if present
+            app.logger.warning(
+                "Search is enabled but engine option is invalid or absent. Archivy will try to guess preferred search engine."
             )
-        except elasticsearch.exceptions.RequestError:
-            app.logger.info("Elasticsearch index already created")
+            app.config["SEARCH_CONF"]["engine"] = "none"
+            es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
+            try:
+                es.cluster.health()
+                app.config["SEARCH_CONF"]["engine"] = "elasticsearch"
+            except elasticsearch.exceptions.ConnectionError:
+                if which("rg"):
+                    app.config["SEARCH_CONF"]["engine"] = "ripgrep"
+            engine = app.config["SEARCH_CONF"]["engine"]
+            if engine == "none":
+                app.logger.warning("No working search engine found. Disabling search.")
+                app.config["SEARCH_CONF"]["enabled"] = 0
+            else:
+                app.logger.info(f"Running {engine} installation found.")
+
+        if app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
+            es = es or get_elastic_client()
+            try:
+                es.indices.create(
+                    index=app.config["SEARCH_CONF"]["index_name"],
+                    body=app.config["SEARCH_CONF"]["search_conf"],
+                )
+            except elasticsearch.exceptions.RequestError:
+                app.logger.info("Elasticsearch index already created")
 
 
 # login routes / setup

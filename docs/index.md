@@ -15,7 +15,7 @@ Features:
 - CLI that provides a nice backend interface to the app
 - Backend API for flexibility and user enhancements
 - Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
-- Extensible search with Elasticsearch and its Query DSL
+- Extensible search.
 
 
 <video src="https://www.uzpg.me/assets/images/archivy.mov" style="width: 100%" controls>
