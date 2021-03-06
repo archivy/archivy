@@ -7,8 +7,10 @@ from flask import current_app
 from archivy.helpers import get_elastic_client
 
 RG_REGEX_ARG = "-e"
-RG_MISC_ARGS = "-ilt" # i -> case insensitive and l -> only output filenames
+RG_MISC_ARGS = "-ilt"  # i -> case insensitive and l -> only output filenames
 RG_FILETYPE = "md"
+
+
 def add_to_index(model):
     """
     Adds dataobj to given index. If object of given id already exists, it will be updated.
@@ -74,13 +76,15 @@ def query_es_index(query):
 
     return hits
 
+
 def query_ripgrep(query):
     """Uses ripgrep to search data with a simpler setup than ES"""
 
     from archivy.data import get_data_dir
+
     if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
         return None
-    
+
     rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, RG_REGEX_ARG, query, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     file_paths = [Path(p.decode()).parts[-1] for p in rg.stdout.splitlines()]
@@ -92,6 +96,7 @@ def query_ripgrep(query):
         parsed = filename.replace(".md", "").split("-")
         hits.append({"id": int(parsed[0]), "title": parsed[1:]})
     return hits
+
 
 def search(query):
     if current_app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
