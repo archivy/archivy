@@ -183,7 +183,7 @@ def delete_folder():
 
 
 @api_bp.route("/search", methods=["GET"])
-def search_elastic():
+def search_endpoint():
     """
     Searches the instance.
 
