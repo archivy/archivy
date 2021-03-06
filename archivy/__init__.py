@@ -27,14 +27,15 @@ app.config.from_object(config)
 
 if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
-        es = helpers.get_elastic_client()
-        try:
-            es.indices.create(
-                index=app.config["SEARCH_CONF"]["index_name"],
-                body=app.config["SEARCH_CONF"]["search_conf"],
-            )
-        except elasticsearch.exceptions.RequestError:
-            app.logger.info("Elasticsearch index already created")
+        if app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
+            es = helpers.get_elastic_client()
+            try:
+                es.indices.create(
+                    index=app.config["SEARCH_CONF"]["index_name"],
+                    body=app.config["SEARCH_CONF"]["search_conf"],
+                )
+            except elasticsearch.exceptions.RequestError:
+                app.logger.info("Elasticsearch index already created")
 
 
 # login routes / setup

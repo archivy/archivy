@@ -54,6 +54,7 @@ def init(ctx):
     )
     if es_enabled:
         config.SEARCH_CONF["enabled"] = 1
+        config.SEARCH_CONF["engine"] = "elasticsearch"
     else:
         delattr(config, "SEARCH_CONF")
 

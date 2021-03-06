@@ -58,21 +58,22 @@
   {% if search_enabled %}  
     function appendHit(hit) {
       let hitsDiv = document.getElementById("searchHits");
-      let hitLi = document.createElement("li");
-      let body = document.createElement("div");
-      if ("highlight" in hit)
-      {
-        for(let i = 0; i < hit["highlight"].length; i++)
-        {
-          body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);  
-        }
-      }
-      let p = document.createElement("p"), a = document.createElement("a"), hitText = '';
-      p.innerHTML = hitText, a.textContent = hit["title"], a.href = `/dataobj/${hit['id']}`;
-      hitLi.append(a);
-      hitLi.append(p);
-      hitLi.append(body);
-      hitsDiv.appendChild(hitLi);
+	  let hitLi = document.createElement("li");
+	  let a = document.createElement("a");
+	  a.href = `/dataobjs/${hit["id"]}`, a.textContent = hit["title"];
+	  {% if engine == "elasticsearch" %}
+		let body = document.createElement("div");
+		if ("highlight" in hit)
+		{
+		  for(let i = 0; i < hit["highlight"].length; i++)
+		  {
+			body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);
+		  }
+		}
+		hitLi.append(body);
+	  {% endif %}
+	  hitLi.append(a);
+	  hitsDiv.appendChild(hitLi);
     }
 
     let input = document.getElementById("searchBar");
