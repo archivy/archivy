@@ -39,7 +39,7 @@ if app.config["SEARCH_CONF"]["enabled"]:
                 "Search is enabled but engine option is invalid or absent. Archivy will try to guess preferred search engine."
             )
             app.config["SEARCH_CONF"]["engine"] = "none"
-            es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
+            es = elasticsearch.Elasticsearch(app.config["SEARCH_CONF"]["url"])
             try:
                 es.cluster.health()
                 app.config["SEARCH_CONF"]["engine"] = "elasticsearch"
