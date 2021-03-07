@@ -93,7 +93,7 @@ def query_ripgrep(query):
     hits = []
     for filename in file_paths:
         parsed = filename.replace(".md", "").split("-")
-        hits.append({"id": int(parsed[0]), "title": parsed[1:]})
+        hits.append({"id": int(parsed[0]), "title": "-".join(parsed[1:])})
     return hits
 
 

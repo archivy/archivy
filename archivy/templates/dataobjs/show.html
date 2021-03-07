@@ -128,10 +128,11 @@
                     className: "fa fa-save"
                   },
 	          {
-		    name: "bi-note-link",
+		    name: "bidirBtn",
 		    action: (editor) => {
 		      toggleLinkForm();
-		    }
+		    },
+			className: "fa fa-arrow-alt-h"
 		  },
                   {
                     name: "status",
@@ -159,6 +160,7 @@
 	              resBtn.onclick = () => {
 		        editor.codemirror.replaceSelection(`[[${hit["title"]}/${hit["id"]}]]`);
 	                linkForm.style.dislay = "none";
+                        toggleLinkForm();
 	              }
 	              searchHits.appendChild(resBtn);
 	            })

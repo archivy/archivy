@@ -10,6 +10,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db
+from archivy.search import search
 
 
 @app.context_processor
@@ -107,6 +108,14 @@ def show_dataobj(dataobj_id):
 
     if request.args.get("raw") == "1":
         return frontmatter.dumps(dataobj)
+
+    if app.config["SEARCH_CONF"]["enabled"]:
+        incoming_links = search(f"/{dataobj_id}]]")
+        if incoming_links:
+            dataobj.content += "\n# Backlinks"
+            for hit in incoming_links:
+                if hit["id"] != dataobj_id:
+                    dataobj.content += f"\n- [{hit['title']}](/dataobj/{hit['id']})" 
 
     return render_template(
         "dataobjs/show.html",

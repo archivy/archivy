@@ -429,10 +429,10 @@ form {
 	margin: 0px;
 	padding: 0px;
 }
-.bi-note-link {
-	width: 130px !important;
+.bidirBtn {
+	width: 100px !important;
 }
-.bi-note-link::before {
+.bidirBtn::before {
 	content: "Link to a note";
 }
 /* mobile adjustements */
