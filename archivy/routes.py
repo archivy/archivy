@@ -115,6 +115,7 @@ def show_dataobj(dataobj_id):
         current_path=dataobj["dir"],
         form=forms.DeleteDataForm(),
         view_only=0,
+        search_enabled=app.config["SEARCH_CONF"]["enabled"],
     )
 
 
