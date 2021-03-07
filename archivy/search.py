@@ -91,7 +91,6 @@ def query_ripgrep(query):
 
     # don't open file just find info from filename for speed
     hits = []
-    print(str(get_data_dir().resolve()))
     for filename in file_paths:
         parsed = filename.replace(".md", "").split("-")
         hits.append({"id": int(parsed[0]), "title": parsed[1:]})

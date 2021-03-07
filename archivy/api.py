@@ -158,7 +158,6 @@ def create_folder():
     directory = request.json.get("path")
     try:
         sanitized_name = data.create_dir(directory)
-        print(sanitized_name)
         if not sanitized_name:
             return Response("Invalid dirname", status=400)
     except FileExistsError:
