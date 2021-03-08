@@ -115,7 +115,7 @@ def show_dataobj(dataobj_id):
             dataobj.content += "\n# Backlinks"
             for hit in incoming_links:
                 if hit["id"] != dataobj_id:
-                    dataobj.content += f"\n- [{hit['title']}](/dataobj/{hit['id']})" 
+                    dataobj.content += f"\n- [{hit['title']}](/dataobj/{hit['id']})"
 
     return render_template(
         "dataobjs/show.html",
