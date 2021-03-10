@@ -48,7 +48,7 @@ def init(ctx):
     )
 
     desires_search = click.confirm(
-        "Would you like to have search on your knowledge base contents?"
+        "Would you like to enable search on your knowledge base contents?"
     )
 
     if desires_search:

@@ -89,7 +89,10 @@ def test_es_connection(es):
 
 def get_elastic_client():
     """Returns the elasticsearch client you can use to search and insert / delete data"""
-    if not current_app.config["SEARCH_CONF"]["enabled"]:
+    if (
+        not current_app.config["SEARCH_CONF"]["enabled"]
+        or current_app.config["SEARCH_CONF"]["engine"] != "elasticsearch"
+    ):
         return None
 
     es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
