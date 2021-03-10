@@ -53,6 +53,7 @@ def index():
         new_folder_form=forms.NewFolderForm(),
         delete_form=forms.DeleteFolderForm(),
         view_only=0,
+        search_engine=app.config["SEARCH_CONF"]["engine"],
     )
 
 

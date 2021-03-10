@@ -27,6 +27,7 @@ jobs:
         python-version: 3.7
     - name: Generate coverage report
       run: |
+        sudo apt-get install ripgrep
         pip install -r requirements-tests.txt
         pip install .
         pip install tests/test_plugin

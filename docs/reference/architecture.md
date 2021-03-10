@@ -34,8 +34,13 @@ Archivy uses the [python-frontmatter](https://python-frontmatter.readthedocs.io/
 - Another storage method Archivy uses is [TinyDB](https://tinydb.readthedocs.io/en/stable/). This is a small, simple document-oriented database archivy gives you access to for persistent data you might want to store in archivy plugins. Use [`helpers.get_db`](/reference/helpers/#archivy.helpers.get_db) to call the database.
 
 ## Search
+Archivy supports two search engines:
 
-Archivy uses [Elasticsearch](https://www.elastic.co/) to index and allow users to have full-text search on their knowledge bases. 
+1. [Elasticsearch](https://www.elastic.co/) - an incredibly powerful solution that is however harder to install.
+2. [ripgrep](https://github.com/BurntSushi/ripgrep), much more lightweight but also less powerful.
+
+These allow archivy to to index and provide full-text search on their knowledge bases. 
+
 
 Elasticsearch requires configuration to have higher quality search results. You can check out the top-notch config archivy already uses by default [here](https://github.com/archivy/archivy/blob/master/archivy/config.py).
 

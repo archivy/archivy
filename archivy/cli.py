@@ -47,15 +47,21 @@ def init(ctx):
         default=str(Path(".").resolve()),
     )
 
-    es_enabled = click.confirm(
-        "Would you like to enable Elasticsearch? For this to work "
-        "when you run archivy, you must have ES installed."
-        "See https://archivy.github.io/setup-search/ for more info."
+    desires_search = click.confirm(
+        "Would you like to enable search on your knowledge base contents?"
     )
-    if es_enabled:
-        config.SEARCH_CONF["enabled"] = 1
-    else:
-        delattr(config, "SEARCH_CONF")
+
+    if desires_search:
+        search_engine = click.prompt(
+            "Then go to https://archivy.github.io/setup-search/ to see the different backends you can use for search and how you can configure them.",
+            type=click.Choice(["elasticsearch", "ripgrep", "cancel"]),
+            show_choices=True,
+        )
+        if search_engine != "cancel":
+            config.SEARCH_CONF["enabled"] = 1
+            config.SEARCH_CONF["engine"] = search_engine
+        else:
+            delattr(config, "SEARCH_CONF")
 
     create_new_user = click.confirm("Would you like to create a new admin user?")
     if create_new_user:

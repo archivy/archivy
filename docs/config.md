@@ -15,9 +15,11 @@ Here's an overview of the different values you can set and modify.
 | `HOST`          | 127.0.0.1                   | Host on which the app will run. |
 
 
-### Elasticsearch
+### Search
 
-All of these are children of the `SEARCH_CONF` object, like this in the yaml:
+See [setup-search.md] for more information.
+
+All of these options are children of the `SEARCH_CONF` object, like this in the `config.yml`:
 
 ```yaml
 SEARCH_CONF:
@@ -25,14 +27,16 @@ SEARCH_CONF:
   url:
   # ...
 ```
+To use search, you first have to enable it either through the `archivy init` setup script or by modifying the `enabled` variable (see below).
 
-This part will not be configured by default unless you specify you wish to integrate with ES.
+Variables marked `ES only` in their description are only relevant when using the Elasticsearch engine.
 
 | Variable                | Default                        | Description                           |
 |-------------------------|--------------------------------|---------------------------------------|
 | `enabled`               | 1                              |                                       |
-| `url`                   | http://localhost:9200          | Url to the elasticsearch server       |
-| `search_conf`           | Long dict of ES config options | Configuration of Elasticsearch [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html), [mappings](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) and general settings. |
+| `engine`                | empty string                   | search engine you'd like to use. One of `["ripgrep", ["elasticsearch"]`|
+| `url`                   | http://localhost:9200          | **[ES only]** Url to the elasticsearch server       |
+| `search_conf`           | Long dict of ES config options | **[ES only]** Configuration of Elasticsearch [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html), [mappings](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) and general settings. |
 
 
 `INTERNAL_DIR` and `USER_DIR` by default will be set by the

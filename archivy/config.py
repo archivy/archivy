@@ -19,6 +19,7 @@ class Config(object):
             "enabled": 0,
             "url": "http://localhost:9200",
             "index_name": "dataobj",
+            "engine": "",
             "search_conf": {
                 "settings": {
                     "highlight": {"max_analyzed_offset": 100000000},
