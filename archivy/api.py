@@ -4,7 +4,7 @@ from flask_login import login_user
 from tinydb import Query
 
 from archivy import data
-from archivy.search import query_index
+from archivy.search import search
 from archivy.models import DataObj, User
 from archivy.helpers import get_db
 
@@ -158,7 +158,6 @@ def create_folder():
     directory = request.json.get("path")
     try:
         sanitized_name = data.create_dir(directory)
-        print(sanitized_name)
         if not sanitized_name:
             return Response("Invalid dirname", status=400)
     except FileExistsError:
@@ -183,7 +182,7 @@ def delete_folder():
 
 
 @api_bp.route("/search", methods=["GET"])
-def search_elastic():
+def search_endpoint():
     """
     Searches the instance.
 
@@ -191,5 +190,5 @@ def search_elastic():
     - **query**
     """
     query = request.args.get("query")
-    search_results = query_index(query)
+    search_results = search(query)
     return jsonify(search_results)
