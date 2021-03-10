@@ -52,6 +52,6 @@ See the [official docs](https://archivy.github.io) for information on other inst
 
 Archivy is dedicated at building **open and quality knowledge base software** through collaboration and community discussion.
 
+To get news and updates on Archivy and its development, you can [watch the archivy repository](https://github.com/archivy/archivy) or follow [@uzpg_ on Twitter](https://twitter.com/uzpg_).
+
 You can interact with us through the [issue board](https://github.com/archivy/archivy/issues) and the more casual [discord server](https://discord.gg/uQsqyxB).
-
-
