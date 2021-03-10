@@ -144,3 +144,13 @@ def test_deleting_unrelated_user_dir_fails(test_app, client: FlaskClient):
 def test_path_injection_fails(test_app, client: FlaskClient):
     resp = client.post("/api/folders/new", json={"path": "../../"})
     assert resp.status_code == 400
+
+
+def test_search_using_ripgrep(test_app, client: FlaskClient, note_fixture):
+    test_app.config["SEARCH_CONF"]["engine"] = "ripgrep"
+    test_app.config["SEARCH_CONF"]["enabled"] = 1
+
+    resp = client.get("/api/search?query=test")
+    assert resp.status_code == 200
+    assert resp.json[0]["id"] == note_fixture.id
+    test_app.config["SEARCH_CONF"]["enabled"] = 0

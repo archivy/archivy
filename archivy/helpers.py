@@ -63,12 +63,8 @@ def set_max_id(val):
     db.update(operations.set("val", val), Query().name == "max_id")
 
 
-def get_elastic_client():
-    """Returns the elasticsearch client you can use to search and insert / delete data"""
-    if not current_app.config["SEARCH_CONF"]["enabled"]:
-        return None
-
-    es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
+def test_es_connection(es):
+    """Tests health and presence of connection to elasticsearch."""
     try:
         health = es.cluster.health()
     except elasticsearch.exceptions.ConnectionError:
@@ -89,4 +85,16 @@ def get_elastic_client():
             "properly. Search might not work. You can disable "
             "Elasticsearch by setting ELASTICSEARCH_ENABLED to 0."
         )
+
+
+def get_elastic_client():
+    """Returns the elasticsearch client you can use to search and insert / delete data"""
+    if (
+        not current_app.config["SEARCH_CONF"]["enabled"]
+        or current_app.config["SEARCH_CONF"]["engine"] != "elasticsearch"
+    ):
+        return None
+
+    es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
+    test_es_connection(es)
     return es

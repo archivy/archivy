@@ -55,7 +55,7 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
 
     with cli_runner.isolated_filesystem():
         # use ES, localhost and don't create user
-        res = cli_runner.invoke(click_cli, ["init"], input="\ny\nn\n\n")
+        res = cli_runner.invoke(click_cli, ["init"], input="\ny\nelasticsearch\nn\n\n")
 
     assert "Config successfully created" in res.output
     conf = open(conf_path).read()
@@ -68,6 +68,23 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     # check initialization in random directory
     # has resulted in change of user dir
     assert old_data_dir != test_app.config["USER_DIR"]
+
+
+def test_initialization_with_ripgrep(test_app, cli_runner, click_cli):
+    conf_path = os.path.join(test_app.config["USER_DIR"], "config.yml")
+    old_data_dir = test_app.config["USER_DIR"]
+
+    with cli_runner.isolated_filesystem():
+        # use ES, localhost and don't create user
+        res = cli_runner.invoke(click_cli, ["init"], input="\ny\nripgrep\nn\n\n")
+
+    assert "Config successfully created" in res.output
+    conf = open(conf_path).read()
+
+    # assert search Config is saved
+    assert "SEARCH_CONF" in conf
+    assert "enabled: 1" in conf
+    assert "ripgrep" in conf
 
 
 def test_initialization_in_diff_than_curr_dir(test_app, cli_runner, click_cli):
