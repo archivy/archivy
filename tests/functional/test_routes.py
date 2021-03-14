@@ -204,11 +204,17 @@ def test_bookmarklet(test_app, client: FlaskClient):
     resp = client.get("/bookmarklet")
     assert resp.status_code == 200
 
-def test_backlinks_are_saved(test_app, client: FlaskClient, note_fixture, bookmark_fixture):
-    resp = client.put(f"/api/dataobjs/{note_fixture.id}", json={
-        "content": f"[[[{bookmark_fixture.id}](/dataobj/{bookmark_fixture.id})]]"
-    })
+
+def test_backlinks_are_saved(
+    test_app, client: FlaskClient, note_fixture, bookmark_fixture
+):
+    resp = client.put(
+        f"/api/dataobjs/{note_fixture.id}",
+        json={
+            "content": f"[[[{bookmark_fixture.id}](/dataobj/{bookmark_fixture.id})]]"
+        },
+    )
     assert resp.status_code == 200
 
     resp = client.get(f"/dataobj/{bookmark_fixture.id}")
-    assert b"Backlinks" in resp.data # backlink was detected
+    assert b"Backlinks" in resp.data  # backlink was detected
