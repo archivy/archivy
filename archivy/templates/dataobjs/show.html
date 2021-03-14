@@ -158,7 +158,7 @@
                       let resBtn = document.createElement("button");
 		      resBtn.textContent = hit["title"];
 	              resBtn.onclick = () => {
-		        editor.codemirror.replaceSelection(`[[${hit["title"]}/${hit["id"]}]]`);
+		        editor.codemirror.replaceSelection(`[[[${hit["title"]}](/dataobj/${hit["id"]})]]`);
 	                linkForm.style.dislay = "none";
                         toggleLinkForm();
 	              }

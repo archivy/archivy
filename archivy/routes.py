@@ -110,7 +110,7 @@ def show_dataobj(dataobj_id):
         return frontmatter.dumps(dataobj)
 
     if app.config["SEARCH_CONF"]["enabled"]:
-        incoming_links = search(f"/{dataobj_id}]]")
+        incoming_links = search(f"/{dataobj_id}\)]]")
         if incoming_links:
             dataobj.content += "\n# Backlinks"
             for hit in incoming_links:
