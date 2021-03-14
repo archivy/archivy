@@ -208,6 +208,9 @@ def test_bookmarklet(test_app, client: FlaskClient):
 def test_backlinks_are_saved(
     test_app, client: FlaskClient, note_fixture, bookmark_fixture
 ):
+    test_app.config["SEARCH_CONF"]["enabled"] = 1
+    test_app.config["SEARCH_CONF"]["engine"] = "ripgrep"
+
     resp = client.put(
         f"/api/dataobjs/{note_fixture.id}",
         json={
@@ -218,3 +221,4 @@ def test_backlinks_are_saved(
 
     resp = client.get(f"/dataobj/{bookmark_fixture.id}")
     assert b"Backlinks" in resp.data  # backlink was detected
+    test_app.config["SEARCH_CONF"]["enabled"] = 0
