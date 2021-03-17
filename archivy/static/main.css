@@ -399,7 +399,42 @@ form {
 	color: #586069;
 }
 
-
+#link-form {
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	width: 300px;
+	border: 1px #e1e4e8 solid;
+	background-color: #f3f4f6;
+    overflow-y:scroll;
+	overflow-x:hidden;
+	max-height: 300px;
+	top: 300px;
+}
+#link-form div {
+	margin: 20px auto;
+	width: 90%;
+}
+#link-form ul button {
+	width: 100%;
+	padding: 16px;
+	border: none;
+	border-top: 1px #e1e4e8 solid;
+}
+#link-form ul {
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+.bidirBtn {
+	width: 100px !important;
+}
+.bidirBtn::before {
+	content: "Link to a note";
+}
 /* mobile adjustements */
 @media only screen and (max-width: 500px) {
 	.content {
