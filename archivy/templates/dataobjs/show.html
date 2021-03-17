@@ -8,6 +8,15 @@
     	<script async src="/static/editor.js"></script>
     {% endif %}
     <link rel="stylesheet" href="/static/markdown.css">
+	{% if search_enabled %}
+		<div id="link-form" style="display: none">
+			<div>
+    			<input type="text" id="searchBar" placeholder="Search for linked note.">
+				<button onclick="toggleLinkForm()" class="btn">Cancel</button>
+			</div>
+    		<ul id="searchHits"></ul>
+		</div>
+	{% endif %}
     <h2 id="post-title">{{ dataobj['title'] }}</h2>
     {{ ", ".join(dataobj['tags']) }}
     <br>
@@ -57,9 +66,25 @@
                             | replace("${", "\\${")
                             | safe
         %} */
+
         document.getElementById("content").innerHTML = window.parser.render(`\${toc}\n{{ content }}`)
 	{% if not view_only %}
             let editorDiv, oldContent;
+	    let linkForm = document.getElementById("link-form");
+	    let input = document.getElementById("searchBar");
+	    let searchHits = document.getElementById("searchHits");
+
+	    function toggleLinkForm() {
+	      if (linkForm.style.display == "none")
+	      {
+	        linkForm.style.display = "block";
+	      }
+	      else {
+	        linkForm.style.display = "none";
+	        input.value = "";
+	        searchHits.innerHTML = "";
+              }
+	    }
             window.addEventListener("load", function() {
               let editor = new EasyMDE({
                 autofocus: true,
@@ -102,6 +127,13 @@
                     },
                     className: "fa fa-save"
                   },
+	          {
+		    name: "bidirBtn",
+		    action: (editor) => {
+		      toggleLinkForm();
+		    },
+			className: "fa fa-arrow-alt-h"
+		  },
                   {
                     name: "status",
                     className: "fa fa-check-circle status"
@@ -112,6 +144,29 @@
                 }
               });
               editor.value(`{{ content }}`)
+	      input.addEventListener("input", async function() {
+	        let query = input.value;
+	        if (input.value !== "")
+	        {
+                  let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
+                    "method": "GET"
+                  });
+                  if (searchQuery.ok && query == input.value) {
+                    let data = await searchQuery.json(), i = 0;
+                    searchHits.innerHTML = "";
+                    data.forEach(function(hit) {
+                      let resBtn = document.createElement("button");
+		      resBtn.textContent = hit["title"];
+	              resBtn.onclick = () => {
+		        editor.codemirror.replaceSelection(`[[[${hit["title"]}](/dataobj/${hit["id"]})]]`);
+	                linkForm.style.dislay = "none";
+                        toggleLinkForm();
+	              }
+	              searchHits.appendChild(resBtn);
+	            })
+                  }
+	        }
+              })
 
               let statusBtn = document.querySelector(".status .fa");
               editor.codemirror.on("change", function() {
