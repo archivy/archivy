@@ -54,6 +54,15 @@
             <textarea id="original-textarea" aria-label="Text editor">
             </textarea>
 	{% endif %}
+
+	{% if backlinks %}
+	    <ul id="backlinks">
+	        <h3>Backlinks</h3>
+		{% for backlink in backlinks %}
+		    <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
+		{% endfor %}
+	    </ul>
+        {% endif %}
     </div>
     {% if not view_only %}
     	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
@@ -67,9 +76,15 @@
                             | safe
         %} */
 
-        document.getElementById("content").innerHTML = window.parser.render(`\${toc}\n{{ content }}`)
+		
+        let contentDiv = document.getElementById("content");
+        function renderContent(content)
+        {
+	  return window.parser.render("${toc}\n\n" + content);
+        }
+        contentDiv.innerHTML = renderContent(`{{ content }}`);
 	{% if not view_only %}
-            let editorDiv, oldContent;
+	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 	    let linkForm = document.getElementById("link-form");
 	    let input = document.getElementById("searchBar");
 	    let searchHits = document.getElementById("searchHits");
@@ -86,10 +101,10 @@
               }
 	    }
             window.addEventListener("load", function() {
-              let editor = new EasyMDE({
+              editor = new EasyMDE({
                 autofocus: true,
                 previewRender: function(content) {
-                  return window.parser.render("${toc}\n\n" + content);
+                  return renderContent(content);
                 },
                 toolbar: [
                   "bold",
@@ -124,6 +139,7 @@
                       })
                       statusBtn.classList.add("fa-check-circle");
                       statusBtn.classList.remove("fa-times");
+		      savedContent = editor.value();
                     },
                     className: "fa fa-save"
                   },
@@ -222,8 +238,14 @@
             function toggleEditor(btn)
             {
               let btnText = btn.querySelector("span");
-              if (btnText.textContent == "Edit") { btnText.textContent = "Hide Editor"; }
-              else { btnText.textContent = "Edit"; }
+              if (btnText.textContent == "Edit") {
+	        btnText.textContent = "Hide Editor";
+              }
+
+              else {
+	        btnText.textContent = "Edit";
+	        contentDiv.innerHTML = renderContent(savedContent);
+              }
               oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
             }
 	{% endif %}
