@@ -109,18 +109,19 @@ def show_dataobj(dataobj_id):
     if request.args.get("raw") == "1":
         return frontmatter.dumps(dataobj)
 
+    backlinks = []
     if app.config["SEARCH_CONF"]["enabled"]:
         incoming_links = search(f"/{dataobj_id}\)]]")
         if incoming_links:
-            dataobj.content += "\n# Backlinks"
             for hit in incoming_links:
                 if hit["id"] != dataobj_id:
-                    dataobj.content += f"\n- [{hit['title']}](/dataobj/{hit['id']})"
+                    backlinks.append({"title": hit["title"], "id": hit["id"]})
 
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
         dataobj=dataobj,
+        backlinks=backlinks,
         current_path=dataobj["dir"],
         form=forms.DeleteDataForm(),
         view_only=0,
