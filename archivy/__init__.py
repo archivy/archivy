@@ -11,7 +11,7 @@ from archivy import helpers
 from archivy.api import api_bp
 from archivy.models import User
 from archivy.config import Config
-from archivy.helpers import load_config
+from archivy.helpers import load_config, get_elastic_client
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
