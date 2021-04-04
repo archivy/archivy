@@ -56,14 +56,15 @@
 	{% endif %}
 
 	{% if backlinks %}
-	    <ul id="backlinks">
-	        <h3>Backlinks</h3>
+	    <ul id="backlinks" style="padding: 0">
+	        <h1>Backlinks</h3>
 		{% for backlink in backlinks %}
 		    <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
 		{% endfor %}
 	    </ul>
         {% endif %}
     </div>
+    <br>
     {% if not view_only %}
     	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
     {% endif %}

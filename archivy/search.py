@@ -40,8 +40,12 @@ def remove_from_index(dataobj_id):
     es.delete(index=current_app.config["SEARCH_CONF"]["index_name"], id=dataobj_id)
 
 
-def query_es_index(query):
-    """Returns search results for your given query"""
+def query_es_index(query, strict=False):
+    """
+    Returns search results for your given query
+
+    Specify strict=True if you want only exact result (in case you're using ES.
+    """
     es = get_elastic_client()
     if not es:
         return []
@@ -72,8 +76,10 @@ def query_es_index(query):
         formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"]}
         if "highlight" in hit:
             formatted_hit["highlight"] = hit["highlight"]["content"]
+            reformatted_match = " ".join(formatted_hit["highlight"]).replace("==", "")
+            if strict and not (query in reformatted_match):
+                continue
         hits.append(formatted_hit)
-
     return hits
 
 
@@ -97,8 +103,13 @@ def query_ripgrep(query):
     return hits
 
 
-def search(query):
+def search(query, strict=False):
+    """
+    Wrapper to search methods for different engines.
+
+    If using ES, specify strict=True if you only want results that strictly match the query, without parsing / tokenization.
+    """
     if current_app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
-        return query_es_index(query)
+        return query_es_index(query, strict=strict)
     elif current_app.config["SEARCH_CONF"]["engine"] == "ripgrep":
         return query_ripgrep(query)
