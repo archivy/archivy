@@ -4,6 +4,7 @@ Archivy files are in the [markdown](https://daringfireball.net/projects/markdown
 
 We've also included a few powerful extensions:
 
+- **Bidirectional links**: You can create a link to a note by clicking the "Link to a note" button. All links to a given note will be displayed when you visit that note, at the bottom in the "Backlinks" section.
 
 - **LaTeX**: you can render mathematical expressions like this:
 
