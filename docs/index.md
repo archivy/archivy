@@ -7,6 +7,7 @@ Archivy is a self-hosted knowledge repository that allows you to safely preserve
 Features:
 
 - If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- Bidirectional links between notes.
 - Login module that allows you to host the service on a server
 - Plugin system to allow people to publish and write extensions to archivy
 - Notes are stored in an extended markdown format with footnotes, LaTeX math rendering, syntax highlighting and more. 
