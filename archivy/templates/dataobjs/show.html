@@ -72,6 +72,7 @@
         // escape text for template literal - double slashes for python rendering and js rendering
         /* {% set content = dataobj["content"]
                             | replace("\\", "\\\\")
+
                             | replace("`", "\\`")
                             | replace("${", "\\${")
                             | safe
@@ -87,10 +88,16 @@
 	{% if not view_only %}
 	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 	    let linkForm = document.getElementById("link-form");
-	    let input = document.getElementById("searchBar");
+	
+	    {% if search_enabled %}
+	      let input = document.getElementById("searchBar");
+            {% else %}
+              let input = null;
+            {% endif %}
 	    let searchHits = document.getElementById("searchHits");
 
 	    function toggleLinkForm() {
+              {% if not search_enabled %} return {% endif %}
 	      if (linkForm.style.display == "none")
 	      {
 	        linkForm.style.display = "block";
@@ -144,24 +151,26 @@
                     },
                     className: "fa fa-save"
                   },
-	          {
-		    name: "bidirBtn",
-		    action: (editor) => {
-		      toggleLinkForm();
+                  {% if search_enabled %}
+	            {
+		      name: "bidirBtn",
+		      action: (editor) => {
+		        toggleLinkForm();
+		      },
+		      className: "fa fa-arrow-alt-h"
 		    },
-			className: "fa fa-arrow-alt-h"
-		  },
-                  {
-                    name: "status",
-                    className: "fa fa-check-circle status"
-                  },
+                    {
+                      name: "status",
+                      className: "fa fa-check-circle status"
+                    },
+                  {% endif %}
                 ],
                 shortcuts: {
                   "save": "Ctrl-S"
                 }
               });
               editor.value(`{{ content }}`)
-	      input.addEventListener("input", async function() {
+	      input?.addEventListener("input", async function() {
 	        let query = input.value;
 	        if (input.value !== "")
 	        {
