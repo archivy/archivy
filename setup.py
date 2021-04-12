@@ -13,7 +13,7 @@ with open("requirements.txt", encoding="utf-8") as f:
 
 setuptools.setup(
     name="archivy",
-    version="1.1.3",
+    version="1.1.4",
     author="Uzay-G",
     author_email="uzgirit@gmail.com",
     description=(
