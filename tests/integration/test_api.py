@@ -200,5 +200,5 @@ def test_uploading_image_with_same_name_doesnt_collide(test_app, client):
         content_type="multipart/form-data",
     )
     assert resp.status_code == 200
-    assert open(test_app.config["USER_DIR"] + resp.json['data']['filePath'], "r")
+    assert open(test_app.config["USER_DIR"] + resp.json["data"]["filePath"], "r")
     remove("image.png")
