@@ -229,6 +229,6 @@ def serve_image(filename):
         if image_path:
             return send_file(image_path)
         else:
-            return 404
+            return "Image not found", 404
     else:
         return "Invalid file request", 413

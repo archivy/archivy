@@ -318,9 +318,7 @@ def open_file(path):
 
 def valid_image_filename(filename):
     ALLOWED_EXTENSIONS = ["jpg", "png", "gif"]
-    print(filename.rsplit(".") in ALLOWED_EXTENSIONS)
-    return "." in filename and filename.rsplit(".")[1] in ALLOWED_EXTENSIONS
-
+    return "." in filename and filename.rsplit(".")[1] in ALLOWED_EXTENSIONS 
 
 def save_image(image):
     """
