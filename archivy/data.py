@@ -314,3 +314,15 @@ def open_file(path):
         subprocess.Popen(["open", path])
     else:
         subprocess.Popen(["xdg-open", path])
+
+
+def save_image(image):
+    """Saves image to USER_DATA_DIR"""
+    base_path = Path(current_app.config["USER_DIR"]) / "images"
+    fileparts = image.filename.rsplit(".", 1)
+    sanitized_filename = secure_filename(fileparts[0])
+    dest_path = base_path / f"{sanitized_filename}.{fileparts[1]}"
+    i = 1
+    while dest_path.is_file():
+        dest_path = base_path / f"{sanitized_filename}-{i}.{fileparts[1]}"
+    image.save(str(dest_path))

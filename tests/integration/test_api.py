@@ -1,4 +1,5 @@
 from base64 import b64encode
+from os import remove
 
 import responses
 from flask import Flask
@@ -154,3 +155,52 @@ def test_search_using_ripgrep(test_app, client: FlaskClient, note_fixture):
     assert resp.status_code == 200
     assert resp.json[0]["id"] == note_fixture.id
     test_app.config["SEARCH_CONF"]["enabled"] = 0
+
+
+def test_upload_image(test_app, client: FlaskClient):
+    open("image.png", "a").close()
+    data = {"file": open("image.png", "r")}
+    resp = client.post("/api/images", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 200
+    assert open(test_app.config["USER_DIR"] + "/images/image.png", "r")
+    remove("image.png")
+
+
+def test_uploading_image_with_invalid_ext_fails(test_app, client: FlaskClient):
+    open("video.mp4", "a").close()
+    data = {"file": open("video.mp4", "r")}
+    resp = client.post("/api/images", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 400
+    assert b"Invalid file" in resp.data
+    try:
+        open(test_app.config["USER_DIR"] + "/images/video.mp4", "r")
+        assert False
+    except FileNotFoundError:
+        pass
+    remove("video.mp4")
+
+
+def test_calling_upload_images_without_image_fails(test_app, client):
+    resp = client.post("/api/images", data={}, content_type="multipart/form-data")
+    assert resp.status_code == 400
+    assert b"No image sent" in resp.data
+
+
+def test_uploading_image_with_same_name_doesnt_collide(test_app, client):
+    open("image.png", "a").close()
+    resp = client.post(
+        "/api/images",
+        data={"file": open("image.png", "r")},
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 200
+    assert open(test_app.config["USER_DIR"] + "/images/image.png", "r")
+
+    resp = client.post(
+        "/api/images",
+        data={"file": open("image.png", "r")},
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 200
+    assert open(test_app.config["USER_DIR"] + "/images/image-1.png", "r")
+    remove("image.png")

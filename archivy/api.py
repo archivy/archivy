@@ -192,3 +192,18 @@ def search_endpoint():
     query = request.args.get("query")
     search_results = search(query)
     return jsonify(search_results)
+
+
+@api_bp.route("/images", methods=["POST"])
+def image_upload():
+    ALLOWED_EXTENSIONS = ["jpg", "png", "gif"]
+    if "file" not in request.files:
+        return Response("No image sent", status=400)
+    image = request.files["file"]
+    fileext = image.filename.rsplit(".", 1)[1].lower()
+    print(image.filename)
+    if "." in image.filename and fileext in ALLOWED_EXTENSIONS:
+        data.save_image(image)
+        return Response("Image saved!", status=200)
+    else:
+        return Response("Invalid file", status=400)
