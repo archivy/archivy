@@ -2,7 +2,7 @@ from pathlib import Path
 from os.path import sep
 
 import frontmatter
-from flask import render_template, flash, redirect, request, url_for
+from flask import render_template, flash, redirect, request, url_for, send_file
 from flask_login import login_user, current_user, logout_user
 from tinydb import Query
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -220,3 +220,15 @@ def delete_folder():
 @app.route("/bookmarklet")
 def bookmarklet():
     return render_template("bookmarklet.html", title="Bookmarklet")
+
+@app.route("/images/<filename>")
+def serve_image(filename):
+    if filename and data.valid_image_filename(filename):
+        image_path = data.image_exists(filename)
+        if image_path:
+            return send_file(image_path)
+        else:
+            return 404
+    else:
+        return "Invalid file request", 413
+
