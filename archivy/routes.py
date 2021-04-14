@@ -221,6 +221,7 @@ def delete_folder():
 def bookmarklet():
     return render_template("bookmarklet.html", title="Bookmarklet")
 
+
 @app.route("/images/<filename>")
 def serve_image(filename):
     if filename and data.valid_image_filename(filename):
@@ -231,4 +232,3 @@ def serve_image(filename):
             return 404
     else:
         return "Invalid file request", 413
-

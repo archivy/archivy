@@ -322,11 +322,10 @@ def valid_image_filename(filename):
     return "." in filename and filename.rsplit(".")[1] in ALLOWED_EXTENSIONS
 
 
-
 def save_image(image):
     """
     Saves image to USER_DATA_DIR
-    
+
     Returns: filename where image has been saved.
     """
     base_path = Path(current_app.config["USER_DIR"]) / "images"
