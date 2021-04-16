@@ -1,9 +1,11 @@
+from os import pathconf
+
 from flask.testing import FlaskClient
 from flask import request
 from flask_login import current_user
-
 from responses import RequestsMock, GET
 from werkzeug.security import generate_password_hash
+
 from archivy.helpers import get_max_id, get_db
 from archivy.data import get_dirs, create_dir
 
@@ -222,3 +224,19 @@ def test_backlinks_are_saved(
     resp = client.get(f"/dataobj/{bookmark_fixture.id}")
     assert b"Backlinks" in resp.data  # backlink was detected
     test_app.config["SEARCH_CONF"]["enabled"] = 0
+
+
+def test_bookmark_with_long_title_gets_truncated(test_app, client, mocked_responses):
+
+    long_title = "a" * 300
+    # check that our mock title is indeed longer than the limit
+    # and would cause an error, without our truncating
+    assert pathconf("/", "PC_NAME_MAX") < len(long_title)
+    mocked_responses.add(GET, "https://example.com", f"<title>{long_title}</title>")
+    bookmark_data = {
+        "url": "https://example.com",
+        "submit": "true",
+    }
+
+    resp = client.post("/bookmarks/new", data=bookmark_data)
+    assert resp.status_code == 200
