@@ -339,10 +339,9 @@ def save_image(image):
     return dest_path.parts[-1]
 
 
-def image_exists(filename):
+def image_exists(filename: str):
     sanitized = secure_filename(filename)
     image_path = Path(current_app.config["USER_DIR"]) / "images" / sanitized
     if image_path.exists():
         return str(image_path)
-    else:
-        return 0
+    return 0

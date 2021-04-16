@@ -206,5 +206,4 @@ def image_upload():
     ):
         saved_to = data.save_image(image)
         return jsonify({"data": {"filePath": f"/images/{saved_to}"}}), 200
-    else:
-        return jsonify({"error": "415"}), 415
+    return jsonify({"error": "415"}), 415
