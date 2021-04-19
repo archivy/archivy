@@ -192,3 +192,18 @@ def search_endpoint():
     query = request.args.get("query")
     search_results = search(query)
     return jsonify(search_results)
+
+
+@api_bp.route("/images", methods=["POST"])
+def image_upload():
+    CONTENT_TYPES = ["image/jpeg", "image/png", "image/gif"]
+    if "image" not in request.files:
+        return jsonify({"error": "400"}), 400
+    image = request.files["image"]
+    if (
+        data.valid_image_filename(image.filename)
+        and image.headers["Content-Type"].strip() in CONTENT_TYPES
+    ):
+        saved_to = data.save_image(image)
+        return jsonify({"data": {"filePath": f"/images/{saved_to}"}}), 200
+    return jsonify({"error": "415"}), 415

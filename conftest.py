@@ -1,6 +1,6 @@
-import os
 import shutil
 import tempfile
+from pathlib import Path
 
 import click
 import pytest
@@ -25,11 +25,11 @@ def test_app():
     global _app
     if _app is None:
         _app = create_click_web_app(cli, cli.cli, app)
-    app_dir = tempfile.mkdtemp()
-    _app.config["INTERNAL_DIR"] = app_dir
-    _app.config["USER_DIR"] = app_dir
-    data_dir = os.path.join(app_dir, "data")
-    os.mkdir(data_dir)
+    app_dir = Path(tempfile.mkdtemp())
+    _app.config["INTERNAL_DIR"] = str(app_dir)
+    _app.config["USER_DIR"] = str(app_dir)
+    (app_dir / "data").mkdir()
+    (app_dir / "images").mkdir()
 
     _app.config["TESTING"] = True
     _app.config["WTF_CSRF_ENABLED"] = False

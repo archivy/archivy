@@ -25,6 +25,7 @@ except FileNotFoundError:
 app.config.from_object(config)
 
 (Path(app.config["USER_DIR"]) / "data").mkdir(parents=True, exist_ok=True)
+(Path(app.config["USER_DIR"]) / "images").mkdir(parents=True, exist_ok=True)
 
 if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
