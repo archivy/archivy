@@ -111,18 +111,23 @@
             window.addEventListener("load", function() {
               editor = new EasyMDE({
                 autofocus: true,
+                uploadImage: true,
+                imageUploadEndpoint: "{{ SCRIPT_ROOT }}/api/images",
                 previewRender: function(content) {
                   return renderContent(content);
                 },
+                previewImagesInEditor: true,
+                imageAccept: "image/png, image/jpeg, image/gif",
+                imageMaxSize: "100000000",
                 toolbar: [
                   "bold",
                   "italic",
-                  "strikethrough",
+                  "link",
+                  "upload-image",
                   "heading",
                   "code",
+                  "strikethrough",
                   "quote",
-                  "link",
-                  "image",
                   "table",
                   {
                     name: "LaTeX",
@@ -159,11 +164,11 @@
 		      },
 		      className: "fa fa-arrow-alt-h"
 		    },
-                    {
-                      name: "status",
-                      className: "fa fa-check-circle status"
-                    },
                   {% endif %}
+                  {
+                    name: "status",
+                    className: "fa fa-check-circle status"
+                  },
                 ],
                 shortcuts: {
                   "save": "Ctrl-S"
