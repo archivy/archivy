@@ -6,15 +6,15 @@ Archivy is a self-hosted knowledge repository that allows you to safely preserve
 
 Features:
 
-- If you add bookmarks, their webpages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
+- If you add bookmarks, their web-pages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
 - Bidirectional links between notes.
 - Login module that allows you to host the service on a server
 - Plugin system to allow people to publish and write extensions to archivy
-- Notes are stored in an extended markdown format with footnotes, LaTeX math rendering, syntax highlighting and more. 
-- CLI that provides a nice backend interface to the app
-- Backend API for flexibility and user enhancements
-- Everything is a file! For ease of access and editing, all the content is stored in markdown files with yaml front matter.
-- Extensible search.
+- [Git integration](https://github.com/archivy/archivy-git)
+- Everything is a file! For ease of access and editing, all the content is stored in extended markdown files with yaml front matter. This format supports footnotes, LaTeX math rendering, syntax highlighting and more. 
+- Powerful and advanced search. 
+- Backend API for flexibility and user enhancements.
+- Image upload
 
 
 <video src="https://www.uzpg.me/assets/images/archivy.mov" style="width: 100%" controls>
@@ -24,8 +24,6 @@ Features:
 
 Upcoming:
 
-- Links / tagging between different knowledge base items
-- Image Upload
 - Annotations
 - Multi User System with permission setup.
 
