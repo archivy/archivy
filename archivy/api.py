@@ -46,7 +46,7 @@ def create_bookmark():
     json_data = request.get_json()
     bookmark = DataObj(
         url=json_data["url"],
-        tags=json_data.get("tags"),
+        tags=json_data.get("tags", []),
         path=json_data.get("path", ""),
         type="bookmark",
     )
