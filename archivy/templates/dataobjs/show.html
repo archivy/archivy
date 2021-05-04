@@ -139,9 +139,9 @@
                   "side-by-side",
                   "fullscreen",
                   {
-                    name: "bookmarks",
+                    name: "local-archive-btn",
                     className: "fa fa-bookmark",
-                    title: "Download a webpage into archivy and link to it",
+                    title: "Archives and links to local copy of selected url",
                     action: async editor => {
                       let link = editor.codemirror.getSelection().trim(), url;
                       try {
@@ -180,7 +180,7 @@
                   {% endif %}
                   {
                     name: "save",
-                    title: "Save note contents"
+                    title: "Save note contents",
                     action: (editor) => {
                       fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
                         method: "PUT",
