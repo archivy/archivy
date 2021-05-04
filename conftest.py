@@ -52,7 +52,7 @@ def test_app():
 
 @pytest.fixture
 def client(test_app):
-    """ HTTP client for calling a test instance of the app"""
+    """HTTP client for calling a test instance of the app"""
     with test_app.test_client() as client:
         client.post("/login", data={"username": "halcyon", "password": "password"})
         yield client
