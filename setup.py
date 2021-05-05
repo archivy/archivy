@@ -22,7 +22,7 @@ setuptools.setup(
     ),
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Uzay-G/archivy",
+    url="https://github.com/archivy/archivy",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
