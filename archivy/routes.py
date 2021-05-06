@@ -61,7 +61,8 @@ def index():
 # TODO: refactor two following methods
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
-    form = forms.NewBookmarkForm()
+    bookmark_dir = app.config["DEFAULT_BOOKMARKS_DIR"]
+    form = forms.NewBookmarkForm(path=bookmark_dir)
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
         path = form.path.data if form.path.data != "not classified" else ""
@@ -74,9 +75,9 @@ def new_bookmark():
             return redirect(f"/dataobj/{bookmark_id}")
     # for bookmarklet
     form.url.data = request.args.get("url", "")
-    path = request.args.get("path", "not classified").strip("/")
+    path = request.args.get("path", bookmark_dir).strip("/")
     # handle empty argument
-    form.path.data = path if path != "" else "not classified"
+    form.path.data = path or bookmark_dir
     return render_template("dataobjs/new.html", title="New Bookmark", form=form)
 
 

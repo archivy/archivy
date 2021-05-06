@@ -4,7 +4,7 @@ from os import remove
 import responses
 from flask import Flask
 from flask.testing import FlaskClient
-from archivy.data import create_dir, get_items
+from archivy.data import create_dir, get_items, create_dir
 from archivy.models import DataObj
 
 
@@ -38,6 +38,25 @@ def test_create_bookmark(test_app, client: FlaskClient, mocked_responses):
     assert response.json["title"] == "http://example.org"
     assert response.json["dataobj_id"] == 1
     assert response.json["content"] == "Example"
+
+
+def test_creating_bookmark_without_passing_path_saves_to_default_dir(
+    test_app, client, mocked_responses
+):
+    mocked_responses.add(responses.GET, "http://example.org", body="Example\n")
+    bookmarks_dir = "bookmarks"
+    test_app.config["DEFAULT_BOOKMARKS_DIR"] = bookmarks_dir
+    create_dir(bookmarks_dir)
+    resp = client.post(
+        "/api/bookmarks",
+        json={
+            "url": "http://example.org",
+        },
+    )
+    bookmark = get_items(structured=False)[0]
+    assert (
+        "bookmarks" in bookmark["path"]
+    )  # verify it was saved to default bookmark dir
 
 
 def test_create_note(test_app, client: FlaskClient, mocked_responses):
