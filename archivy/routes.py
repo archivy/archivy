@@ -61,7 +61,7 @@ def index():
 # TODO: refactor two following methods
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
-    bookmark_dir = app.config["DEFAULT_BOOKMARKS_DIR"]
+    bookmark_dir = app.config["DEFAULT_BOOKMARKS_DIR"] or "not classified"
     form = forms.NewBookmarkForm(path=bookmark_dir)
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
     if form.validate_on_submit():
