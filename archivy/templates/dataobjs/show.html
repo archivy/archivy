@@ -105,13 +105,9 @@
           }
         };
 
-        let response = fetch(`${SCRIPT_ROOT}/dataobjs/frontmatter/{{dataobj['id']}}`, payload);
-        if (response.ok) {
-          // Change the current state of the site
-          document.getElementById("post-title").innerHTML = frontmatter_form.title.value
-        } else {
-          console.log(response);
-        }
+        response = fetch(`${SCRIPT_ROOT}/dataobjs/frontmatter/{{dataobj['id']}}`, payload);
+        // Change the current state of the site
+        document.getElementById("post-title").innerHTML = frontmatter_form.title.value;
         e.preventDefault();
       }
 
