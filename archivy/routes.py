@@ -121,15 +121,20 @@ def show_dataobj(dataobj_id):
                 if hit["id"] != dataobj_id:
                     backlinks.append({"title": hit["title"], "id": hit["id"]})
 
+    frontmatter_form = forms.FrontMatterForm()
+    frontmatter_form.title.data = dataobj["title"]
+    frontmatter_form.date.data = dataobj["date"]
+    frontmatter_form.tags.data = ",".join(dataobj["tags"])
+
     return render_template(
         "dataobjs/show.html",
-        title=dataobj["title"],
         dataobj=dataobj,
         backlinks=backlinks,
         current_path=dataobj["dir"],
         form=forms.DeleteDataForm(),
         view_only=0,
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
+        frontmatter_form=frontmatter_form
     )
 
 

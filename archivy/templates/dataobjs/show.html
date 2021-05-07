@@ -28,6 +28,28 @@
         </a>
     {% endif %}
     <br>
+    <!-- Form for editing the frontmatter -->
+    <form id="post-frontmatter-form">
+        <h1>{{ title }}</h1>
+        {{ frontmatter_form.hidden_tag() }}
+        {% for field in frontmatter_form %}
+            {% if field.name != "csrf_token" and field.name != "submit" %}
+                <p>
+                    {{ field.label }}
+                    {{ field(placeholder=field.name, **{"aria-describedby":"username-input-validation"}) }}
+
+                    {% for error in field.errors %}
+                        <div class="error-wrapper">
+                            <p class="note-error" id="validation-{{ field.name }}">{{ error }}</p>
+                        </div>
+                    {% endfor %}
+                </p>
+            {% endif %}
+        {% endfor %}
+        <p>{{ frontmatter_form.submit() }}</p>
+    </form>
+
+    <!-- Edit / Delete buttons -->
     {% if not view_only %}
     	<div class="d-flex" id="post-btns">
             <button onclick="toggleEditor(this)" class="btn">
@@ -69,6 +91,33 @@
     	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
     {% endif %}
     <script>
+      // The form for editing the front matter
+      var update_frontmatter_callback = function(e) {
+        let payload = {
+          method: "PUT",
+          body: JSON.stringify({
+            "date": frontmatter_form.date.value,
+            "title": frontmatter_form.title.value,
+            "tags": frontmatter_form.tags.value
+          }),
+          headers: {
+            "content-type": "application/json"
+          }
+        };
+
+        let response = fetch(`${SCRIPT_ROOT}/dataobjs/frontmatter/{{dataobj['id']}}`, payload);
+        if (response.ok) {
+          // Change the current state of the site
+          document.getElementById("post-title").innerHTML = frontmatter_form.title.value
+        } else {
+          console.log(response);
+        }
+        e.preventDefault();
+      }
+
+      var frontmatter_form = document.getElementById("post-frontmatter-form");
+      frontmatter_form.addEventListener("submit", update_frontmatter_callback, true);
+
         // escape text for template literal - double slashes for python rendering and js rendering
         /* {% set content = dataobj["content"]
                             | replace("\\", "\\\\")
@@ -78,7 +127,7 @@
                             | safe
         %} */
 
-		
+
         let contentDiv = document.getElementById("content");
         function renderContent(content)
         {

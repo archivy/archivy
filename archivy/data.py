@@ -142,7 +142,7 @@ def delete_item(dataobj_id):
         Path(file).unlink()
 
 
-def update_item(dataobj_id, new_content):
+def update_item_md(dataobj_id, new_content):
     """
     Given an object id, this method overwrites the inner
     content of the post with `new_content`.
@@ -185,6 +185,41 @@ def update_item(dataobj_id, new_content):
     with open(filename, "w", encoding="utf-8") as f:
         f.write(md)
 
+    converted_dataobj = DataObj.from_md(md)
+    converted_dataobj.fullpath = str(
+        filename.relative_to(current_app.config["USER_DIR"])
+    )
+    converted_dataobj.index()
+    load_hooks().on_edit(converted_dataobj)
+
+
+def update_item_frontmatter(dataobj_id, new_frontmatter):
+    """
+    Given an object id, this method overwrites the front matter
+    of the post with `new_frontmatter`.
+
+    ---
+    date: Str
+    id: Str
+    path: Str
+    tags: List[Str]
+    title: Str
+    type: note/bookmark
+    ---
+    """
+
+    from archivy.models import DataObj
+
+    filename = get_by_id(dataobj_id)
+    dataobj = frontmatter.load(filename)
+    dataobj['title'] = new_frontmatter['title']
+    dataobj['date'] = new_frontmatter['date']
+    dataobj['tags'] = new_frontmatter['tags']
+    md = frontmatter.dumps(dataobj)
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(md)
+
+    # TODO: What does this do?
     converted_dataobj = DataObj.from_md(md)
     converted_dataobj.fullpath = str(
         filename.relative_to(current_app.config["USER_DIR"])

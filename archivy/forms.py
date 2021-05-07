@@ -35,3 +35,10 @@ class UserForm(FlaskForm):
     username = StringField("username")
     password = PasswordField("password")
     submit = SubmitField("Submit")
+
+
+class FrontMatterForm(FlaskForm):
+    title = StringField("title")
+    date = StringField("date")
+    tags = StringField("tags")
+    submit = SubmitField("Save")
