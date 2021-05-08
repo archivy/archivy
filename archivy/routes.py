@@ -126,6 +126,7 @@ def show_dataobj(dataobj_id):
 
     return render_template(
         "dataobjs/show.html",
+        title=dataobj["title"],
         dataobj=dataobj,
         backlinks=backlinks,
         current_path=dataobj["dir"],
