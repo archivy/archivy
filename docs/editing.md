@@ -6,6 +6,8 @@ We've also included a few powerful extensions:
 
 - **Bidirectional links**: You can create a link to a note by clicking the "Link to a note" button. All links to a given note will be displayed when you visit that note, at the bottom in the "Backlinks" section.
 
+- **In-editor bookmarking**: if you'd like to store a local copy of a webpage you're referring to inside an archivy note, simply select the url and click the "bookmark" icon.
+
 - **LaTeX**: you can render mathematical expressions like this:
 
 ```md
@@ -40,11 +42,9 @@ There are several ways you can edit content in Archivy.
 
 Whenever you open a note or bookmark, at the bottom of the page you'll find a few buttons that allow you to edit it.
 
-## Ways you can edit
+## Editing through the web interface
 
-## Through the web interface
-
-You can still do edits through the web app, by clicking "Toggle web editor" at the bottom.
+You can edit through the web app, by clicking "Toggle web editor" at the bottom. This is the recommended way because the Archivy web editor provides useful functionality. You can save your work, link to other notes with the "Link to a note button", and archive webpages referenced in your note, all inside the editor!
 
 ## Locally
 

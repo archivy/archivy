@@ -7,7 +7,7 @@ from responses import RequestsMock, GET
 from werkzeug.security import generate_password_hash
 
 from archivy.helpers import get_max_id, get_db
-from archivy.data import get_dirs, create_dir
+from archivy.data import get_dirs, create_dir, get_items
 
 
 def test_get_index(test_app, client: FlaskClient):
@@ -80,6 +80,26 @@ def test_create_new_bookmark(
     assert b"testing, bookmark" in resp.data
     assert b"https://example.com" in resp.data
     assert b"Random" in resp.data
+
+
+def test_creating_bookmark_without_passing_path_saves_to_default_dir(
+    test_app, client, mocked_responses
+):
+    mocked_responses.add(GET, "http://example.org", body="Example\n")
+    bookmarks_dir = "bookmarks"
+    test_app.config["DEFAULT_BOOKMARKS_DIR"] = bookmarks_dir
+    create_dir(bookmarks_dir)
+    resp = client.post(
+        "/bookmarks/new",
+        data={
+            "url": "http://example.org",
+            "submit": "true",
+        },
+    )
+    bookmark = get_items(structured=False)[0]
+    assert (
+        "bookmarks" in bookmark["path"]
+    )  # verify it was saved to default bookmark dir
 
 
 def test_create_note(test_app, client: FlaskClient):

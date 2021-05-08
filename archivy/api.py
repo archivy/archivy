@@ -1,4 +1,4 @@
-from flask import Response, jsonify, request, Blueprint
+from flask import Response, jsonify, request, Blueprint, current_app
 from werkzeug.security import check_password_hash
 from flask_login import login_user
 from tinydb import Query
@@ -46,8 +46,8 @@ def create_bookmark():
     json_data = request.get_json()
     bookmark = DataObj(
         url=json_data["url"],
-        tags=json_data.get("tags"),
-        path=json_data.get("path", ""),
+        tags=json_data.get("tags", []),
+        path=json_data.get("path", current_app.config["DEFAULT_BOOKMARKS_DIR"]),
         type="bookmark",
     )
     bookmark.process_bookmark_url()
