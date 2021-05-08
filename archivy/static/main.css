@@ -265,6 +265,10 @@ form {
 	margin: 0;
 }
 
+#post-title {
+	margin: 0 1em 0 0;
+}
+
 #post-title-form {
 	margin-left: 0;
 }

@@ -19,11 +19,17 @@
 	{% endif %}
   <div class="post-header">
     <!-- Form for editing the frontmatter -->
+    {% if not view_only %}
     <form id="post-title-form">
-    {{ post_title_form.hidden_tag() }}
-      {{ post_title_form.title(**{"aria-describedby":"username-input-validation"}) }}
-      {{ post_title_form.submit() }}
-    </form>
+      {{ post_title_form.hidden_tag() }}
+        {{ post_title_form.title(**{"aria-describedby":"username-input-validation"}) }}
+        {{ post_title_form.submit() }}
+      </form>
+    {% else %}
+      <h2 id="post-title">
+        {{ dataobj['title'] }}
+      </h2>
+    {% endif %}
 
     <div class="post-tags">
     {% for tag in dataobj['tags'] %}
@@ -82,6 +88,7 @@
     	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
     {% endif %}
     <script>
+    {% if not view_only %}
       // The form for editing the front matter
       var update_frontmatter_callback = function(e) {
         let payload = {
@@ -117,7 +124,6 @@
 	  return window.parser.render("${toc}\n\n" + content);
         }
         contentDiv.innerHTML = renderContent(`{{ content }}`);
-	{% if not view_only %}
 	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 	    let linkForm = document.getElementById("link-form");
 	
