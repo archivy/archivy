@@ -22,7 +22,7 @@
     {% if not view_only %}
     <form id="post-title-form">
       {{ post_title_form.hidden_tag() }}
-        {{ post_title_form.title(**{"aria-describedby":"username-input-validation"}) }}
+        {{ post_title_form.title() }}
         {{ post_title_form.submit() }}
       </form>
     {% else %}
