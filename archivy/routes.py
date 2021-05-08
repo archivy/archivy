@@ -132,7 +132,7 @@ def show_dataobj(dataobj_id):
         form=forms.DeleteDataForm(),
         view_only=0,
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
-        post_title_form=post_title_form
+        post_title_form=post_title_form,
     )
 
 
