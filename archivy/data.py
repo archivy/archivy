@@ -218,7 +218,6 @@ def update_item_frontmatter(dataobj_id, new_frontmatter):
     with open(filename, "w", encoding="utf-8") as f:
         f.write(md)
 
-    # TODO: What does this do?
     converted_dataobj = DataObj.from_md(md)
     converted_dataobj.fullpath = str(
         filename.relative_to(current_app.config["USER_DIR"])
