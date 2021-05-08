@@ -37,8 +37,6 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class FrontMatterForm(FlaskForm):
+class TitleForm(FlaskForm):
     title = StringField("title")
-    date = StringField("date")
-    tags = StringField("tags")
-    submit = SubmitField("Save")
+    submit = SubmitField("✓")

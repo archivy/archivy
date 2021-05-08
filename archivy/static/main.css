@@ -247,6 +247,16 @@ form {
 	height: 100%;
 }
 
+#post-title-form {
+	margin-left: 0;
+}
+
+#post-title-form input {
+	font-weight: bold;
+	font-size: 1.2em;
+	display: inline-block;
+}
+
 
 /*Partly inspired by Primer -> https://github.com/primer/css*/
 .Header {

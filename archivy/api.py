@@ -143,8 +143,6 @@ def update_dataobj_frontmatter(dataobj_id):
 
     new_frontmatter = {
         "title": request.json.get("title"),
-        "date": request.json.get("date"),
-        "tags": request.json.get("tags").split(","),
     }
 
     try:
