@@ -245,7 +245,6 @@ form {
 .post-header {
 	margin: 10px 0 5px 0;
 	padding-bottom: 5px;
-	border-bottom: 1px solid var(--black);
 }
 
 #post-btns {
