@@ -46,6 +46,13 @@
           	screenreader mode
             </label>
     	</div>
+
+      <form action="/dataobj/move/{{ dataobj['id'] }}" method="post" novalidate id="post-move-form">
+          {{ move_form.hidden_tag() }}
+          {{ move_form.path.label }}
+          {{ move_form.path(placeholder=move_form.path.name, **{"aria-describedby":"username-input-validation"}) }}
+          {{ move_form.submit() }}
+      </form>
     {% endif %}
     <div id="content-cont" class="markdown-body">
         <div id="content">

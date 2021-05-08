@@ -2,7 +2,7 @@ import platform
 import subprocess
 import os
 from pathlib import Path
-from shutil import rmtree
+import shutil
 
 import frontmatter
 from flask import current_app
@@ -134,6 +134,12 @@ def get_item(dataobj_id):
     return None
 
 
+def move_item(dataobj_id, new_path):
+    """Move dataobj of given id to new_path"""
+    file = get_by_id(dataobj_id)
+    return shutil.move(file, f"{get_data_dir()}/{new_path}/")
+
+
 def delete_item(dataobj_id):
     """Delete dataobj of given id"""
     file = get_by_id(dataobj_id)
@@ -224,7 +230,7 @@ def delete_dir(name):
     if not is_relative_to(target_dir, root_dir) or target_dir == root_dir:
         return False
     try:
-        rmtree(target_dir)
+        shutil.rmtree(target_dir)
         return True
     except FileNotFoundError:
         return False
