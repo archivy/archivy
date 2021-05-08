@@ -102,6 +102,7 @@
         };
 
         response = fetch(`${SCRIPT_ROOT}/dataobjs/frontmatter/{{dataobj['id']}}`, payload);
+        post_title_form.submit.classList.add("post-title-form-sucess");
         e.preventDefault();
       }
 

@@ -279,6 +279,10 @@ form {
 	display: inline-block;
 }
 
+.post-title-form-sucess {
+	color: var(--green);
+}
+
 .post-date {
 	background: var(--gray-background);
 	padding: 4px 7px;
