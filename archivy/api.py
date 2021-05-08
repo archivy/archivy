@@ -138,7 +138,7 @@ def update_dataobj_frontmatter(dataobj_id):
 
     Paramter in JSON body:
 
-    - **content**: markdown text of new dataobj.
+    - **title**: the new title of the dataobj.
     """
 
     new_frontmatter = {
