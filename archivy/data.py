@@ -137,10 +137,7 @@ def get_item(dataobj_id):
 def move_item(dataobj_id, new_path):
     """Move dataobj of given id to new_path"""
     file = get_by_id(dataobj_id)
-    if move(file, f"{get_data_dir()}/{new_path}/"):
-        return True
-    else:
-        return False
+    return move(file, f"{get_data_dir()}/{new_path}/")
 
 
 def delete_item(dataobj_id):
