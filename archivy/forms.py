@@ -23,6 +23,11 @@ class NewFolderForm(FlaskForm):
     submit = SubmitField("Create sub directory")
 
 
+class MoveDataForm(FlaskForm):
+    path = SelectField("Move to")
+    submit = SubmitField("✓")
+
+
 class DeleteDataForm(FlaskForm):
     submit = SubmitField("Delete")
 

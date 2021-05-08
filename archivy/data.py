@@ -2,7 +2,7 @@ import platform
 import subprocess
 import os
 from pathlib import Path
-from shutil import rmtree
+from shutil import rmtree, move
 
 import frontmatter
 from flask import current_app
@@ -132,6 +132,15 @@ def get_item(dataobj_id):
         data["dir"] = str(file.parent.relative_to(get_data_dir()))
         return data
     return None
+
+
+def move_item(dataobj_id, new_path):
+    """Move dataobj of given id to new_path"""
+    file = get_by_id(dataobj_id)
+    if move(file, f"{get_data_dir()}/{new_path}/"):
+        return True
+    else:
+        return False
 
 
 def delete_item(dataobj_id):

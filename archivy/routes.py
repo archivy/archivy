@@ -121,6 +121,10 @@ def show_dataobj(dataobj_id):
                 if hit["id"] != dataobj_id:
                     backlinks.append({"title": hit["title"], "id": hit["id"]})
 
+    # Form for moving data into another folder
+    move_form = forms.MoveDataForm()
+    move_form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
+
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -130,7 +134,21 @@ def show_dataobj(dataobj_id):
         form=forms.DeleteDataForm(),
         view_only=0,
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
+        move_form=move_form
     )
+
+
+@app.route("/dataobj/move/<dataobj_id>", methods=["POST"])
+def move_data(dataobj_id):
+    form = forms.MoveDataForm()
+    if data.move_item(dataobj_id, form.path.data):
+        flash(f"Data successfully moved to {form.path.data}.", "success")
+        return redirect(f"/dataobj/{dataobj_id}")
+    else:
+        flash(f"Data couldn't be moved to {form.path.data}.", "error")
+        return redirect(f"/dataobj/{dataobj_id}")
+    flash("Data couldn't be moved.", "error")
+    return redirect(f"/dataobj/{dataobj_id}")
 
 
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
