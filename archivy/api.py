@@ -124,11 +124,32 @@ def update_dataobj(dataobj_id):
     """
     if request.json.get("content"):
         try:
-            data.update_item(dataobj_id, request.json.get("content"))
+            data.update_item_md(dataobj_id, request.json.get("content"))
             return Response(status=200)
         except BaseException:
             return Response(status=404)
     return Response("Must provide content parameter", status=401)
+
+
+@api_bp.route("/dataobjs/frontmatter/<int:dataobj_id>", methods=["PUT"])
+def update_dataobj_frontmatter(dataobj_id):
+    """
+    Updates frontmatter of object of given id.
+
+    Paramter in JSON body:
+
+    - **title**: the new title of the dataobj.
+    """
+
+    new_frontmatter = {
+        "title": request.json.get("title"),
+    }
+
+    try:
+        data.update_item_frontmatter(dataobj_id, new_frontmatter)
+        return Response(status=200)
+    except BaseException:
+        return Response(status=404)
 
 
 @api_bp.route("/dataobjs", methods=["GET"])
