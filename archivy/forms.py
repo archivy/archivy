@@ -35,3 +35,8 @@ class UserForm(FlaskForm):
     username = StringField("username")
     password = PasswordField("password")
     submit = SubmitField("Submit")
+
+
+class TitleForm(FlaskForm):
+    title = StringField("title")
+    submit = SubmitField("✓")
