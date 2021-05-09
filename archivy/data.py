@@ -7,6 +7,7 @@ from shutil import rmtree
 import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
@@ -359,7 +360,7 @@ def valid_image_filename(filename):
     return "." in filename and filename.rsplit(".", 1)[1] in ALLOWED_EXTENSIONS
 
 
-def save_image(image):
+def save_image(image: FileStorage):
     """
     Saves image to USER_DATA_DIR
 
