@@ -145,10 +145,7 @@ class DataObj:
                     # delete tag
                     tag.decompose()
 
-            elif (
-                tag.name == "img"
-                and tag.has_attr("src")
-            ):
+            elif tag.name == "img" and tag.has_attr("src"):
                 filename = tag["src"].split("/")[-1]
                 try:
                     filename = filename[

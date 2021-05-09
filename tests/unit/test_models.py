@@ -61,8 +61,12 @@ def test_bookmark_sanitization(test_app, client, mocked_responses, bookmark_fixt
 
 
 def test_bookmark_included_images_are_saved(test_app, client, mocked_responses):
-    mocked_responses.add(GET, "https://example.com", body="""<html><img src='/image.png'></html>""")
-    mocked_responses.add(GET, "https://example.com/image.png", body=open("docs/img/logo.png", "rb"))
+    mocked_responses.add(
+        GET, "https://example.com", body="""<html><img src='/image.png'></html>"""
+    )
+    mocked_responses.add(
+        GET, "https://example.com/image.png", body=open("docs/img/logo.png", "rb")
+    )
     test_app.config["SCRAPING_CONF"]["save_images"] = True
     bookmark = DataObj(type="bookmark", url="https://example.com")
     bookmark.process_bookmark_url()
