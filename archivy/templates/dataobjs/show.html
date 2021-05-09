@@ -1,74 +1,112 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% include "markdown-parser.html" %}
-    {% if not view_only %}
-    	<link rel="stylesheet" href="/static/editor.css">
-    	<link rel="stylesheet" href="/static/accessibility.css">
-    	<script async src="/static/editor.js"></script>
-    {% endif %}
-    <link rel="stylesheet" href="/static/markdown.css">
-	{% if search_enabled %}
-		<div id="link-form" style="display: none">
-			<div>
-    			<input type="text" id="searchBar" placeholder="Search for linked note.">
-				<button onclick="toggleLinkForm()" class="btn">Cancel</button>
-			</div>
-    		<ul id="searchHits"></ul>
-		</div>
-	{% endif %}
-    <h2 id="post-title">{{ dataobj['title'] }}</h2>
-    {{ ", ".join(dataobj['tags']) }}
-    <br>
-
-    {{ dataobj['date'] }}
-    {% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
-        <a href="{{ dataobj['url'] }}" rel="noopener">
-            Link
-        </a>
-    {% endif %}
-    <br>
-    {% if not view_only %}
-    	<div class="d-flex" id="post-btns">
-            <button onclick="toggleEditor(this)" class="btn">
-                <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.249.249 0 00.108-.064l6.286-6.286z"></path></svg>
-                <span>Edit</span>
-            </button>
-            <form action="/dataobj/delete/{{ dataobj['id'] }}" method="delete" onsubmit="return confirm('Delete this item permanently?')" novalidate>
-            	{{ form.hidden_tag() }}
-            	<button class="btn btn-delete">
-              	    <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M6.5 1.75a.25.25 0 01.25-.25h2.5a.25.25 0 01.25.25V3h-3V1.75zm4.5 0V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675a.75.75 0 10-1.492.15l.66 6.6A1.75 1.75 0 005.405 15h5.19c.9 0 1.652-.681 1.741-1.576l.66-6.6a.75.75 0 00-1.492-.149l-.66 6.6a.25.25 0 01-.249.225h-5.19a.25.25 0 01-.249-.225l-.66-6.6z"></path></svg>
-            	    <span>Delete</span>
-            	</button>
-            </form>
-            <label class="sr-only">
-            	<input type="checkbox" id="sr-checkbox">
-          	screenreader mode
-            </label>
-    	</div>
-    {% endif %}
-    <div id="content-cont" class="markdown-body">
-        <div id="content">
-        </div>
-	{% if not view_only %}
-            <textarea id="original-textarea" aria-label="Text editor">
-            </textarea>
-	{% endif %}
-
-	{% if backlinks %}
-	    <ul id="backlinks" style="padding: 0">
-	        <h1>Backlinks</h3>
-		{% for backlink in backlinks %}
-		    <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
-		{% endfor %}
-	    </ul>
-        {% endif %}
+  {% include "markdown-parser.html" %}
+  {% if not view_only %}
+    <link rel="stylesheet" href="/static/editor.css">
+    <link rel="stylesheet" href="/static/accessibility.css">
+    <script async src="/static/editor.js"></script>
+  {% endif %}
+  <link rel="stylesheet" href="/static/markdown.css">
+  {% if search_enabled %}
+    <div id="link-form" style="display: none">
+	<div>
+    	  <input type="text" id="searchBar" placeholder="Search for linked note.">
+	  <button onclick="toggleLinkForm()" class="btn">Cancel</button>
+	</div>
+        <ul id="searchHits"></ul>
     </div>
-    <br>
+  {% endif %}
+  <div class="post-header">
+    <!-- Form for editing the frontmatter -->
     {% if not view_only %}
-    	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
+    <form id="post-title-form">
+      {{ post_title_form.hidden_tag() }}
+        {{ post_title_form.title() }}
+        {{ post_title_form.submit() }}
+    </form>
+    {% else %}
+      <h2 id="post-title">
+        {{ dataobj['title'] }}
+      </h2>
     {% endif %}
-    <script>
+
+    <div class="post-tags">
+      {% for tag in dataobj['tags'] %}
+        <span class="post-tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+
+    <span class="post-date">{{ dataobj['date'] }}</span>
+
+    {% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
+      <a href="{{ dataobj['url'] }}" rel="noopener">
+        Link
+      </a>
+    {% endif %}
+    <br>
+    <!-- Edit / Delete buttons -->
+    {% if not view_only %}
+      <div class="d-flex" id="post-btns">
+        <button onclick="toggleEditor(this)" class="btn">
+          <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.249.249 0 00.108-.064l6.286-6.286z"></path></svg>
+          <span>Edit</span>
+        </button>
+        <form action="/dataobj/delete/{{ dataobj['id'] }}" method="delete" onsubmit="return confirm('Delete this item permanently?')" novalidate>
+          {{ form.hidden_tag() }}
+          <button class="btn btn-delete">
+            <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M6.5 1.75a.25.25 0 01.25-.25h2.5a.25.25 0 01.25.25V3h-3V1.75zm4.5 0V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675a.75.75 0 10-1.492.15l.66 6.6A1.75 1.75 0 005.405 15h5.19c.9 0 1.652-.681 1.741-1.576l.66-6.6a.75.75 0 00-1.492-.149l-.66 6.6a.25.25 0 01-.249.225h-5.19a.25.25 0 01-.249-.225l-.66-6.6z"></path></svg>
+            <span>Delete</span>
+          </button>
+        </form>
+        <label class="sr-only">
+          <input type="checkbox" id="sr-checkbox">
+          screenreader mode
+        </label>
+      </div>
+    {% endif %}
+  </div>
+  <div id="content-cont" class="markdown-body">
+    <div id="content"></div>
+      {% if not view_only %}
+        <textarea id="original-textarea" aria-label="Text editor"></textarea>
+      {% endif %}
+
+    {% if backlinks %}
+      <ul id="backlinks" style="padding: 0">
+        <h1>Backlinks</h3>
+        {% for backlink in backlinks %}
+          <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+  <br>
+  {% if not view_only %}
+    <button class="sr-only" type="button" id="sr-savebutton">Save</button>
+  {% endif %}
+  <script>
+    {% if not view_only %}
+      // The form for editing the front matter
+      var update_frontmatter_callback = function(e) {
+        let payload = {
+          method: "PUT",
+          body: JSON.stringify({
+            "title": post_title_form.title.value,
+          }),
+          headers: {
+            "content-type": "application/json"
+          }
+        };
+
+        response = fetch(`${SCRIPT_ROOT}/dataobjs/frontmatter/{{dataobj['id']}}`, payload);
+        post_title_form.submit.classList.add("post-title-form-sucess");
+        e.preventDefault();
+      }
+
+      var post_title_form = document.getElementById("post-title-form");
+      post_title_form.addEventListener("submit", update_frontmatter_callback, true);
+
         // escape text for template literal - double slashes for python rendering and js rendering
         /* {% set content = dataobj["content"]
                             | replace("\\", "\\\\")
@@ -78,14 +116,13 @@
                             | safe
         %} */
 
-		
+
         let contentDiv = document.getElementById("content");
         function renderContent(content)
         {
 	  return window.parser.render("${toc}\n\n" + content);
         }
         contentDiv.innerHTML = renderContent(`{{ content }}`);
-	{% if not view_only %}
 	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 	    let linkForm = document.getElementById("link-form");
 	
@@ -205,7 +242,7 @@
               })
               oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
               editorDiv.classList.add("hidden");
-              document.getElementById("post-title").scrollIntoView(true);
+              document.body.scrollIntoView(true);
 
               /* Screenreader mode checkbox */
               function toggleScreenReaderMode(cbox, editor)
@@ -262,6 +299,6 @@
               }
               oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
             }
-	{% endif %}
-    </script>
+    {% endif %}
+  </script>
 {% endblock %}
