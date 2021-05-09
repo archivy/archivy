@@ -148,10 +148,7 @@ class DataObj:
             elif (
                 tag.name == "img"
                 and tag.has_attr("src")
-                and (tag["src"].startswith("/") or tag["src"].startswith("./"))
             ):
-
-                tag["src"] = urljoin(url, tag["src"])
                 filename = tag["src"].split("/")[-1]
                 try:
                     filename = filename[
@@ -159,6 +156,8 @@ class DataObj:
                     ]  # remove query parameters
                 except ValueError:
                     pass
+                if tag["src"].startswith("/") or tag["src"].startswith("./"):
+                    tag["src"] = urljoin(url, tag["src"])
                 if current_app.config["SCRAPING_CONF"][
                     "save_images"
                 ] and valid_image_filename(filename):
