@@ -4,7 +4,7 @@ import frontmatter
 
 from archivy.models import DataObj
 from archivy.helpers import get_max_id
-from responses import RequestsMock, GET
+from responses import GET
 
 from archivy.models import DataObj
 
