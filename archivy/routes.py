@@ -125,6 +125,9 @@ def show_dataobj(dataobj_id):
     move_form = forms.MoveDataForm()
     move_form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
 
+    post_title_form = forms.TitleForm()
+    post_title_form.title.data = dataobj["title"]
+
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -134,6 +137,7 @@ def show_dataobj(dataobj_id):
         form=forms.DeleteDataForm(),
         view_only=0,
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
+        post_title_form=post_title_form,
         move_form=move_form
     )
 

@@ -7,6 +7,7 @@ import shutil
 import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
@@ -148,7 +149,7 @@ def delete_item(dataobj_id):
         Path(file).unlink()
 
 
-def update_item(dataobj_id, new_content):
+def update_item_md(dataobj_id, new_content):
     """
     Given an object id, this method overwrites the inner
     content of the post with `new_content`.
@@ -187,6 +188,39 @@ def update_item(dataobj_id, new_content):
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
     dataobj.content = new_content
+    md = frontmatter.dumps(dataobj)
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(md)
+
+    converted_dataobj = DataObj.from_md(md)
+    converted_dataobj.fullpath = str(
+        filename.relative_to(current_app.config["USER_DIR"])
+    )
+    converted_dataobj.index()
+    load_hooks().on_edit(converted_dataobj)
+
+
+def update_item_frontmatter(dataobj_id, new_frontmatter):
+    """
+    Given an object id, this method overwrites the front matter
+    of the post with `new_frontmatter`.
+
+    ---
+    date: Str
+    id: Str
+    path: Str
+    tags: List[Str]
+    title: Str
+    type: note/bookmark
+    ---
+    """
+
+    from archivy.models import DataObj
+
+    filename = get_by_id(dataobj_id)
+    dataobj = frontmatter.load(filename)
+    for key in list(new_frontmatter):
+        dataobj[key] = new_frontmatter[key]
     md = frontmatter.dumps(dataobj)
     with open(filename, "w", encoding="utf-8") as f:
         f.write(md)
@@ -332,7 +366,7 @@ def valid_image_filename(filename):
     return "." in filename and filename.rsplit(".", 1)[1] in ALLOWED_EXTENSIONS
 
 
-def save_image(image):
+def save_image(image: FileStorage):
     """
     Saves image to USER_DATA_DIR
 

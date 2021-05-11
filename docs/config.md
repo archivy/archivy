@@ -14,6 +14,14 @@ Here's an overview of the different values you can set and modify.
 | `PORT`          | 5000                        | Port on which archivy will run        |
 | `HOST`          | 127.0.0.1                   | Host on which the app will run. |
 
+### Scraping
+
+An in-progress configuration object to customize how you'd like bookmarking / scraping to work.
+
+| Variable                | Default                     | Description                           |
+|-------------------------|-----------------------------|---------------------------------------|
+| `save_images` | False | If true, whenever you save a bookmark, every linked image will also be downloaded locally. | 
+
 
 ### Search
 

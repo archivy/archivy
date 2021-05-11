@@ -2,6 +2,7 @@ from datetime import datetime
 from pkg_resources import require
 from typing import List, Optional
 from urllib.parse import urljoin
+from io import BytesIO
 
 import frontmatter
 import requests
@@ -9,14 +10,15 @@ import validators
 from attr import attrs, attrib
 from attr.validators import instance_of, optional
 from bs4 import BeautifulSoup
-from flask import flash
+from flask import flash, current_app
 from flask_login import UserMixin
 from html2text import html2text
 from tinydb import Query
 from werkzeug.security import generate_password_hash
+from werkzeug.datastructures import FileStorage
 
 from archivy import helpers
-from archivy.data import create
+from archivy.data import create, save_image, valid_image_filename
 from archivy.search import add_to_index
 
 
@@ -123,7 +125,7 @@ class DataObj:
         self.content = ""
 
     def extract_content(self, beautsoup):
-        """converts html bookmark url to optimized markdown"""
+        """converts html bookmark url to optimized markdown and saves images"""
 
         stripped_tags = ["footer", "nav"]
         url = self.url.rstrip("/")
@@ -143,13 +145,24 @@ class DataObj:
                     # delete tag
                     tag.decompose()
 
-            elif (
-                tag.name == "img"
-                and tag.has_attr("src")
-                and (tag["src"].startswith("/") or tag["src"].startswith("./"))
-            ):
-
-                tag["src"] = urljoin(url, tag["src"])
+            elif tag.name == "img" and tag.has_attr("src"):
+                filename = tag["src"].split("/")[-1]
+                try:
+                    filename = filename[
+                        : filename.index("?")
+                    ]  # remove query parameters
+                except ValueError:
+                    pass
+                if tag["src"].startswith("/") or tag["src"].startswith("./"):
+                    tag["src"] = urljoin(url, tag["src"])
+                if current_app.config["SCRAPING_CONF"][
+                    "save_images"
+                ] and valid_image_filename(filename):
+                    image = FileStorage(
+                        BytesIO(requests.get(tag["src"]).content), filename, name="file"
+                    )
+                    saved_to = save_image(image)
+                    tag["src"] = "/images/" + saved_to
 
         res = html2text(str(beautsoup), bodywidth=0)
         return res

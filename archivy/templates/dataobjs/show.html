@@ -1,33 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% include "markdown-parser.html" %}
+  {% include "markdown-parser.html" %}
+  {% if not view_only %}
+    <link rel="stylesheet" href="/static/editor.css">
+    <link rel="stylesheet" href="/static/accessibility.css">
+    <script async src="/static/editor.js"></script>
+  {% endif %}
+  <link rel="stylesheet" href="/static/markdown.css">
+  {% if search_enabled %}
+    <div id="link-form" style="display: none">
+	<div>
+    	  <input type="text" id="searchBar" placeholder="Search for linked note.">
+	  <button onclick="toggleLinkForm()" class="btn">Cancel</button>
+	</div>
+        <ul id="searchHits"></ul>
+    </div>
+  {% endif %}
+  <div class="post-header">
+    <!-- Form for editing the frontmatter -->
     {% if not view_only %}
-    	<link rel="stylesheet" href="/static/editor.css">
-    	<link rel="stylesheet" href="/static/accessibility.css">
-    	<script async src="/static/editor.js"></script>
+    <form id="post-title-form">
+      {{ post_title_form.hidden_tag() }}
+        {{ post_title_form.title() }}
+        {{ post_title_form.submit() }}
+    </form>
+    {% else %}
+      <h2 id="post-title">
+        {{ dataobj['title'] }}
+      </h2>
     {% endif %}
-    <link rel="stylesheet" href="/static/markdown.css">
-	{% if search_enabled %}
-		<div id="link-form" style="display: none">
-			<div>
-    			<input type="text" id="searchBar" placeholder="Search for linked note.">
-				<button onclick="toggleLinkForm()" class="btn">Cancel</button>
-			</div>
-    		<ul id="searchHits"></ul>
-		</div>
-	{% endif %}
-    <h2 id="post-title">{{ dataobj['title'] }}</h2>
-    {{ ", ".join(dataobj['tags']) }}
-    <br>
 
-    {{ dataobj['date'] }}
+    <div class="post-tags">
+      {% for tag in dataobj['tags'] %}
+        <span class="post-tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+
+    <span class="post-date">{{ dataobj['date'] }}</span>
+
     {% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
-        <a href="{{ dataobj['url'] }}" rel="noopener">
-            Link
-        </a>
+      <a href="{{ dataobj['url'] }}" rel="noopener">
+        Link
+      </a>
     {% endif %}
     <br>
+    <!-- Edit / Delete buttons -->
     {% if not view_only %}
     	<div class="d-flex" id="post-btns">
             <button onclick="toggleEditor(this)" class="btn">
@@ -54,28 +72,48 @@
           {{ move_form.submit() }}
       </form>
     {% endif %}
-    <div id="content-cont" class="markdown-body">
-        <div id="content">
-        </div>
-	{% if not view_only %}
-            <textarea id="original-textarea" aria-label="Text editor">
-            </textarea>
-	{% endif %}
+  </div>
+  <div id="content-cont" class="markdown-body">
+    <div id="content"></div>
+      {% if not view_only %}
+        <textarea id="original-textarea" aria-label="Text editor"></textarea>
+      {% endif %}
 
-	{% if backlinks %}
-	    <ul id="backlinks" style="padding: 0">
-	        <h1>Backlinks</h3>
-		{% for backlink in backlinks %}
-		    <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
-		{% endfor %}
-	    </ul>
-        {% endif %}
-    </div>
-    <br>
-    {% if not view_only %}
-    	<button class="sr-only" type="button" id="sr-savebutton">Save</button>
+    {% if backlinks %}
+      <ul id="backlinks" style="padding: 0">
+        <h1>Backlinks</h3>
+        {% for backlink in backlinks %}
+          <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
+        {% endfor %}
+      </ul>
     {% endif %}
-    <script>
+  </div>
+  <br>
+  {% if not view_only %}
+    <button class="sr-only" type="button" id="sr-savebutton">Save</button>
+  {% endif %}
+  <script>
+    {% if not view_only %}
+      // The form for editing the front matter
+      var update_frontmatter_callback = function(e) {
+        let payload = {
+          method: "PUT",
+          body: JSON.stringify({
+            "title": post_title_form.title.value,
+          }),
+          headers: {
+            "content-type": "application/json"
+          }
+        };
+
+        response = fetch(`${SCRIPT_ROOT}/dataobjs/frontmatter/{{dataobj['id']}}`, payload);
+        post_title_form.submit.classList.add("post-title-form-sucess");
+        e.preventDefault();
+      }
+
+      var post_title_form = document.getElementById("post-title-form");
+      post_title_form.addEventListener("submit", update_frontmatter_callback, true);
+
         // escape text for template literal - double slashes for python rendering and js rendering
         /* {% set content = dataobj["content"]
                             | replace("\\", "\\\\")
@@ -85,14 +123,13 @@
                             | safe
         %} */
 
-		
+
         let contentDiv = document.getElementById("content");
         function renderContent(content)
         {
 	  return window.parser.render("${toc}\n\n" + content);
         }
         contentDiv.innerHTML = renderContent(`{{ content }}`);
-	{% if not view_only %}
 	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 	    let linkForm = document.getElementById("link-form");
 	
@@ -212,7 +249,7 @@
               })
               oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
               editorDiv.classList.add("hidden");
-              document.getElementById("post-title").scrollIntoView(true);
+              document.body.scrollIntoView(true);
 
               /* Screenreader mode checkbox */
               function toggleScreenReaderMode(cbox, editor)
@@ -269,6 +306,6 @@
               }
               oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
             }
-	{% endif %}
-    </script>
+    {% endif %}
+  </script>
 {% endblock %}

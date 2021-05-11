@@ -111,6 +111,16 @@ def test_update_dataobj(test_app, client: FlaskClient, note_fixture):
     assert resp.json["content"] == lorem
 
 
+def test_update_dataobj_frontmatter(test_app, client: FlaskClient, note_fixture):
+    lorem = "Updated note title"
+    resp = client.put("/api/dataobjs/frontmatter/1", json={"title": lorem})
+
+    assert resp.status_code == 200
+
+    resp = client.get("/api/dataobjs/1")
+    assert resp.json["title"] == lorem
+
+
 def test_updating_inexistent_dataobj_returns(test_app, client: FlaskClient):
     resp = client.put("/api/dataobjs/1", json={"content": "test"})
 
