@@ -33,6 +33,7 @@ def test_app():
 
     _app.config["TESTING"] = True
     _app.config["WTF_CSRF_ENABLED"] = False
+    _app.config["SCRAPING_CONF"]["save_images"] = False
     # This setups a TinyDB instance, using the `app_dir` temporary
     # directory defined above
     # Required so that `flask.current_app` can be called in data.py and
