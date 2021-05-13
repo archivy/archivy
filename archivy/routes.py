@@ -116,6 +116,34 @@ def new_note():
     return render_template("/dataobjs/new.html", title="New Note", form=form)
 
 
+@app.route("/tags")
+def show_all_tags():
+    all_items = data.get_items(structured=False)
+
+    # Fetch all tags from the dataobjs and count how often they appear.
+    all_tags = {}
+    for item in all_items:
+        for this_tag in item['tags']:
+            if this_tag not in list(all_tags):
+                all_tags[this_tag] = {
+                    "count": 1
+                }
+            else:
+                all_tags[this_tag]['count'] += 1
+
+    list_of_tags = []
+    for this_tag in list(all_tags):
+        list_of_tags.append({
+            'name': this_tag,
+            'count': all_tags[this_tag]['count']
+        })
+
+    return render_template(
+        "tags/all.html",
+        title="All Tags",
+        tags=sorted(list_of_tags, key=lambda k: k['count'], reverse=True)
+    )
+
 @app.route("/dataobj/<dataobj_id>")
 def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)

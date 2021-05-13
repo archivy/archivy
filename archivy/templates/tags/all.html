@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>All tags</h2>
+<ul>
+    {% for tag in tags %}
+        <li>{{ tag.name }} ({{ tag["count"] }})</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
