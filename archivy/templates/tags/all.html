@@ -3,9 +3,11 @@
 {% block content %}
 <h2>All tags</h2>
 <ul>
-    {% for tag in tags %}
-        <li>{{ tag.name }} ({{ tag["count"] }})</li>
-    {% endfor %}
+  {% for tag in tags %}
+    <a href="/tags/{{ tag.name }}">
+      <li>{{ tag.name }} ({{ tag["count"] }})</li>
+    </a>
+  {% endfor %}
 </ul>
 
 {% endblock %}

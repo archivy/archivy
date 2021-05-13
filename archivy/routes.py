@@ -144,6 +144,23 @@ def show_all_tags():
         tags=sorted(list_of_tags, key=lambda k: k['count'], reverse=True)
     )
 
+@app.route("/tags/<tag_name>")
+def show_tag(tag_name):
+    all_items = data.get_items(structured=False)
+
+    # Fetch all tags from the dataobjs and count how often they appear.
+    all_dataobjs = []
+    for item in all_items:
+        if tag_name in item['tags']:
+            all_dataobjs.append(item)
+
+    return render_template(
+        "tags/show.html",
+        title=f"Tags - {tag_name}",
+        tag_name=tag_name,
+        all_dataobjs=all_dataobjs
+    )
+
 @app.route("/dataobj/<dataobj_id>")
 def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
