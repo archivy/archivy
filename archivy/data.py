@@ -114,9 +114,9 @@ def create(contents, title, path=""):
     """
     filename = secure_filename(title)
     data_dir = get_data_dir()
-    max_filename_length = os.pathconf(str(data_dir), "PC_NAME_MAX")
-    if len(filename) > max_filename_length:
-        filename = filename[0:max_filename_length]
+    max_filename_length = 255
+    if len(filename + ".md") > max_filename_length:
+        filename = filename[0:max_filename_length - 3]
     path_to_md_file = data_dir / path.strip("/") / f"{filename}.md"
     with open(path_to_md_file, "w", encoding="utf-8") as file:
         file.write(contents)
