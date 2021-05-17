@@ -2,7 +2,15 @@ from pathlib import Path
 from os.path import sep
 
 import frontmatter
-from flask import render_template, flash, redirect, request, url_for, send_file
+from flask import (
+    render_template,
+    flash,
+    redirect,
+    request,
+    url_for,
+    send_file,
+    send_from_directory,
+)
 from flask_login import login_user, current_user, logout_user
 from tinydb import Query
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -236,3 +244,13 @@ def serve_image(filename):
             return "Image not found", 404
     else:
         return "Invalid file request", 413
+
+
+@app.route("/custom_css.css")
+def custom_css():
+    if not app.config["THEME_CONF"]["use_custom_css"]:
+        return
+
+    return send_from_directory(
+        Path(app.config["USER_DIR"]) / "css", app.config["THEME_CONF"]["custom_css"]
+    )
