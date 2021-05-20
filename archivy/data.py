@@ -143,6 +143,8 @@ def move_item(dataobj_id, new_path):
     file = get_by_id(dataobj_id)
     data_dir = get_data_dir()
     out_dir = data_dir / new_path
+    if not file:
+        raise FileNotFoundError
     if (out_dir / file.parts[-1]).exists():
         raise FileExistsError
     elif is_relative_to(out_dir, data_dir) and out_dir.exists():  # check file isn't

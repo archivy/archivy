@@ -154,15 +154,23 @@ def show_dataobj(dataobj_id):
 def move_data(dataobj_id):
     form = forms.MoveDataForm()
     out_dir = form.path.data if form.path.data != "" else "root directory"
+    if form.path.data == None:
+        flash("No path specified.")
+        return redirect(f"/dataobj/{dataobj_id}")
     try:
         if data.move_item(dataobj_id, form.path.data):
+            print("c")
             flash(f"Data successfully moved to {out_dir}.", "success")
             return redirect(f"/dataobj/{dataobj_id}")
         else:
-            flash(f"Data couldn't be moved to {out_dir}.", "error")
+            print("k")
+            flash(f"Data could not be moved to {out_dir}.", "error")
             return redirect(f"/dataobj/{dataobj_id}")
+    except FileNotFoundError:
+        flash("Data not found.", "error")
+        return redirect("/")
     except FileExistsError:
-        flash("File is already in target directory.", "error")
+        flash("Data already in target directory.", "error")
         return redirect(f"/dataobj/{dataobj_id}")
 
 
