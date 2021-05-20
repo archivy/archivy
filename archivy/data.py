@@ -148,7 +148,7 @@ def move_item(dataobj_id, new_path):
     if (out_dir / file.parts[-1]).exists():
         raise FileExistsError
     elif is_relative_to(out_dir, data_dir) and out_dir.exists():  # check file isn't
-        return shutil.move(file, f"{get_data_dir()}/{new_path}/")
+        return shutil.move(str(file), f"{get_data_dir()}/{new_path}/")
     return False
 
 
