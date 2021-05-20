@@ -67,7 +67,7 @@ def test_create_new_bookmark(
     bookmark_data = {
         "url": "https://example.com",
         "tags": "testing,bookmark",
-        "path": "root directory",
+        "path": "",
         "submit": "true",
     }
 
@@ -88,7 +88,7 @@ def test_create_note(test_app, client: FlaskClient):
     note_data = {
         "title": "Testing the create route",
         "tags": "testing,note",
-        "path": "root directory",
+        "path": "",
         "submit": "true",
     }
 
