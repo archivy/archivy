@@ -488,6 +488,15 @@ form {
 .bidirBtn::before {
 	content: "Link to a note";
 }
+
+#post-move-form {
+	margin-left: 0em;
+}
+
+#post-move-form input[type="submit"] {
+	margin: 0;
+}
+
 /* mobile adjustements */
 @media only screen and (max-width: 500px) {
 	.content {

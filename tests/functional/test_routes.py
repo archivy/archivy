@@ -7,7 +7,7 @@ from responses import RequestsMock, GET
 from werkzeug.security import generate_password_hash
 
 from archivy.helpers import get_max_id, get_db
-from archivy.data import get_dirs, create_dir
+from archivy.data import get_dirs, create_dir, get_item
 
 
 def test_get_index(test_app, client: FlaskClient):
@@ -67,7 +67,7 @@ def test_create_new_bookmark(
     bookmark_data = {
         "url": "https://example.com",
         "tags": "testing,bookmark",
-        "path": "not classified",
+        "path": "",
         "submit": "true",
     }
 
@@ -88,7 +88,7 @@ def test_create_note(test_app, client: FlaskClient):
     note_data = {
         "title": "Testing the create route",
         "tags": "testing,note",
-        "path": "not classified",
+        "path": "",
         "submit": "true",
     }
 
@@ -242,3 +242,41 @@ def test_bookmark_with_long_title_gets_truncated(test_app, client, mocked_respon
 
     resp = client.post("/bookmarks/new", data=bookmark_data)
     assert resp.status_code == 200
+
+
+def test_move_data(test_app, note_fixture, client):
+    create_dir("random")
+
+    resp = client.post(
+        "/dataobj/move/1",
+        data={"path": "random", "submit": "true"},
+        follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    assert "Data successfully moved to random."
+
+    assert get_item(1)["dir"] == "random"
+
+
+def test_invalid_inputs_fail_move_data(test_app, note_fixture, client):
+
+    resp = client.post("/dataobj/move/1", follow_redirects=True)
+    assert b"No path specified." in resp.data
+
+    resp = client.post(
+        "/dataobj/move/2", data={"path": "aaa", "submit": "true"}, follow_redirects=True
+    )
+    assert b"Data not found" in resp.data
+
+    resp = client.post(
+        "/dataobj/move/1", data={"path": "", "submit": "true"}, follow_redirects=True
+    )
+    assert b"Data already in target directory" in resp.data
+
+    faulty_paths = ["../adarnad", "~/adasd", "ssss"]
+    for p in faulty_paths:
+        print(p)
+        resp = client.post(
+            "/dataobj/move/1", data={"path": p, "submit": "true"}, follow_redirects=True
+        )
+        assert b"Data could not be moved to " + bytes(p, "utf-8") in resp.data
