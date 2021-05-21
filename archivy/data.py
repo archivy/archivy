@@ -2,7 +2,7 @@ import platform
 import subprocess
 import os
 from pathlib import Path
-from shutil import rmtree
+import shutil
 
 import frontmatter
 from flask import current_app
@@ -131,8 +131,25 @@ def get_item(dataobj_id):
         data = frontmatter.load(file)
         data["fullpath"] = str(file)
         data["dir"] = str(file.parent.relative_to(get_data_dir()))
+        # replace . for root items to ''
+        if data["dir"] == ".":
+            data["dir"] = ""
         return data
     return None
+
+
+def move_item(dataobj_id, new_path):
+    """Move dataobj of given id to new_path"""
+    file = get_by_id(dataobj_id)
+    data_dir = get_data_dir()
+    out_dir = data_dir / new_path
+    if not file:
+        raise FileNotFoundError
+    if (out_dir / file.parts[-1]).exists():
+        raise FileExistsError
+    elif is_relative_to(out_dir, data_dir) and out_dir.exists():  # check file isn't
+        return shutil.move(str(file), f"{get_data_dir()}/{new_path}/")
+    return False
 
 
 def delete_item(dataobj_id):
@@ -236,8 +253,6 @@ def get_dirs():
         if dir_path.is_dir()
     ]
 
-    # append name for root dir
-    dirnames.append("not classified")
     return dirnames
 
 
@@ -258,7 +273,7 @@ def delete_dir(name):
     if not is_relative_to(target_dir, root_dir) or target_dir == root_dir:
         return False
     try:
-        rmtree(target_dir)
+        shutil.rmtree(target_dir)
         return True
     except FileNotFoundError:
         return False
