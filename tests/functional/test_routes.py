@@ -1,4 +1,4 @@
-from os import pathconf
+import os
 
 from flask.testing import FlaskClient
 from flask import request
@@ -13,6 +13,24 @@ from archivy.data import get_dirs, create_dir, get_items, get_item
 def test_get_index(test_app, client: FlaskClient):
     response = client.get("/")
     assert response.status_code == 200
+
+
+def test_get_custom_css(test_app, client: FlaskClient):
+    test_app.config["THEME_CONF"]["use_custom_css"] = True
+    css_file = "custom.css"
+    css_contents = """
+        body {
+            color: red
+        }
+    """
+
+    os.mkdir(f"{test_app.config['USER_DIR']}/css/")
+    with open(f"{test_app.config['USER_DIR']}/css/{css_file}", "w") as f:
+        f.write(css_contents)
+    test_app.config["THEME_CONF"]["custom_css_file"] = css_file
+    resp = client.get("/static/custom.css")
+    assert css_contents.encode("utf-8") in resp.data
+    test_app.config["THEME_CONF"]["use_custom_css"] = False
 
 
 def test_get_new_bookmark(test_app, client: FlaskClient):
@@ -253,7 +271,7 @@ def test_bookmark_with_long_title_gets_truncated(test_app, client, mocked_respon
     long_title = "a" * 300
     # check that our mock title is indeed longer than the limit
     # and would cause an error, without our truncating
-    assert pathconf("/", "PC_NAME_MAX") < len(long_title)
+    assert os.pathconf("/", "PC_NAME_MAX") < len(long_title)
     mocked_responses.add(GET, "https://example.com", f"<title>{long_title}</title>")
     bookmark_data = {
         "url": "https://example.com",
