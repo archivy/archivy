@@ -380,7 +380,8 @@ def save_image(image: FileStorage):
 
 def image_exists(filename: str):
     sanitized = secure_filename(filename)
-    image_path = Path(current_app.config["USER_DIR"]) / "images" / sanitized
-    if image_path.exists():
+    images_dir = Path(current_app.config["USER_DIR"]) / "images"
+    image_path = images_dir / sanitized
+    if image_path.exists() and is_relative_to(image_path, images_dir):
         return str(image_path)
     return 0

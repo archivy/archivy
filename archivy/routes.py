@@ -246,7 +246,7 @@ def serve_image(filename):
         return "Invalid file request", 413
 
 
-@app.route("/custom_css.css")
+@app.route("/static/custom.css")
 def custom_css():
     if not app.config["THEME_CONF"]["use_custom_css"]:
         return
