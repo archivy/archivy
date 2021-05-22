@@ -61,11 +61,9 @@ def index():
 # TODO: refactor two following methods
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
-    default_dir = app.config["DEFAULT_BOOKMARKS_DIR"] or "root directory"
+    default_dir = app.config.get("DEFAULT_BOOKMARKS_DIR", "root directory")
     form = forms.NewBookmarkForm(path=default_dir)
-    form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
-    form = forms.NewBookmarkForm()
-    form.path.choices = [("", default_dir)] + [
+    form.path.choices = [("", "root directory")] + [
         (pathname, pathname) for pathname in data.get_dirs()
     ]
     if form.validate_on_submit():
