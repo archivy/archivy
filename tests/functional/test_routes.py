@@ -7,7 +7,7 @@ from responses import RequestsMock, GET
 from werkzeug.security import generate_password_hash
 
 from archivy.helpers import get_max_id, get_db
-from archivy.data import get_dirs, create_dir, get_items, get_ite 
+from archivy.data import get_dirs, create_dir, get_items, get_item
 
 
 def test_get_index(test_app, client: FlaskClient):
