@@ -81,7 +81,7 @@ def new_bookmark():
     form.url.data = request.args.get("url", "")
     path = request.args.get("path", default_dir).strip("/")
     # handle empty argument
-    form.path.data = path or bookmark_dir
+    form.path.data = path
     return render_template("dataobjs/new.html", title="New Bookmark", form=form)
 
 
