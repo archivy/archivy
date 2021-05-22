@@ -13,6 +13,7 @@ Here's an overview of the different values you can set and modify.
 | `INTERNAL_DIR` | System-dependent, see below | Directory where archivy internals will be stored (config, db...)
 | `PORT`          | 5000                        | Port on which archivy will run        |
 | `HOST`          | 127.0.0.1                   | Host on which the app will run. |
+| `DEFAULT_BOOKMARKS_DIR` | empty string (represents the root directory) | any subdirectory of the `data/` directory with your notes.
 
 ### Scraping
 

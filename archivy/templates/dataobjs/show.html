@@ -177,6 +177,7 @@
                   {
                     name: "LaTeX",
                     className: "fa fa-math",
+                    title: "Embed Maths",
                     action: (editor) => {
                       editor.codemirror.replaceSelection("$$\n$$")
                     }
@@ -184,7 +185,48 @@
                   "side-by-side",
                   "fullscreen",
                   {
+                    name: "local-archive-btn",
+                    className: "fa fa-bookmark",
+                    title: "Archives and links to local copy of selected url",
+                    action: async editor => {
+                      let link = editor.codemirror.getSelection().trim(), url;
+                      try {
+                        url = new URL(link);
+                      }
+                      catch (_) {
+                        return false;
+                      }
+                      if (url.protocol !== "http:" && url.protocol !== "https:") {
+                        return false;
+                      }
+                      let req = await fetch(`${SCRIPT_ROOT}/bookmarks`, {
+                        method: "POST",
+                        body: JSON.stringify({
+                          "url": link
+                        }),
+                        headers: {
+                          "content-type": "application/json"
+                        }
+                      })
+                      if (req.ok) {
+                        let bookmark = await req.json();
+                        editor.codemirror.replaceSelection(`[${link}](/dataobj/${bookmark["bookmark_id"]})\n`); 
+                      }
+                    }
+                  },
+
+                  {% if search_enabled %}
+	            {
+		      name: "bidirBtn",
+		      action: (editor) => {
+		        toggleLinkForm();
+		      },
+		      className: "fa fa-arrow-alt-h"
+		    },
+                  {% endif %}
+                  {
                     name: "save",
+                    title: "Save note contents",
                     action: (editor) => {
                       fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
                         method: "PUT",
@@ -201,19 +243,16 @@
                     },
                     className: "fa fa-save"
                   },
-                  {% if search_enabled %}
-	            {
-		      name: "bidirBtn",
-		      action: (editor) => {
-		        toggleLinkForm();
-		      },
-		      className: "fa fa-arrow-alt-h"
-		    },
-                  {% endif %}
                   {
                     name: "status",
                     className: "fa fa-check-circle status"
                   },
+                  {
+                    name: "doc",
+                    className: "fa fa-question-circle",
+                    action: "https://archivy.github.io/editing",
+                    title: "Editing Guide"
+                  }
                 ],
                 shortcuts: {
                   "save": "Ctrl-S"
