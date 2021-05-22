@@ -2,11 +2,12 @@ import platform
 import subprocess
 import os
 from pathlib import Path
-from shutil import rmtree
+import shutil
 
 import frontmatter
 from flask import current_app
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
@@ -113,9 +114,9 @@ def create(contents, title, path=""):
     """
     filename = secure_filename(title)
     data_dir = get_data_dir()
-    max_filename_length = os.pathconf(str(data_dir), "PC_NAME_MAX")
-    if len(filename) > max_filename_length:
-        filename = filename[0:max_filename_length]
+    max_filename_length = 255
+    if len(filename + ".md") > max_filename_length:
+        filename = filename[0 : max_filename_length - 3]
     path_to_md_file = data_dir / path.strip("/") / f"{filename}.md"
     with open(path_to_md_file, "w", encoding="utf-8") as file:
         file.write(contents)
@@ -130,8 +131,25 @@ def get_item(dataobj_id):
         data = frontmatter.load(file)
         data["fullpath"] = str(file)
         data["dir"] = str(file.parent.relative_to(get_data_dir()))
+        # replace . for root items to ''
+        if data["dir"] == ".":
+            data["dir"] = ""
         return data
     return None
+
+
+def move_item(dataobj_id, new_path):
+    """Move dataobj of given id to new_path"""
+    file = get_by_id(dataobj_id)
+    data_dir = get_data_dir()
+    out_dir = data_dir / new_path
+    if not file:
+        raise FileNotFoundError
+    if (out_dir / file.parts[-1]).exists():
+        raise FileExistsError
+    elif is_relative_to(out_dir, data_dir) and out_dir.exists():  # check file isn't
+        return shutil.move(str(file), f"{get_data_dir()}/{new_path}/")
+    return False
 
 
 def delete_item(dataobj_id):
@@ -142,7 +160,7 @@ def delete_item(dataobj_id):
         Path(file).unlink()
 
 
-def update_item(dataobj_id, new_content):
+def update_item_md(dataobj_id, new_content):
     """
     Given an object id, this method overwrites the inner
     content of the post with `new_content`.
@@ -193,6 +211,39 @@ def update_item(dataobj_id, new_content):
     load_hooks().on_edit(converted_dataobj)
 
 
+def update_item_frontmatter(dataobj_id, new_frontmatter):
+    """
+    Given an object id, this method overwrites the front matter
+    of the post with `new_frontmatter`.
+
+    ---
+    date: Str
+    id: Str
+    path: Str
+    tags: List[Str]
+    title: Str
+    type: note/bookmark
+    ---
+    """
+
+    from archivy.models import DataObj
+
+    filename = get_by_id(dataobj_id)
+    dataobj = frontmatter.load(filename)
+    for key in list(new_frontmatter):
+        dataobj[key] = new_frontmatter[key]
+    md = frontmatter.dumps(dataobj)
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(md)
+
+    converted_dataobj = DataObj.from_md(md)
+    converted_dataobj.fullpath = str(
+        filename.relative_to(current_app.config["USER_DIR"])
+    )
+    converted_dataobj.index()
+    load_hooks().on_edit(converted_dataobj)
+
+
 def get_dirs():
     """Gets all dir names where dataobjs are stored"""
     # join glob matchers
@@ -202,8 +253,6 @@ def get_dirs():
         if dir_path.is_dir()
     ]
 
-    # append name for root dir
-    dirnames.append("not classified")
     return dirnames
 
 
@@ -224,7 +273,7 @@ def delete_dir(name):
     if not is_relative_to(target_dir, root_dir) or target_dir == root_dir:
         return False
     try:
-        rmtree(target_dir)
+        shutil.rmtree(target_dir)
         return True
     except FileNotFoundError:
         return False
@@ -322,11 +371,11 @@ def open_file(path):
 
 
 def valid_image_filename(filename):
-    ALLOWED_EXTENSIONS = ["jpg", "png", "gif"]
-    return "." in filename and filename.rsplit(".")[1] in ALLOWED_EXTENSIONS
+    ALLOWED_EXTENSIONS = ["jpg", "png", "gif", "jpeg"]
+    return "." in filename and filename.rsplit(".", 1)[1] in ALLOWED_EXTENSIONS
 
 
-def save_image(image):
+def save_image(image: FileStorage):
     """
     Saves image to USER_DATA_DIR
 

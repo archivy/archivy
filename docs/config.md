@@ -15,6 +15,14 @@ Here's an overview of the different values you can set and modify.
 | `HOST`          | 127.0.0.1                   | Host on which the app will run. |
 | `DEFAULT_BOOKMARKS_DIR` | empty string (represents the root directory) | any subdirectory of the `data/` directory with your notes.
 
+### Scraping
+
+An in-progress configuration object to customize how you'd like bookmarking / scraping to work.
+
+| Variable                | Default                     | Description                           |
+|-------------------------|-----------------------------|---------------------------------------|
+| `save_images` | False | If true, whenever you save a bookmark, every linked image will also be downloaded locally. | 
+
 
 ### Search
 

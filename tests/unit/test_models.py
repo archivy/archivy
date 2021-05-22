@@ -1,7 +1,11 @@
+from pathlib import Path
+
 import frontmatter
 
 from archivy.models import DataObj
 from archivy.helpers import get_max_id
+from responses import GET
+
 from archivy.models import DataObj
 
 attributes = ["type", "title", "tags", "path", "id"]
@@ -54,3 +58,19 @@ def test_bookmark_sanitization(test_app, client, mocked_responses, bookmark_fixt
 
     # check empty link has been cleared
     assert "[](empty-link)" not in bookmark_fixture.content
+
+
+def test_bookmark_included_images_are_saved(test_app, client, mocked_responses):
+    mocked_responses.add(
+        GET, "https://example.com", body="""<html><img src='/image.png'></html>"""
+    )
+    mocked_responses.add(
+        GET, "https://example.com/image.png", body=open("docs/img/logo.png", "rb")
+    )
+    test_app.config["SCRAPING_CONF"]["save_images"] = True
+    bookmark = DataObj(type="bookmark", url="https://example.com")
+    bookmark.process_bookmark_url()
+    bookmark.insert()
+    images_dir = Path(test_app.config["USER_DIR"]) / "images"
+    assert images_dir.exists()
+    assert (images_dir / "image.png").exists()

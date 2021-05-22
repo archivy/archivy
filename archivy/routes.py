@@ -61,11 +61,15 @@ def index():
 # TODO: refactor two following methods
 @app.route("/bookmarks/new", methods=["GET", "POST"])
 def new_bookmark():
-    bookmark_dir = app.config["DEFAULT_BOOKMARKS_DIR"] or "not classified"
+    default_dir = app.config["DEFAULT_BOOKMARKS_DIR"] or "root directory"
     form = forms.NewBookmarkForm(path=bookmark_dir)
     form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
+    form = forms.NewBookmarkForm()
+    form.path.choices = [("", default_dir)] + [
+        (pathname, pathname) for pathname in data.get_dirs()
+    ]
     if form.validate_on_submit():
-        path = form.path.data if form.path.data != "not classified" else ""
+        path = form.path.data
         tags = form.tags.data.split(",") if form.tags.data != "" else []
         bookmark = DataObj(url=form.url.data, tags=tags, path=path, type="bookmark")
         bookmark.process_bookmark_url()
@@ -75,7 +79,7 @@ def new_bookmark():
             return redirect(f"/dataobj/{bookmark_id}")
     # for bookmarklet
     form.url.data = request.args.get("url", "")
-    path = request.args.get("path", bookmark_dir).strip("/")
+    path = request.args.get("path", default_dir).strip("/")
     # handle empty argument
     form.path.data = path or bookmark_dir
     return render_template("dataobjs/new.html", title="New Bookmark", form=form)
@@ -84,18 +88,21 @@ def new_bookmark():
 @app.route("/notes/new", methods=["GET", "POST"])
 def new_note():
     form = forms.NewNoteForm()
-    form.path.choices = [(pathname, pathname) for pathname in data.get_dirs()]
+    default_dir = "root directory"
+    form.path.choices = [("", default_dir)] + [
+        (pathname, pathname) for pathname in data.get_dirs()
+    ]
     if form.validate_on_submit():
-        path = form.path.data if form.path.data != "not classified" else ""
+        path = form.path.data
         tags = form.tags.data.split(",") if form.tags.data != "" else []
         note = DataObj(title=form.title.data, tags=tags, path=path, type="note")
         note_id = note.insert()
         if note_id:
             flash("Note Saved!", "success")
             return redirect(f"/dataobj/{note_id}")
-    path = request.args.get("path", "not classified").strip("/")
+    path = request.args.get("path", default_dir).strip("/")
     # handle empty argument
-    form.path.data = path if path != "" else "not classified"
+    form.path.data = path
     return render_template("/dataobjs/new.html", title="New Note", form=form)
 
 
@@ -122,6 +129,15 @@ def show_dataobj(dataobj_id):
                 if hit["id"] != dataobj_id:
                     backlinks.append({"title": hit["title"], "id": hit["id"]})
 
+    # Form for moving data into another folder
+    move_form = forms.MoveDataForm()
+    move_form.path.choices = [("", "root directory")] + [
+        (pathname, pathname) for pathname in data.get_dirs()
+    ]
+
+    post_title_form = forms.TitleForm()
+    post_title_form.title.data = dataobj["title"]
+
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -131,7 +147,33 @@ def show_dataobj(dataobj_id):
         form=forms.DeleteDataForm(),
         view_only=0,
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
+        post_title_form=post_title_form,
+        move_form=move_form,
     )
+
+
+@app.route("/dataobj/move/<dataobj_id>", methods=["POST"])
+def move_data(dataobj_id):
+    form = forms.MoveDataForm()
+    out_dir = form.path.data if form.path.data != "" else "root directory"
+    if form.path.data == None:
+        flash("No path specified.")
+        return redirect(f"/dataobj/{dataobj_id}")
+    try:
+        if data.move_item(dataobj_id, form.path.data):
+            print("c")
+            flash(f"Data successfully moved to {out_dir}.", "success")
+            return redirect(f"/dataobj/{dataobj_id}")
+        else:
+            print("k")
+            flash(f"Data could not be moved to {out_dir}.", "error")
+            return redirect(f"/dataobj/{dataobj_id}")
+    except FileNotFoundError:
+        flash("Data not found.", "error")
+        return redirect("/")
+    except FileExistsError:
+        flash("Data already in target directory.", "error")
+        return redirect(f"/dataobj/{dataobj_id}")
 
 
 @app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])

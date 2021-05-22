@@ -1,3 +1,11 @@
+:root {
+	--green: #48BB78;
+	--light-green: rgba(72, 187, 120, 0.5);
+	--black: #24292e;
+	--light-yellow: #f6efa6;
+	--red: #c0392b;
+}
+
 body {
 	font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
 	font-size: 14px;
@@ -234,8 +242,13 @@ form {
 }
 
 /* dataobj styles */
+.post-header {
+	margin: 10px 0 5px 0;
+	padding-bottom: 5px;
+}
+
 #post-btns {
-	margin: 10px;
+	margin: 10px 0;
 }
 
 #post-btns form {
@@ -245,6 +258,46 @@ form {
 	margin-left: 5px;
 	width: 100%;
 	height: 100%;
+}
+
+#post-btns button {
+	margin: 0;
+}
+
+#post-title {
+	margin: 0 1em 0 0;
+}
+
+#post-title-form {
+	margin-left: 0;
+}
+
+#post-title-form input {
+	font-weight: bold;
+	font-size: 1.2em;
+	display: inline-block;
+}
+
+.post-title-form-sucess {
+	color: var(--green);
+}
+
+.post-date {
+	background: var(--gray-background);
+	padding: 4px 7px;
+	margin-right: 6px;
+	display: inline-block;
+}
+
+.post-tags {
+	display: inline-block;
+}
+
+.post-tags span {
+	background: var(--light-yellow);
+	padding: 4px 7px;
+	margin-right: 6px;
+	display: inline-block;
 }
 
 
@@ -435,6 +488,15 @@ form {
 .bidirBtn::before {
 	content: "Link to a note";
 }
+
+#post-move-form {
+	margin-left: 0em;
+}
+
+#post-move-form input[type="submit"] {
+	margin: 0;
+}
+
 /* mobile adjustements */
 @media only screen and (max-width: 500px) {
 	.content {
