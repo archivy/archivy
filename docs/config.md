@@ -32,7 +32,7 @@ SCRAPING_CONF:
 
 ### Search
 
-See [setup-search.md] for more information.
+See [Setup Search](setup-search.md) for more information.
 
 All of these options are children of the `SEARCH_CONF` object, like this in the `config.yml`:
 
