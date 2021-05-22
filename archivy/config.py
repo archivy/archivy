@@ -16,7 +16,7 @@ class Config(object):
         self.PANDOC_HIGHLIGHT_THEME = "pygments"
         self.SCRAPING_CONF = {"save_images": False}
 
-        self.THEME_CONF = {"use_custom_css": False, "custom_css": ""}
+        self.THEME_CONF = {"use_custom_css": False, "custom_css_file": ""}
 
         self.SEARCH_CONF = {
             "enabled": 0,

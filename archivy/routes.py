@@ -252,5 +252,5 @@ def custom_css():
         return
 
     return send_from_directory(
-        Path(app.config["USER_DIR"]) / "css", app.config["THEME_CONF"]["custom_css"]
+        Path(app.config["USER_DIR"]) / "css", app.config["THEME_CONF"]["custom_css_file"]
     )
