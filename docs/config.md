@@ -17,7 +17,13 @@ Here's an overview of the different values you can set and modify.
 
 ### Scraping
 
-An in-progress configuration object to customize how you'd like bookmarking / scraping to work.
+An in-progress configuration object to customize how you'd like bookmarking / scraping to work. The options are children of the `SCRAPING_CONF` object, like so:
+
+```yaml
+SCRAPING_CONF:
+  save_images:
+  ...
+```
 
 | Variable                | Default                     | Description                           |
 |-------------------------|-----------------------------|---------------------------------------|
