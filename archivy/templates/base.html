@@ -4,6 +4,10 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+      {% if config.THEME_CONF['use_custom_css'] %}
+        <link rel="stylesheet" href="/static/custom.css">
+      {% endif %}
+
 	  <link rel="icon" href="{{ url_for('static', filename='archivy.svg')}}" type="image/svg+xml">
       <style>
 
@@ -25,7 +29,7 @@
                         <svg class="octicon open" style="display: none;" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"></path></svg>
                     </button>
 					<a href="/?path={{ SEP.join(path) + SEP }}"><h3>
-                        {{ dir.name }} 
+                        {{ dir.name }}
 						</h3></a>
                 </div>
                 {% if dir.child_files | length %}
@@ -114,7 +118,7 @@
         <script>
           const SCRIPT_ROOT = {{ request.script_root|tojson|safe }} + "/api";
           let max_folder_id = document.querySelectorAll(".folder-cont").length;
-          function createInteractive(btn, id) 
+          function createInteractive(btn, id)
           {
             // expand
             let parentDiv = btn.parentNode;
