@@ -285,7 +285,7 @@ def serve_image(filename):
 
 @app.route("/static/custom.css")
 def custom_css():
-    if not app.config["THEME_CONF"]["use_custom_css"]:
+    if not app.config["THEME_CONF"].get("use_custom_css", False):
         return ""
     return send_from_directory(
         Path(app.config["USER_DIR"]) / "css",
