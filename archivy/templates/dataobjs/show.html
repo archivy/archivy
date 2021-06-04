@@ -95,6 +95,21 @@
     <button class="sr-only" type="button" id="sr-savebutton">Save</button>
   {% endif %}
   <script>
+
+
+    // escape text for template literal - double slashes for python rendering and js rendering
+    /* {% set content = dataobj["content"]
+                          | replace("\\", "\\\\")
+                          | replace("`", "\\`")
+                          | replace("${", "\\${")
+                          | safe
+       %} */
+    let contentDiv = document.getElementById("content");
+    function renderContent(content)
+    {
+      return window.parser.render("${toc}\n\n" + content);
+    }
+    contentDiv.innerHTML = renderContent(`{{ content }}`);
     {% if not view_only %}
       // The form for editing the front matter
       var update_frontmatter_callback = function(e) {
@@ -116,22 +131,8 @@
       var post_title_form = document.getElementById("post-title-form");
       post_title_form.addEventListener("submit", update_frontmatter_callback, true);
 
-        // escape text for template literal - double slashes for python rendering and js rendering
-        /* {% set content = dataobj["content"]
-                            | replace("\\", "\\\\")
-
-                            | replace("`", "\\`")
-                            | replace("${", "\\${")
-                            | safe
-        %} */
 
 
-        let contentDiv = document.getElementById("content");
-        function renderContent(content)
-        {
-	  return window.parser.render("${toc}\n\n" + content);
-        }
-        contentDiv.innerHTML = renderContent(`{{ content }}`);
 	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 	    let linkForm = document.getElementById("link-form");
 	
