@@ -12,6 +12,7 @@ class Config(object):
         self.INTERNAL_DIR = appdirs.user_data_dir("archivy")
         self.USER_DIR = self.INTERNAL_DIR
         self.DEFAULT_BOOKMARKS_DIR = ""
+        self.SITE_TITLE = "Archivy"
         os.makedirs(self.INTERNAL_DIR, exist_ok=True)
 
         self.PANDOC_HIGHLIGHT_THEME = "pygments"
