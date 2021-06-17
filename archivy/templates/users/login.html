@@ -4,7 +4,7 @@
 <div id="login-cont">
     <img src="https://archivy.github.io/img/logo-2.png" width="100" height="100">
     <form action="" method="post">
-        <h1>Sign in with {{ config.SITE_TITLE }}</h1>
+        <h1>Sign in</h1>
         {{ form.hidden_tag() }}
         {% for error in form.username.errors %}
             <div class="flash flash-error">{{ error }}</div>
