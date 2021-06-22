@@ -1,5 +1,6 @@
 from pathlib import Path
 from os.path import sep
+from pkg_resources import require
 
 import frontmatter
 from flask import (
@@ -24,11 +25,12 @@ from archivy.search import search
 @app.context_processor
 def pass_defaults():
     dataobjs = data.get_items()
+    version = require("archivy")[0].version
     SEP = sep
     # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
     if SEP == "\\":
         SEP += "\\"
-    return dict(dataobjs=dataobjs, SEP=SEP)
+    return dict(dataobjs=dataobjs, SEP=SEP, version=version)
 
 
 @app.before_request
