@@ -8,7 +8,7 @@ import responses
 
 from archivy import app, cli
 from archivy.click_web import create_click_web_app, _flask_app
-from archivy.helpers import get_db
+from archivy.helpers import get_db, load_hooks
 from archivy.models import DataObj, User
 
 _app = None

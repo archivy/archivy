@@ -187,7 +187,7 @@ class DataObj:
             self.id = helpers.get_max_id()
             self.date = datetime.now()
 
-            hooks = helpers.load_hooks()
+            hooks = current_app.config["HOOKS"]
 
             hooks.before_dataobj_create(self)
             data = {
@@ -286,7 +286,7 @@ class User(UserMixin):
             "type": "user",
         }
 
-        helpers.load_hooks().on_user_create(self)
+        current_app.config["HOOKS"].on_user_create(self)
         return db.insert(db_user)
 
     @classmethod

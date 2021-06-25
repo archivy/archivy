@@ -3,12 +3,12 @@ from textwrap import dedent
 import pytest
 from tinydb import Query
 
-from archivy.helpers import get_db
+from archivy.helpers import get_db, load_hooks
 from archivy import data
 
 
 @pytest.fixture()
-def hooks_cli_runner(cli_runner, click_cli):
+def hooks_cli_runner(test_app, cli_runner, click_cli):
     """
     Saves hooks to user config directory for tests.
 
@@ -32,6 +32,8 @@ def hooks_cli_runner(cli_runner, click_cli):
         cli_runner.invoke(click_cli, ["init"], input="\nn\nn\n\n")
         with open("hooks.py", "w") as f:
             f.write(dedent(hookfile))
+        with test_app.app_context():
+            test_app.config["HOOKS"] = load_hooks()
         yield cli_runner
 
 
@@ -64,5 +66,5 @@ def test_dataobj_edit_hook(test_app, hooks_cli_runner, note_fixture, client):
 
 
 def test_user_creation_hook(test_app, hooks_cli_runner, user_fixture):
-    creation_message = get_db().search(Query().type == "user_creation_message")[0]
+    creation_message = get_db().search(Query().type == "user_creation_message")[1]
     assert f"New user {user_fixture.username} created." == creation_message["content"]
