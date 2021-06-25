@@ -3,6 +3,7 @@ from pkg_resources import require
 from typing import List, Optional
 from urllib.parse import urljoin
 from io import BytesIO
+import re
 
 import frontmatter
 import requests
@@ -92,6 +93,11 @@ class DataObj:
             self.url
         ):
             return None
+
+        for pattern, handler in current_app.config["SCRAPING_PATTERNS"].items():
+            if re.search(pattern, self.url):
+                handler(self)
+                return
 
         try:
             url_request = requests.get(

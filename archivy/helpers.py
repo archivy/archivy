@@ -35,6 +35,16 @@ def load_hooks():
 
     return user_locals["Hooks"]()
 
+def load_scraper():
+    try:
+        user_scraping = (Path(current_app.config["USER_DIR"]) / "scraping.py").open()
+    except FileNotFoundError:
+        return {}
+    user_locals = {}
+    exec(user_scraping.read(), globals(), user_locals)
+    user_scraping.close()
+    return user_locals["PATTERNS"]
+
 
 def get_db(force_reconnect=False):
     """

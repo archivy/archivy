@@ -28,6 +28,7 @@ app.config.from_object(config)
 
 with app.app_context():
     app.config["HOOKS"] = helpers.load_hooks()
+    app.config["SCRAPING_PATTERNS"] = helpers.load_scraper()
 if app.config["SEARCH_CONF"]["enabled"]:
     with app.app_context():
         search_engines = ["elasticsearch", "ripgrep"]
