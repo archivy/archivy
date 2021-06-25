@@ -35,6 +35,7 @@ def load_hooks():
 
     return user_locals["Hooks"]()
 
+
 def load_scraper():
     try:
         user_scraping = (Path(current_app.config["USER_DIR"]) / "scraping.py").open()
