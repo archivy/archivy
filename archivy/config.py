@@ -30,7 +30,7 @@ class Config(object):
                 "plugins": {
                     "markdownitFootnote": {},
                     "markdownitMark": {},
-                    "markdownItAnchor": {"permalink": True, "permalinkSymbol": '¶'},
+                    "markdownItAnchor": {"permalink": True, "permalinkSymbol": "¶"},
                     "markdownItTocDoneRight": {},
                 },
             },
