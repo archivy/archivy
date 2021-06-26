@@ -95,6 +95,13 @@
     <button class="sr-only" type="button" id="sr-savebutton">Save</button>
   {% endif %}
   <script>
+    // escape text for template literal - double slashes for python rendering and js rendering
+    /* {% set content = dataobj["content"]
+                          | replace("\\", "\\\\")
+                          | replace("`", "\\`")
+                          | replace("${", "\\${")
+                          | safe
+       %} */
     // Render the content with TOC
     let contentDiv = document.getElementById("content");
     function renderContent(content) {
