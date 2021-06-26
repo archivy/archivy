@@ -48,6 +48,33 @@ THEME_CONF:
 | `custom_css_file` | "" | Name of file to load in the `css/` subdirectory of your user directory (the one with your data or hooks). Create `css/` if it doesn't exist. |
 
 
+### Markdown configuration
+Archivy uses the [markdown-it](https://github.com/markdown-it/markdown-it) parser. The default values of `EDITOR_CONF` are given below. We refer to the [markdown-it docs](https://github.com/markdown-it/markdown-it#init-with-presets-and-options) for a full list of possible options.
+
+```yaml
+EDITOR_CONF:
+  linkify: true
+  html: false
+  xhtmlOut: false
+  breaks: true
+  typographer: false
+  plugins: ...
+```
+
+Plugins that are loaded with the syntax `markdownit().use(window.PLUGIN, PARAMS)` are set up with the following configuration by default:
+
+```yaml
+EDITOR_CONF:
+  plugins:
+    markdownitFootnote: {}
+    markdownitMark: {}
+    markdownItAnchor: 
+      permalink: True
+      permalinkSymbol: '¶'
+    markdownItTocDoneRight: {}
+```
+
+
 ### Search
 
 See [Setup Search](setup-search.md) for more information.
