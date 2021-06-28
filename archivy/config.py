@@ -21,11 +21,13 @@ class Config(object):
         self.THEME_CONF = {"use_custom_css": False, "custom_css_file": ""}
 
         self.EDITOR_CONF = {
-            "html": False,
-            "xhtmlOut": False,
-            "breaks": False,
-            "linkify": True,
-            "typographer": False,
+            "settings": {
+                "html": False,
+                "xhtmlOut": False,
+                "breaks": False,
+                "linkify": True,
+                "typographer": False,
+            },
             "plugins": {
                 "markdownitFootnote": {},
                 "markdownitMark": {},
