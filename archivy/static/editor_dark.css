@@ -1,0 +1,27 @@
+.EasyMDEContainer .CodeMirror {
+	background: var(--light-grey);
+}
+
+.EasyMDEContainer .CodeMirror-fullscreen {
+    background: var(--light-grey);
+}
+
+.EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
+    background: var(--light-grey);
+}
+
+.editor-toolbar {
+    background: var(--mid-grey);
+    border-top: 1px solid var(--mid-dark-grey);
+    border-left: 1px solid var(--mid-dark-grey);
+    border-right: 1px solid var(--mid-dark-grey);
+}
+
+.editor-toolbar.fullscreen {
+    background: var(--mid-grey);
+}
+
+.editor-preview {
+    background: var(--dark-grey);
+}
+

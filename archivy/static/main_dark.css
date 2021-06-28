@@ -19,7 +19,7 @@ body {
 	margin: 0;
 	line-height: 1.5;
 	color: var(--mid-light-grey);
-    background-color: var(--dark-grey);
+    background: var(--dark-grey);
 }
 
 * {
