@@ -10,10 +10,10 @@
   <link rel="stylesheet" href="/static/markdown.css">
   {% if search_enabled %}
     <div id="link-form" style="display: none">
-	<div>
-    	  <input type="text" id="searchBar" placeholder="Search for linked note.">
-	  <button onclick="toggleLinkForm()" class="btn">Cancel</button>
-	</div>
+  <div>
+        <input type="text" id="searchBar" placeholder="Search for linked note.">
+    <button onclick="toggleLinkForm()" class="btn">Cancel</button>
+  </div>
         <ul id="searchHits"></ul>
     </div>
   {% endif %}
@@ -47,7 +47,7 @@
     <br>
     <!-- Edit / Delete buttons -->
     {% if not view_only %}
-    	<div class="d-flex" id="post-btns">
+      <div class="d-flex" id="post-btns">
           <button onclick="toggleEditor(this)" class="btn">
             <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25a1.75 1.75 0 01.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.249.249 0 00.108-.064l6.286-6.286z"></path></svg>
             <span>Edit</span>
@@ -71,7 +71,7 @@
             <input type="checkbox" id="sr-checkbox">
             screenreader mode
           </label>
-    	</div>
+      </div>
 
     {% endif %}
   </div>
@@ -132,11 +132,11 @@
       post_title_form.addEventListener("submit", update_frontmatter_callback, true);
 
       // Render the editor and put the dataobj in it
-	    let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
-	    
+      let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
+      
       // Set up search
-	    {% if search_enabled %}
-	      let input = document.getElementById("searchBar");
+      {% if search_enabled %}
+        let input = document.getElementById("searchBar");
       {% else %}
         let input = null;
       {% endif %}
@@ -144,14 +144,14 @@
       // Show the form for embedding links
       let searchHits = document.getElementById("searchHits");
       let linkForm = document.getElementById("link-form");
-	    function toggleLinkForm() {
+      function toggleLinkForm() {
         {% if not search_enabled %} return {% endif %}
-	      if (linkForm.style.display == "none") {
-	        linkForm.style.display = "block";
-	      } else {
-	        linkForm.style.display = "none";
-	        input.value = "";
-	        searchHits.innerHTML = "";
+        if (linkForm.style.display == "none") {
+          linkForm.style.display = "block";
+        } else {
+          linkForm.style.display = "none";
+          input.value = "";
+          searchHits.innerHTML = "";
         }
       }
 
@@ -217,10 +217,10 @@
             },  // archive-btn
             {% if search_enabled %}
             {
-    		      name: "bidirBtn",
-    		      action: (editor) => { toggleLinkForm(); },
-    		      className: "fa fa-arrow-alt-h"
-    		    },
+              name: "bidirBtn",
+              action: (editor) => { toggleLinkForm(); },
+              className: "fa fa-arrow-alt-h"
+            },
             {% endif %}
             {
               name: "save",
@@ -259,9 +259,9 @@
 
         editor.value(`{{ content }}`)
 
-	      input?.addEventListener("input", async function() {
-	        let query = input.value;
-	        if (input.value !== "") {
+        input?.addEventListener("input", async function() {
+          let query = input.value;
+          if (input.value !== "") {
             let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
               "method": "GET"
             });
@@ -276,11 +276,11 @@
                 editor.codemirror.replaceSelection(`[[[${hit["title"]}](/dataobj/${hit["id"]})]]`);
                 linkForm.style.dislay = "none";
                 toggleLinkForm();
-	              }
-	              searchHits.appendChild(resBtn);
-	            })
+                }
+                searchHits.appendChild(resBtn);
+              })
             }  // if searchQuery.ok
-	        }  // if input.value !== ""
+          }  // if input.value !== ""
         })  // addEventListener
 
         let statusBtn = document.querySelector(".status .fa");
@@ -335,10 +335,10 @@
       function toggleEditor(btn) {
         let btnText = btn.querySelector("span");
         if (btnText.textContent == "Edit") {
-	        btnText.textContent = "Hide Editor";
+          btnText.textContent = "Hide Editor";
         } else {
-	        btnText.textContent = "Edit";
-	        contentDiv.innerHTML = renderContent(savedContent);
+          btnText.textContent = "Edit";
+          contentDiv.innerHTML = renderContent(savedContent);
         }
         oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
       }
