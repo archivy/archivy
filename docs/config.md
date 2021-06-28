@@ -48,6 +48,7 @@ THEME_CONF:
 | `custom_css_file` | "" | Name of file to load in the `css/` subdirectory of your user directory (the one with your data or hooks). Create `css/` if it doesn't exist. |
 
 
+
 ### Search
 
 See [Setup Search](setup-search.md) for more information.
@@ -78,3 +79,39 @@ Variables marked `ES only` in their description are only relevant when using the
 On Linux systems, it follows the [XDG
 specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html):
 `~/.local/share/archivy`
+
+
+### Editor configuration
+Archivy uses the [markdown-it](https://github.com/markdown-it/markdown-it) parser for its editor. This parser can be configured to change the output according to your needs. The default values of `EDITOR_CONF` are given below. Refer to the [markdown-it docs](https://github.com/markdown-it/markdown-it#init-with-presets-and-options) for a full list of possible options.
+
+```yaml
+EDITOR_CONF:
+  settings:
+    linkify: true
+    html: false
+    xhtmlOut: false
+    breaks: true
+    typographer: false
+  plugins: ...
+```
+
+Archivy uses several markdown plugins to enhance its functionality:
+
+- [markdown-it-anchor](https://github.com/valeriangalliat/markdown-it-anchor)
+- [markdown-it-toc-done-right](https://github.com/nagaozen/markdown-it-toc-done-right)
+- [markdown-it-mark](https://github.com/markdown-it/markdown-it-mark)
+- [markdown-it-footnote](https://github.com/markdown-it/markdown-it-footnote)
+- [markdown-it-texmath](https://github.com/goessner/markdown-it-texmath)
+
+Some of these plugins (see below) can be configured and modified. Refer to their homepages above to see what you can change. They are set up with the following configuration by default:
+
+```yaml
+EDITOR_CONF:
+  plugins:
+    markdownitFootnote: {}
+    markdownitMark: {}
+    markdownItAnchor:
+      permalink: True
+      permalinkSymbol: '¶'
+    markdownItTocDoneRight: {}
+```
