@@ -38,12 +38,14 @@ These configuration options are children of the `THEME_CONF` object, like this:
 
 ```yaml
 THEME_CONF:
+  use_theme_dark:
   use_custom_css:
   custom_css_file:
 ```
 
 | Variable | Default | Description |
 |------|-------|----|
+| `use_theme_dark` | false | Whether or not to load the dark version of the default theme CSS. |
 | `use_custom_css` | false | Whether or not to load custom css from `custom_css_file` |
 | `custom_css_file` | "" | Name of file to load in the `css/` subdirectory of your user directory (the one with your data or hooks). Create `css/` if it doesn't exist. |
 
