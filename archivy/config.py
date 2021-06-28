@@ -20,6 +20,22 @@ class Config(object):
 
         self.THEME_CONF = {"use_custom_css": False, "custom_css_file": ""}
 
+        self.EDITOR_CONF = {
+            "settings": {
+                "html": False,
+                "xhtmlOut": False,
+                "breaks": False,
+                "linkify": True,
+                "typographer": False,
+            },
+            "plugins": {
+                "markdownitFootnote": {},
+                "markdownitMark": {},
+                "markdownItAnchor": {"permalink": True, "permalinkSymbol": "¶"},
+                "markdownItTocDoneRight": {},
+            },
+        }
+
         self.SEARCH_CONF = {
             "enabled": 0,
             "url": "http://localhost:9200",
