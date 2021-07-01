@@ -96,3 +96,4 @@ def test_custom_scraping_patterns(custom_scraping_setup, test_app, bookmark_fixt
     assert pattern in bookmark_fixture.url
     assert bookmark_fixture.title == "Overridden note"
     assert bookmark_fixture.tags == ["test"]
+    test_app.config["SCRAPING_PATTERNS"] = {}
