@@ -3,7 +3,7 @@ from pkg_resources import require
 from typing import List, Optional
 from urllib.parse import urljoin
 from io import BytesIO
-import re
+import fnmatch
 
 import frontmatter
 import requests
@@ -95,7 +95,7 @@ class DataObj:
             return None
 
         for pattern, handler in current_app.config["SCRAPING_PATTERNS"].items():
-            if re.search(pattern, self.url):
+            if fnmatch.fnmatch(self.url, pattern):
                 handler(self)
                 return
 
