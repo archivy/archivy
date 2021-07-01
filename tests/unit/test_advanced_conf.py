@@ -5,7 +5,6 @@ from tinydb import Query
 
 from archivy.helpers import get_db, load_hooks, load_scraper
 from archivy import data
-from archivy.models import DataObj
 
 
 @pytest.fixture()
@@ -45,7 +44,6 @@ def custom_scraping_setup(test_app, cli_runner, click_cli):
                 data.title = "Overridden note"
                 data.content = "this note was not processed by default archivy bookmarking, but a user-specified function"
                 data.tags = ["test"]
-                print("aaaaaaaaaa")
             
             PATTERNS = {
                 "https://example.com/": test_pattern
