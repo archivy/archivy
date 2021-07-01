@@ -32,8 +32,7 @@ def load_hooks():
     user_locals = {}
     exec(user_hooks.read(), globals(), user_locals)
     user_hooks.close()
-
-    return user_locals["Hooks"]()
+    return user_locals.get("Hooks", BaseHooks)()
 
 
 def load_scraper():
@@ -44,7 +43,7 @@ def load_scraper():
     user_locals = {}
     exec(user_scraping.read(), globals(), user_locals)
     user_scraping.close()
-    return user_locals["PATTERNS"]
+    return user_locals.get("PATTERNS", {})
 
 
 def get_db(force_reconnect=False):
