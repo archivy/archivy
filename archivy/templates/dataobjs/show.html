@@ -11,6 +11,9 @@
     <script async src="/static/editor.js"></script>
   {% endif %}
   <link rel="stylesheet" href="/static/markdown.css">
+  {% if config.THEME_CONF.get('use_theme_dark', False) %}
+    <link rel="stylesheet" href="/static/markdown_dark.css">
+  {% endif %}
   {% if search_enabled %}
     <div id="link-form" style="display: none">
   <div>

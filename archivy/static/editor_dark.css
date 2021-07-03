@@ -31,3 +31,6 @@
     background: var(--dark-grey);
 }
 
+.editor-preview-side {
+    border: 1px solid var(--mid-grey);
+}

@@ -254,7 +254,7 @@ form {
 	padding: 16px;
 	margin-top: -1px;
 	list-style-type: none;
-	border-top: 1px var(--light-grey) solid;
+	border-top: 1px var(--mid-grey) solid;
 }
 
 #files ul .octicon {
