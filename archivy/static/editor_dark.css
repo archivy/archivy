@@ -1,24 +1,30 @@
 .EasyMDEContainer .CodeMirror {
-	background: var(--light-grey);
+    color: var(--mid-light-grey);
+    background: var(--dark-grey);
+    border: 1px solid var(--mid-grey);
 }
 
 .EasyMDEContainer .CodeMirror-fullscreen {
-    background: var(--light-grey);
+    background: var(--dark-grey);
 }
 
 .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
-    background: var(--light-grey);
+    background: var(--dark-grey);
 }
 
 .editor-toolbar {
-    background: var(--mid-grey);
-    border-top: 1px solid var(--mid-dark-grey);
-    border-left: 1px solid var(--mid-dark-grey);
-    border-right: 1px solid var(--mid-dark-grey);
+    background-color: var(--mid-dark-grey);
+    border-top: 1px solid var(--mid-grey);
+    border-left: 1px solid var(--mid-grey);
+    border-right: 1px solid var(--mid-grey);
+}
+
+.editor-toolbar button {
+    color: var(--mid-light-grey);
 }
 
 .editor-toolbar.fullscreen {
-    background: var(--mid-grey);
+    background: var(--dark-grey);
 }
 
 .editor-preview {

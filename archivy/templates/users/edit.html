@@ -2,7 +2,7 @@
 {% block content %}
 <br>
 <div id="user-cont">
-    <form action="" method="post">
+    <form id="user-form" action="" method="post">
         <h1>Edit Profile</h1>
         {{ form.hidden_tag() }}
         {% for error in form.username.errors %}

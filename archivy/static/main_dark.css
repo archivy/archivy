@@ -43,12 +43,14 @@ mark {
 input, select {
 	font-size: 17px;
 	transition: border-color 2s;
+	color: var(--mid-light-grey);
 	border: none;
-	border-bottom: 3px var(--mid-light-grey) solid;
+	border-bottom: 3px var(--dark-grey) solid;
 	padding: 5px;
 	margin: 8px 0px;
-	background-color: var(--light-grey);
+	background-color: var(--mid-dark-grey);
 }
+
 label {
 	font-size: 17px;
 	font-weight: bold;
@@ -59,12 +61,9 @@ select {
 	margin: 3px 0px;
 	padding: 1px 5px;
 }
-input:not([type="checkbox"]):not([type="submit"]) {
-	display: block;
-}
 
 input:focus:not([type="submit"]), input:hover:not([type="submit"]), select:focus, select:hover {
-	border-color: var(--mid-green);
+	border-color: var(--mid-grey);
 }
 
 form {
@@ -103,6 +102,20 @@ form {
 
 #login-cont, #user-cont {
 	width: 300px;
+}
+
+#login-form {
+    width: 300px;
+    margin: 0 auto;
+}
+
+#login-form input.btn {
+    margin: 0 auto;
+    display: block;
+}
+
+#user-form input:not([type="checkbox"]):not([type="submit"]) {
+	display: block;
 }
 
 /* sidebar styles */
@@ -198,9 +211,15 @@ form {
 }
 
 #main-links .btn {
-    color: var(--dark-grey);
-    background: var(--light-grey);
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
 	margin: 3px;
+}
+
+#main-links .btn:hover, .btn.hover, [open] > .btn {
+	background-color: var(--mid-grey);
+	transition-duration: 0.1s;
 }
 
 #current-path {
@@ -265,8 +284,9 @@ form {
 }
 
 #post-btns form {
-	margin: 0;
+	margin: 0 10 0 0;
 }
+
 #post-btns .btn-delete {
 	margin-left: 5px;
 	width: 100%;
@@ -275,8 +295,14 @@ form {
 
 #post-btns button {
 	margin: 0;
-    color: var(--dark-grey);
-    background: var(--light-grey);
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
+}
+
+#post-btns .btn:hover, .btn.hover, [open] > .btn {
+	background-color: var(--mid-grey);
+	transition-duration: 0.1s;
 }
 
 #post-title {
@@ -361,9 +387,11 @@ form {
 	background-color: var(--rose);
 	border-color: var(--dark-rose);
 }
+
 .flash-success {
-	background-color: var(--light-grey);
-	border-color: var(--mid-light-grey);
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
 }
 
 .d-flex {
@@ -372,10 +400,11 @@ form {
 }
 
 .btn {
-	color: var(--mid-dark-grey);
+	color: var(--mid-light-grey);
 	font-weight: normal;
-	background-color: var(--light-grey);
-	box-shadow: 0 1px 0 rgba(27,31,35,0.04),inset 0 1px 0 var(--light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
+	box-shadow: 0 1px 0 var(--dark-grey),inset 0 1px 0 var(--mid-dark-grey);
 	transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
 	position: relative;
 	display: inline-block;
@@ -395,19 +424,17 @@ form {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	border-color: rgba(27,31,35,0.15);
 }
+
 .btn-primary {
 	background-color: var(--grape);
 	color: white;
 }
 
-
 .btn:hover, .btn.hover, [open] > .btn {
-	background-color: var(--light-grey);
+	background-color: var(--mid-grey);
 	transition-duration: 0.1s;
 }
-
 
 .btn-primary:hover, .btn-primary.hover, [open] > .btn-primary {
 	background-color: #2c974b;
@@ -422,7 +449,6 @@ form {
 	vertical-align: text-top;
 	fill: currentColor;
 }
-
 
 .error-wrapper {
 	margin-bottom: 65px;
