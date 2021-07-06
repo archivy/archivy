@@ -10,7 +10,7 @@ from archivy import app
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
 from archivy.data import open_file, format_file, unformat_file
-from archivy.helpers import load_config, write_config, load_hooks
+from archivy.helpers import load_config, write_config
 from archivy.models import User, DataObj
 
 
@@ -114,7 +114,6 @@ def hooks():
 def run():
     click.echo("Running archivy...")
     load_dotenv()
-    app.config["HOOKS"] = load_hooks()
     environ["FLASK_RUN_FROM_CLI"] = "false"
     app_with_cli = create_click_web_app(click, cli, app)
     app_with_cli.run(host=app.config["HOST"], port=app.config["PORT"])
