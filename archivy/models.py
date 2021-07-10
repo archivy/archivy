@@ -93,9 +93,14 @@ class DataObj:
             self.url
         ):
             return None
-
+        selector = None
         for pattern, handler in current_app.config["SCRAPING_PATTERNS"].items():
             if fnmatch.fnmatch(self.url, pattern):
+                if type(handler) == str:
+                    # if the handler is a string, it's simply a css selector to process the page with
+                    selector = handler
+                    break
+                # otherwise custom user function that overrides archivy behavior
                 handler(self)
                 return
 
@@ -117,7 +122,7 @@ class DataObj:
             return
 
         try:
-            self.content = self.extract_content(parsed_html)
+            self.content = self.extract_content(parsed_html, selector)
         except Exception:
             flash(f"Could not extract content from {self.url}\n", "error")
             return
@@ -130,12 +135,17 @@ class DataObj:
         self.title = ""
         self.content = ""
 
-    def extract_content(self, beautsoup):
+    def extract_content(self, beautsoup, selector=None):
         """converts html bookmark url to optimized markdown and saves images"""
 
         stripped_tags = ["footer", "nav"]
         url = self.url.rstrip("/")
 
+        if selector:
+            selected_soup = beautsoup.select(selector)
+            # if the custom selector matched, take the first occurrence
+            if selected_soup:
+                beautsoup = selected_soup[0]
         for tag in stripped_tags:
             if getattr(beautsoup, tag):
                 getattr(beautsoup, tag).extract()

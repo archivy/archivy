@@ -32,6 +32,8 @@ SCRAPING_CONF:
 
 If you want to configure the scraping progress more, you can also create a `scraping.py` file in the root of your user directory. This file allows you to override the default bookmarking behavior for certain websites / links, which you can match with regex.
 
+Once it matches a link, you can either pass your own custom function for parsing, or simply pass a string, which corresponds to the CSS selector for the part of the page you want archivy to scrape. If there are several matches, only the first will be treated.
+
 Example that processes youtube videos:
 
 ```python
@@ -49,6 +51,15 @@ PATTERNS = {
 ```
 
 With this example, whenever you create a bookmark of a youtube video, instead of going through the default archival, your function will be called on the data.
+
+
+Example that tells archivy only to scrape the main body of Wikipedia pages:
+
+```python
+PATTERNS = {
+	"https://*.wikipedia.org/wiki/*": "#bodyContent"
+}
+```
 
 Example patterns:
 

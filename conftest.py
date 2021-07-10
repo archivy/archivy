@@ -127,6 +127,29 @@ def bookmark_fixture(test_app, mocked_responses):
     return bookmark
 
 
+@pytest.fixture
+def different_bookmark_fixture(test_app, mocked_responses):
+    mocked_responses.add(
+        responses.GET,
+        "https://example2.com/",
+        body="""<html>
+        <head><title>Example</title></head><body><p>asdsad<div class="nested">aaa</div></body></html>
+    """,
+    )
+
+    datapoints = {
+        "type": "bookmark",
+        "title": "Test Bookmark2",
+        "url": "https://example2.com/",
+    }
+
+    with test_app.app_context():
+        bookmark = DataObj(**datapoints)
+        bookmark.process_bookmark_url()
+        bookmark.insert()
+    return bookmark
+
+
 @pytest.fixture()
 def user_fixture(test_app):
     user = {"username": "__username__", "password": "__password__"}

@@ -46,7 +46,8 @@ def custom_scraping_setup(test_app, cli_runner, click_cli):
                 data.tags = ["test"]
             
             PATTERNS = {
-                "https://example.com/": test_pattern
+                "https://example.com/": test_pattern,
+                "https://example2.com/": ".nested"
             }"""
 
     with cli_runner.isolated_filesystem():
@@ -91,9 +92,15 @@ def test_user_creation_hook(test_app, hooks_cli_runner, user_fixture):
     assert f"New user {user_fixture.username} created." == creation_message["content"]
 
 
-def test_custom_scraping_patterns(custom_scraping_setup, test_app, bookmark_fixture):
+def test_custom_scraping_patterns(
+    custom_scraping_setup, test_app, bookmark_fixture, different_bookmark_fixture
+):
     pattern = "example.com"
     assert pattern in bookmark_fixture.url
     assert bookmark_fixture.title == "Overridden note"
     assert bookmark_fixture.tags == ["test"]
+    pattern = "example2.com"
+    assert pattern in different_bookmark_fixture.url
+    # check that the CSS selector was parsed and other parts of the document were not selected
+    assert different_bookmark_fixture.content.startswith("aaa")
     test_app.config["SCRAPING_PATTERNS"] = {}
