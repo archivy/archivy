@@ -13,6 +13,7 @@
     --hyperlink-color: #539bf5;
 }
 
+
 body {
 	color: var(--mid-light-grey);
     background: var(--dark-grey);
@@ -31,10 +32,13 @@ mark {
 input, select {
 	color: var(--mid-light-grey);
 	background-color: var(--mid-dark-grey);
+	border-bottom: 3px var(--mid-grey) solid;
 }
+
 input:focus:not([type="submit"]), input:hover:not([type="submit"]), select:focus, select:hover {
-	border-color: var(--mid-grey);
+	border-color: var(--mid-green);
 }
+
 .folder-cont {
 	border-left: 2px var(--mid-green) solid;
 }
@@ -46,10 +50,6 @@ input:focus:not([type="submit"]), input:hover:not([type="submit"]), select:focus
 }
 .sidebar {
 	border-right: 5px solid var(--mid-dark-grey);
-}
-
-#searchBar {
-	border: 1px solid var(--light-grey); border-radius: 5px
 }
 
 #main-links .btn {
