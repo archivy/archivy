@@ -97,6 +97,9 @@ form {
 	width: 300px;
 }
 
+#login-cont input {
+	margin: 7.5px auto;
+}
 /* sidebar styles */
 .expand-btn {
 	background: none;
