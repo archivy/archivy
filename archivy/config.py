@@ -18,7 +18,11 @@ class Config(object):
         self.PANDOC_HIGHLIGHT_THEME = "pygments"
         self.SCRAPING_CONF = {"save_images": False}
 
-        self.THEME_CONF = {"use_custom_css": False, "custom_css_file": ""}
+        self.THEME_CONF = {
+            "use_theme_dark": False,
+            "use_custom_css": False,
+            "custom_css_file": "",
+        }
 
         self.EDITOR_CONF = {
             "settings": {
