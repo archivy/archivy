@@ -251,8 +251,13 @@ form {
 }
 
 #post-btns form {
-	margin: 0;
+	margin: 0 10 0 0;
 }
+
+#post-btns .btn {
+	height: 35px;
+}
+
 #post-btns .btn-delete {
 	margin-left: 5px;
 	width: 100%;
