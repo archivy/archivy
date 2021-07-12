@@ -4,6 +4,9 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+      {% if config.THEME_CONF.get('use_theme_dark', False) %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='main_dark.css') }}">
+      {% endif %}
       {% if config.THEME_CONF.get('use_custom_css', False) %}
         <link rel="stylesheet" href="/static/custom.css">
       {% endif %}

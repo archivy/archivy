@@ -1,0 +1,37 @@
+.EasyMDEContainer .CodeMirror {
+    color: var(--mid-light-grey);
+    background: var(--dark-grey);
+    border: 1px solid var(--mid-grey);
+}
+
+.EasyMDEContainer .CodeMirror-fullscreen {
+    background: var(--dark-grey);
+}
+
+.EasyMDEContainer .CodeMirror-focused .CodeMirror-selected, .CodeMirror-selectedtext, .CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {
+    background: #3297fd;
+	color: white;
+}
+
+.editor-toolbar {
+    background-color: var(--mid-dark-grey);
+    border-top: 1px solid var(--mid-grey);
+    border-left: 1px solid var(--mid-grey);
+    border-right: 1px solid var(--mid-grey);
+}
+
+.editor-toolbar button {
+    color: var(--mid-light-grey);
+}
+
+.editor-toolbar.fullscreen {
+    background: var(--dark-grey);
+}
+
+.editor-preview {
+    background: var(--dark-grey);
+}
+
+.editor-preview-side {
+    border: 1px solid var(--mid-grey);
+}

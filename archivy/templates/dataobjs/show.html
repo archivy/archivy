@@ -4,10 +4,16 @@
   {% include "markdown-parser.html" %}
   {% if not view_only %}
     <link rel="stylesheet" href="/static/editor.css">
+    {% if config.THEME_CONF.get('use_theme_dark', False) %}
+      <link rel="stylesheet" href="/static/editor_dark.css">
+    {% endif %}
     <link rel="stylesheet" href="/static/accessibility.css">
     <script async src="/static/editor.js"></script>
   {% endif %}
   <link rel="stylesheet" href="/static/markdown.css">
+  {% if config.THEME_CONF.get('use_theme_dark', False) %}
+    <link rel="stylesheet" href="/static/markdown_dark.css">
+  {% endif %}
   {% if search_enabled %}
     <div id="link-form" style="display: none">
   <div>
@@ -133,7 +139,7 @@
 
       // Render the editor and put the dataobj in it
       let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
-      
+
       // Set up search
       {% if search_enabled %}
         let input = document.getElementById("searchBar");
@@ -211,7 +217,7 @@
                 })
                 if (req.ok) {
                   let bookmark = await req.json();
-                  editor.codemirror.replaceSelection(`[${link}](/dataobj/${bookmark["bookmark_id"]})\n`); 
+                  editor.codemirror.replaceSelection(`[${link}](/dataobj/${bookmark["bookmark_id"]})\n`);
                 }
               }  // action
             },  // archive-btn

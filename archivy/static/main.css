@@ -97,6 +97,9 @@ form {
 	width: 300px;
 }
 
+#login-cont input {
+	margin: 7.5px auto;
+}
 /* sidebar styles */
 .expand-btn {
 	background: none;
@@ -176,10 +179,6 @@ form {
 	content: "LaTeX"
 }
 
-#searchBar {
-	border: 1px solid #dfe1e5; border-radius: 5px
-}
-
 /* homepage styles */
 #main-links {
 	margin-bottom: 15px;
@@ -252,8 +251,13 @@ form {
 }
 
 #post-btns form {
-	margin: 0;
+	margin: 0 10 0 0;
 }
+
+#post-btns .btn {
+	height: 35px;
+}
+
 #post-btns .btn-delete {
 	margin-left: 5px;
 	width: 100%;

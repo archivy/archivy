@@ -1,0 +1,134 @@
+:root {
+	--light-green: #f6efa6;
+	--mid-green: #48BB78;
+    --rose: #ffe3e6;
+	--mid-rose: #f97583;
+    --dark-rose: #e5534b;
+	--grape: #7848bb;
+    --dark-grey: #22272e;
+    --mid-dark-grey: #373e47;
+    --mid-grey: #636e7b;
+    --mid-light-grey: #909dab;
+    --light-grey: #cdd9e5;
+    --hyperlink-color: #539bf5;
+}
+
+
+body {
+	color: var(--mid-light-grey);
+    background: var(--dark-grey);
+}
+
+
+a {
+	color: var(--hyperlink-color);
+}
+
+mark {
+	background-color: var(--light-green);
+}
+
+/* default form stylings */
+input, select {
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-bottom: 3px var(--mid-grey) solid;
+}
+
+input:focus:not([type="submit"]), input:hover:not([type="submit"]), select:focus, select:hover {
+	border-color: var(--mid-green);
+}
+
+.folder-cont {
+	border-left: 2px var(--mid-green) solid;
+}
+.folder-cont h3 {
+	color: var(--mid-light-grey);
+}
+.folder-cont a {
+	color: var(--mid-light-grey);
+}
+.sidebar {
+	border-right: 5px solid var(--mid-dark-grey);
+}
+
+#main-links .btn {
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
+}
+
+#main-links .btn:hover, .btn.hover, [open] > .btn {
+	background-color: var(--mid-grey);
+	transition-duration: 0.1s;
+}
+
+#current-path a {
+	color: var(--hyperlink-color);
+}
+#files ul li {
+	border-top: 1px var(--mid-grey) solid;
+}
+
+#files ul a {
+	color: var(--mid-light-grey);
+}
+#post-btns button {
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
+}
+
+#post-btns .btn:hover, .btn.hover, [open] > .btn {
+	background-color: var(--mid-grey);
+	transition-duration: 0.1s;
+}
+.post-title-form-sucess {
+	color: var(--mid-green);
+}
+
+.post-tags span {
+    color: var(--mid-dark-grey);
+	background: var(--light-green);
+}
+
+/*Partly inspired by Primer -> https://github.com/primer/css*/
+.Header {
+	color: var(--mid-light-grey);
+    background-color: var(--mid-dark-grey) !important;
+}
+
+.Header-link {
+	color: var(--light-grey);
+}
+.flash {
+	color: var(--mid-dark-grey);
+}
+
+.flash-error {
+	background-color: var(--rose);
+	border-color: var(--dark-rose);
+}
+
+.flash-success {
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
+}
+
+
+.btn {
+	color: var(--mid-light-grey);
+	background-color: var(--mid-dark-grey);
+	border-color: var(--mid-grey);
+	box-shadow: 0 1px 0 var(--dark-grey),inset 0 1px 0 var(--mid-dark-grey);
+}
+
+.btn:hover, .btn.hover, [open] > .btn {
+	background-color: var(--mid-grey);
+}
+
+#link-form {
+	border: 1px var(--light-grey) solid;
+	background-color: var(--light-grey);
+}
