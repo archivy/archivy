@@ -9,7 +9,6 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from archivy.helpers import load_hooks
 from archivy.search import remove_from_index
 
 
@@ -208,7 +207,7 @@ def update_item_md(dataobj_id, new_content):
         filename.relative_to(current_app.config["USER_DIR"])
     )
     converted_dataobj.index()
-    load_hooks().on_edit(converted_dataobj)
+    current_app.config["HOOKS"].on_edit(converted_dataobj)
 
 
 def update_item_frontmatter(dataobj_id, new_frontmatter):
@@ -241,7 +240,7 @@ def update_item_frontmatter(dataobj_id, new_frontmatter):
         filename.relative_to(current_app.config["USER_DIR"])
     )
     converted_dataobj.index()
-    load_hooks().on_edit(converted_dataobj)
+    current_app.config["HOOKS"].on_edit(converted_dataobj)
 
 
 def get_dirs():

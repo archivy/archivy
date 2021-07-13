@@ -32,8 +32,18 @@ def load_hooks():
     user_locals = {}
     exec(user_hooks.read(), globals(), user_locals)
     user_hooks.close()
+    return user_locals.get("Hooks", BaseHooks)()
 
-    return user_locals["Hooks"]()
+
+def load_scraper():
+    try:
+        user_scraping = (Path(current_app.config["USER_DIR"]) / "scraping.py").open()
+    except FileNotFoundError:
+        return {}
+    user_locals = {}
+    exec(user_scraping.read(), globals(), user_locals)
+    user_scraping.close()
+    return user_locals.get("PATTERNS", {})
 
 
 def get_db(force_reconnect=False):

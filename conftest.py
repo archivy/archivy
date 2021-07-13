@@ -8,7 +8,7 @@ import responses
 
 from archivy import app, cli
 from archivy.click_web import create_click_web_app, _flask_app
-from archivy.helpers import get_db
+from archivy.helpers import get_db, load_hooks
 from archivy.models import DataObj, User
 
 _app = None
@@ -118,6 +118,29 @@ def bookmark_fixture(test_app, mocked_responses):
         "tags": ["testing", "archivy"],
         "path": "",
         "url": "https://example.com/",
+    }
+
+    with test_app.app_context():
+        bookmark = DataObj(**datapoints)
+        bookmark.process_bookmark_url()
+        bookmark.insert()
+    return bookmark
+
+
+@pytest.fixture
+def different_bookmark_fixture(test_app, mocked_responses):
+    mocked_responses.add(
+        responses.GET,
+        "https://example2.com/",
+        body="""<html>
+        <head><title>Example</title></head><body><p>asdsad<div class="nested">aaa</div></body></html>
+    """,
+    )
+
+    datapoints = {
+        "type": "bookmark",
+        "title": "Test Bookmark2",
+        "url": "https://example2.com/",
     }
 
     with test_app.app_context():
