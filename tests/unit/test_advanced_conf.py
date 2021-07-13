@@ -3,12 +3,12 @@ from textwrap import dedent
 import pytest
 from tinydb import Query
 
-from archivy.helpers import get_db
+from archivy.helpers import get_db, load_hooks, load_scraper
 from archivy import data
 
 
 @pytest.fixture()
-def hooks_cli_runner(cli_runner, click_cli):
+def hooks_cli_runner(test_app, cli_runner, click_cli):
     """
     Saves hooks to user config directory for tests.
 
@@ -32,6 +32,30 @@ def hooks_cli_runner(cli_runner, click_cli):
         cli_runner.invoke(click_cli, ["init"], input="\nn\nn\n\n")
         with open("hooks.py", "w") as f:
             f.write(dedent(hookfile))
+        with test_app.app_context():
+            test_app.config["HOOKS"] = load_hooks()
+        yield cli_runner
+
+
+@pytest.fixture()
+def custom_scraping_setup(test_app, cli_runner, click_cli):
+    scraping_file = """\
+            def test_pattern(data):
+                data.title = "Overridden note"
+                data.content = "this note was not processed by default archivy bookmarking, but a user-specified function"
+                data.tags = ["test"]
+            
+            PATTERNS = {
+                "https://example.com/": test_pattern,
+                "https://example2.com/": ".nested"
+            }"""
+
+    with cli_runner.isolated_filesystem():
+        cli_runner.invoke(click_cli, ["init"], input="\nn\nn\n\n")
+        with open("scraping.py", "w") as f:
+            f.write(dedent(scraping_file))
+        with test_app.app_context():
+            test_app.config["SCRAPING_PATTERNS"] = load_scraper()
         yield cli_runner
 
 
@@ -64,5 +88,19 @@ def test_dataobj_edit_hook(test_app, hooks_cli_runner, note_fixture, client):
 
 
 def test_user_creation_hook(test_app, hooks_cli_runner, user_fixture):
-    creation_message = get_db().search(Query().type == "user_creation_message")[0]
+    creation_message = get_db().search(Query().type == "user_creation_message")[1]
     assert f"New user {user_fixture.username} created." == creation_message["content"]
+
+
+def test_custom_scraping_patterns(
+    custom_scraping_setup, test_app, bookmark_fixture, different_bookmark_fixture
+):
+    pattern = "example.com"
+    assert pattern in bookmark_fixture.url
+    assert bookmark_fixture.title == "Overridden note"
+    assert bookmark_fixture.tags == ["test"]
+    pattern = "example2.com"
+    assert pattern in different_bookmark_fixture.url
+    # check that the CSS selector was parsed and other parts of the document were not selected
+    assert different_bookmark_fixture.content.startswith("aaa")
+    test_app.config["SCRAPING_PATTERNS"] = {}
