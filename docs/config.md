@@ -46,7 +46,7 @@ def process_videos(data):
 
 # declare your patterns in this PATTERNS variable
 PATTERNS = {
-	"https://youtube.com/*": process_videos
+	"*youtube.com/*": process_videos
 }
 ```
 
