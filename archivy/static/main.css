@@ -282,6 +282,10 @@ form {
 	display: inline-block;
 }
 
+#post-title-form input#title {
+	width: 90%;
+}
+
 .post-title-form-sucess {
 	color: var(--green);
 }
