@@ -126,7 +126,7 @@ def show_all_tags():
     list_of_tags = []
     for this_tag in list(all_tags_with_counts):
         list_of_tags.append({"tagname": this_tag, "count": all_tags[this_tag]["count"]})
-    number_of_tags = len(all_tags_with_counts)
+    number_of_tags = len(list_of_tags)
 
     return render_template(
         "tags/all.html",
