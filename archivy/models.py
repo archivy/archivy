@@ -21,6 +21,7 @@ from werkzeug.datastructures import FileStorage
 from archivy import helpers
 from archivy.data import create, save_image, valid_image_filename
 from archivy.search import add_to_index
+from archivy.tags import add_tag_to_index
 
 
 # TODO: use this as 'type' field
@@ -228,6 +229,7 @@ class DataObj:
             )
 
             hooks.on_dataobj_create(self)
+            [add_tag_to_index(tag) for tag in data["tags"]]
             self.index()
             return self.id
         return False

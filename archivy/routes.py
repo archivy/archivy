@@ -19,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
-from archivy.tags import get_all_tags_with_counts
+from archivy.tags import get_all_tags_with_counts, get_all_tags
 from archivy.search import search
 from archivy.config import Config
 
@@ -82,6 +82,7 @@ def new_bookmark():
     if form.validate_on_submit():
         path = form.path.data
         tags = form.tags.data.split(",") if form.tags.data != "" else []
+        tags = [tag.strip() for tag in tags]
         bookmark = DataObj(url=form.url.data, tags=tags, path=path, type="bookmark")
         bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
@@ -121,13 +122,17 @@ def new_note():
 def show_all_tags():
     all_items = data.get_items(structured=False)
     all_tags_with_counts = get_all_tags_with_counts(all_items)
+
+    list_of_tags = []
+    for this_tag in list(all_tags_with_counts):
+        list_of_tags.append({"tagname": this_tag, "count": all_tags[this_tag]["count"]})
     number_of_tags = len(all_tags_with_counts)
 
     return render_template(
         "tags/all.html",
         title="All Tags",
         number_of_tags=number_of_tags,
-        tags=sorted(all_tags_with_counts, key=lambda k: k["count"], reverse=True),
+        tags=sorted(list_of_tags, key=lambda k: k["count"], reverse=True),
     )
 
 
