@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>All tags</h2>
+<h2>All tags ({{ number_of_tags }})</h2>
 <ul>
   {% for tag in tags %}
     <a href="/tags/{{ tag.name }}">
-      <li>{{ tag.name }} ({{ tag["count"] }})</li>
+      <li>{{ tag.tagname }} ({{ tag["count"] }})</li>
     </a>
   {% endfor %}
 </ul>

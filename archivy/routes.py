@@ -19,6 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
+from archivy.tags import get_all_tags_with_counts
 from archivy.search import search
 from archivy.config import Config
 
@@ -119,24 +120,14 @@ def new_note():
 @app.route("/tags")
 def show_all_tags():
     all_items = data.get_items(structured=False)
-
-    # Fetch all tags from the dataobjs and count how often they appear.
-    all_tags = {}
-    for item in all_items:
-        for this_tag in item["tags"]:
-            if this_tag not in list(all_tags):
-                all_tags[this_tag] = {"count": 1}
-            else:
-                all_tags[this_tag]["count"] += 1
-
-    list_of_tags = []
-    for this_tag in list(all_tags):
-        list_of_tags.append({"name": this_tag, "count": all_tags[this_tag]["count"]})
+    all_tags_with_counts = get_all_tags_with_counts(all_items)
+    number_of_tags = len(all_tags_with_counts)
 
     return render_template(
         "tags/all.html",
         title="All Tags",
-        tags=sorted(list_of_tags, key=lambda k: k["count"], reverse=True),
+        number_of_tags=number_of_tags,
+        tags=sorted(all_tags_with_counts, key=lambda k: k["count"], reverse=True),
     )
 
 
