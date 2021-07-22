@@ -123,26 +123,22 @@ def show_all_tags():
     # Fetch all tags from the dataobjs and count how often they appear.
     all_tags = {}
     for item in all_items:
-        for this_tag in item['tags']:
+        for this_tag in item["tags"]:
             if this_tag not in list(all_tags):
-                all_tags[this_tag] = {
-                    "count": 1
-                }
+                all_tags[this_tag] = {"count": 1}
             else:
-                all_tags[this_tag]['count'] += 1
+                all_tags[this_tag]["count"] += 1
 
     list_of_tags = []
     for this_tag in list(all_tags):
-        list_of_tags.append({
-            'name': this_tag,
-            'count': all_tags[this_tag]['count']
-        })
+        list_of_tags.append({"name": this_tag, "count": all_tags[this_tag]["count"]})
 
     return render_template(
         "tags/all.html",
         title="All Tags",
-        tags=sorted(list_of_tags, key=lambda k: k['count'], reverse=True)
+        tags=sorted(list_of_tags, key=lambda k: k["count"], reverse=True),
     )
+
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
@@ -151,15 +147,16 @@ def show_tag(tag_name):
     # Fetch all tags from the dataobjs and count how often they appear.
     all_dataobjs = []
     for item in all_items:
-        if tag_name in item['tags']:
+        if tag_name in item["tags"]:
             all_dataobjs.append(item)
 
     return render_template(
         "tags/show.html",
         title=f"Tags - {tag_name}",
         tag_name=tag_name,
-        all_dataobjs=all_dataobjs
+        all_dataobjs=all_dataobjs,
     )
+
 
 @app.route("/dataobj/<dataobj_id>")
 def show_dataobj(dataobj_id):

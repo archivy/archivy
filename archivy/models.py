@@ -81,8 +81,7 @@ class DataObj:
     tags: List[str] = attrib(validator=instance_of(list), default=[])
     url: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     date: Optional[datetime] = attrib(
-        validator=optional(instance_of(datetime)),
-        default=None,
+        validator=optional(instance_of(datetime)), default=None
     )
     path: str = attrib(validator=instance_of(str), default="")
     fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
