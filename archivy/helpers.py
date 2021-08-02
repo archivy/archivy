@@ -97,14 +97,33 @@ def test_es_connection(es):
         )
 
 
-def get_elastic_client():
+def get_elastic_client(error_if_invalid=True):
     """Returns the elasticsearch client you can use to search and insert / delete data"""
     if (
         not current_app.config["SEARCH_CONF"]["enabled"]
         or current_app.config["SEARCH_CONF"]["engine"] != "elasticsearch"
-    ):
+    ) and error_if_invalid:
         return None
 
-    es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
-    test_es_connection(es)
+    auth_setup = (
+        current_app.config["SEARCH_CONF"]["es_user"]
+        and current_app.config["SEARCH_CONF"]["es_password"]
+    )
+    if auth_setup:
+        es = Elasticsearch(
+            current_app.config["SEARCH_CONF"]["url"],
+            http_auth=(
+                current_app.config["SEARCH_CONF"]["es_user"],
+                current_app.config["SEARCH_CONF"]["es_password"],
+            ),
+        )
+    else:
+        es = Elasticsearch(current_app.config["SEARCH_CONF"]["url"])
+    if error_if_invalid:
+        test_es_connection(es)
+    else:
+        try:
+            es.cluster.health()
+        except elasticsearch.exceptions.ConnectionError:
+            return False
     return es
