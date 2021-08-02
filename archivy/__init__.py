@@ -42,11 +42,11 @@ if app.config["SEARCH_CONF"]["enabled"]:
                 "Search is enabled but engine option is invalid or absent. Archivy will try to guess preferred search engine."
             )
             app.config["SEARCH_CONF"]["engine"] = "none"
-            es = elasticsearch.Elasticsearch(app.config["SEARCH_CONF"]["url"])
-            try:
-                es.cluster.health()
+
+            es = get_elastic_client(error_if_invalid=False)
+            if es:
                 app.config["SEARCH_CONF"]["engine"] = "elasticsearch"
-            except elasticsearch.exceptions.ConnectionError:
+            else:
                 if which("rg"):
                     app.config["SEARCH_CONF"]["engine"] = "ripgrep"
             engine = app.config["SEARCH_CONF"]["engine"]
