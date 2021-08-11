@@ -109,7 +109,8 @@ Variables marked `ES only` in their description are only relevant when using the
 | `enabled`               | 1                              |                                       |
 | `engine`                | empty string                   | search engine you'd like to use. One of `["ripgrep", ["elasticsearch"]`|
 | `url`                   | http://localhost:9200          | **[ES only]** Url to the elasticsearch server       |
-| `search_conf`           | Long dict of ES config options | **[ES only]** Configuration of Elasticsearch [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html), [mappings](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) and general settings. |
+| `es_user` and `es_password` | None | If you're using authentication, for example with a cloud-hosted ES install, you can specify a user and password |
+| `es_processing_conf`           | Long dict of ES config options | **[ES only]** Configuration of Elasticsearch [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html), [mappings](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) and general settings. |
 
 
 `INTERNAL_DIR` and `USER_DIR` by default will be set by the
