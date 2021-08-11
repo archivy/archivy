@@ -45,7 +45,7 @@ class Config(object):
             "url": "http://localhost:9200",
             "index_name": "dataobj",
             "engine": "",
-            "search_conf": {
+            "es_processing_conf": {
                 "settings": {
                     "highlight": {"max_analyzed_offset": 100000000},
                     "analysis": {

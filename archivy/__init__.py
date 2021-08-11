@@ -61,7 +61,7 @@ if app.config["SEARCH_CONF"]["enabled"]:
             try:
                 es.indices.create(
                     index=app.config["SEARCH_CONF"]["index_name"],
-                    body=app.config["SEARCH_CONF"]["search_conf"],
+                    body=app.config["SEARCH_CONF"]["es_processing_conf"],
                 )
             except elasticsearch.exceptions.RequestError:
                 app.logger.info("Elasticsearch index already created")
