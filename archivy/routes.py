@@ -125,7 +125,9 @@ def show_all_tags():
 
     list_of_tags = []
     for this_tag in list(all_tags_with_counts):
-        list_of_tags.append({"tagname": this_tag, "count": all_tags[this_tag]["count"]})
+        list_of_tags.append(
+            {"tagname": this_tag, "count": all_tags_with_counts[this_tag]["count"]}
+        )
     number_of_tags = len(list_of_tags)
 
     return render_template(
@@ -186,6 +188,8 @@ def show_dataobj(dataobj_id):
     post_title_form = forms.TitleForm()
     post_title_form.title.data = dataobj["title"]
 
+    list_of_tags = get_all_tags()
+
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -197,6 +201,7 @@ def show_dataobj(dataobj_id):
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
         post_title_form=post_title_form,
         move_form=move_form,
+        list_of_tags=list_of_tags,
     )
 
 

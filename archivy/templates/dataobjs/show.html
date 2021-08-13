@@ -9,6 +9,7 @@
     {% endif %}
     <link rel="stylesheet" href="/static/accessibility.css">
     <script async src="/static/editor.js"></script>
+
   {% endif %}
   <link rel="stylesheet" href="/static/markdown.css">
   {% if config.THEME_CONF.get('use_theme_dark', False) %}
@@ -16,11 +17,11 @@
   {% endif %}
   {% if search_enabled %}
     <div id="link-form" style="display: none">
-  <div>
+      <div>
         <input type="text" id="searchBar" placeholder="Search for linked note.">
-    <button onclick="toggleLinkForm()" class="btn">Cancel</button>
-  </div>
-        <ul id="searchHits"></ul>
+        <button onclick="toggleLinkForm()" class="btn">Cancel</button>
+      </div>
+      <ul id="searchHits"></ul>
     </div>
   {% endif %}
   <div class="post-header">
@@ -44,6 +45,7 @@
     </div>
 
     <span class="post-date">{{ dataobj['date'] }}</span>
+
 
     {% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
       <a href="{{ dataobj['url'] }}" rel="noopener">
@@ -81,6 +83,7 @@
 
     {% endif %}
   </div>
+
   <div id="content-cont" class="markdown-body">
     <div id="content"></div>
       {% if not view_only %}
@@ -264,7 +267,7 @@
           },
         });  // EasyMDE
 
-        editor.value(`{{ content }}`)
+        editor.value(`{{ content }}`);
 
         input?.addEventListener("input", async function() {
           let query = input.value;
@@ -298,6 +301,28 @@
         oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
         editorDiv.classList.add("hidden");
         document.body.scrollIntoView(true);
+
+        // Tag autocompletion
+        tag_tooltip = document.createElement("div");
+        tag_tooltip.id = "tag_tooltip";
+        var cm = document.getElementsByClassName("CodeMirror")[0];
+        cm.appendChild(tag_tooltip);
+
+        editor.codemirror.on("cursorActivity", function() {
+          tag_tooltip = document.querySelector("#tag_tooltip")
+          var cursor = document.querySelector('.CodeMirror-cursor');
+          tag_tooltip.innerHTML = cursor.style.top + " " + cursor.style.left;
+
+          document.querySelector("#tag_tooltip").style.zIndex += 1;
+          document.querySelector("#tag_tooltip").style.position = "absolute";
+          document.querySelector("#tag_tooltip").style.top = cursor.style.top;
+          document.querySelector("#tag_tooltip").style.left = cursor.style.left;
+
+          console.log("a", document.querySelector("#tag_tooltip").style.zIndex)
+          console.log("a", document.querySelector("#tag_tooltip").style.position)
+          console.log("a", document.querySelector("#tag_tooltip").style.top)
+          console.log("a", document.querySelector("#tag_tooltip").style.left)
+        });
 
         /* Screenreader mode checkbox */
         function toggleScreenReaderMode(cbox, editor)
@@ -337,7 +362,9 @@
         /* Add screenreader save button handler */
         let srSaveBtn = document.getElementById("sr-savebutton");
         srSaveBtn.onclick = screenReaderSave;
-      })  // window.addEventListener("load"
+      })  // window.addEventListener("load")
+
+
 
       function toggleEditor(btn) {
         let btnText = btn.querySelector("span");
