@@ -169,7 +169,7 @@ class DataObj:
                     ]  # remove query parameters
                 except ValueError:
                     pass
-                if tag["src"].startswith("/") or tag["src"].startswith("./"):
+                if not tag["src"].startswith("http"):
                     tag["src"] = urljoin(url, tag["src"])
                 if current_app.config["SCRAPING_CONF"][
                     "save_images"
