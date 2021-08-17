@@ -6,7 +6,6 @@
     <ul id="searchHits"></ul>
 {% endif %}
 
-
 <div id="files">
     {% if not view_only %}
         <div class="d-flex" id="main-links">
@@ -32,6 +31,14 @@
                 {{ new_folder_form.new_dir(placeholder="New folder name") }}
                 {{ new_folder_form.submit() }}
             </form>
+            {% if current_path != "" %}
+                <form action="/folders/rename" method="post" class="d-flex">
+                    {{ rename_form.csrf_token }}
+		    {{ rename_form.current_path(value=current_path) }}
+                    {{ rename_form.new_name(placeholder="New Name") }}
+                    {{ rename_form.submit() }}
+                </form>
+            {% endif %}
         </div>
     {% endif %}
     <ul>

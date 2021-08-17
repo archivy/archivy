@@ -291,7 +291,7 @@ def test_move_data(test_app, note_fixture, client):
         follow_redirects=True,
     )
     assert resp.status_code == 200
-    assert "Data successfully moved to random."
+    assert b"Data successfully moved to random." in resp.data
 
     assert get_item(1)["dir"] == "random"
 
@@ -313,8 +313,47 @@ def test_invalid_inputs_fail_move_data(test_app, note_fixture, client):
 
     faulty_paths = ["../adarnad", "~/adasd", "ssss"]
     for p in faulty_paths:
-        print(p)
         resp = client.post(
             "/dataobj/move/1", data={"path": p, "submit": "true"}, follow_redirects=True
         )
         assert b"Data could not be moved to " + bytes(p, "utf-8") in resp.data
+
+
+def test_rename_dir(test_app, client):
+    create_dir("random")
+
+    resp = client.post(
+        "/folders/rename",
+        data={"current_path": "random", "new_name": "renamed_random"},
+        follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    assert b"Renamed successfully" in resp.data
+
+
+def test_invalid_inputs_fail_renaming(test_app, client):
+    create_dir("random")
+    create_dir("random2")
+    resp = client.post(
+        "/folders/rename",
+        data={"current_path": "inexisting", "new_name": "random3"},
+        follow_redirects=True,
+    )
+    assert b"Directory not found" in resp.data
+
+    resp = client.post(
+        "/folders/rename",
+        data={"current_path": "random", "new_name": "random2"},
+        follow_redirects=True,
+    )
+    assert b"Target directory exists." in resp.data
+
+    faulty_paths = ["../adarnad", "~/adasd", "/illegal_dir", "."]
+    for p in faulty_paths:
+        print(p)
+        resp = client.post(
+            "/folders/rename",
+            data={"current_path": "random", "new_name": p},
+            follow_redirects=True,
+        )
+        assert b"Invalid input" in resp.data

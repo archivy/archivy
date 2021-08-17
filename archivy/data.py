@@ -141,7 +141,7 @@ def move_item(dataobj_id, new_path):
     """Move dataobj of given id to new_path"""
     file = get_by_id(dataobj_id)
     data_dir = get_data_dir()
-    out_dir = data_dir / new_path
+    out_dir = (data_dir / new_path).resolve()
     if not file:
         raise FileNotFoundError
     if (out_dir / file.parts[-1]).exists():
@@ -149,6 +149,26 @@ def move_item(dataobj_id, new_path):
     elif is_relative_to(out_dir, data_dir) and out_dir.exists():  # check file isn't
         return shutil.move(str(file), f"{get_data_dir()}/{new_path}/")
     return False
+
+
+def rename_folder(old_path, new_name):
+    data_dir = get_data_dir()
+    curr_dir = (data_dir / old_path).resolve()
+    suggested_renaming = (curr_dir.parent / new_name).resolve()
+    if (
+        not is_relative_to(suggested_renaming, data_dir)
+        or curr_dir == data_dir
+        or suggested_renaming == data_dir
+        or not is_relative_to(curr_dir, data_dir)
+        or not suggested_renaming.parent.is_dir()
+    ):
+        return False  # invalid inputs
+    if not curr_dir.is_dir():
+        raise FileNotFoundError
+    if suggested_renaming.exists():
+        raise FileExistsError
+    curr_dir.rename(suggested_renaming)
+    return str(suggested_renaming.relative_to(data_dir))
 
 
 def delete_item(dataobj_id):
