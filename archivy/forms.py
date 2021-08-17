@@ -31,7 +31,7 @@ class MoveItemForm(FlaskForm):
 class RenameDirectoryForm(FlaskForm):
     new_name = StringField("New name", validators=[DataRequired()])
     current_path = HiddenField()
-    submit = SubmitField("Rename")
+    submit = SubmitField("Rename current folder")
 
 
 class DeleteDataForm(FlaskForm):
