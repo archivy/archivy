@@ -79,3 +79,4 @@ db.json
 data/
 .vim/
 .vscode/
+.idea/
