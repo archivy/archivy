@@ -38,7 +38,6 @@ def test_initialization(test_app, cli_runner, click_cli):
     conf = open(conf_path).read()
 
     # assert defaults are saved
-    assert "PANDOC_HIGHLIGHT_THEME: pygments" in conf
     assert f"USER_DIR: {test_app.config['USER_DIR']}" in conf
     assert "HOST: 127.0.0.1"
     # check ES config not saved
