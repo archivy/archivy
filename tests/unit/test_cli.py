@@ -63,7 +63,6 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     # assert ES Config is saved
     assert "SEARCH_CONF" in conf
     assert "enabled: 1" in conf
-    assert "url: http://localhost:9200" in conf
 
     # check initialization in random directory
     # has resulted in change of user dir
