@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% macro render_form(form, depth) %}
+	{% for field in form %}
+		{% if field.type == "FormField"%}
+		<div>
+			{% if field.data | length > 1 %}
+				<h{{ [4, depth + 1] | min}}>{{ field.label.text }}</h{{ [4, depth + 1] | min}}>
+			{% endif %}
+			{{ render_form(field, depth + 1) }}
+		</div>
+		{% elif not field.type in ["CSRFTokenField", "FormField", "SubmitField"] %}
+			<div>	
+			{{ field.label }}
+			{{ field() }}
+			</div>
+		{% elif field.type in ["CSRFTokenField", "SubmitField"] %}
+			{{ field() }}
+		{% endif %}
+	{% endfor %}
+{%- endmacro -%}
+{% block content %}
+	<h1>Config</h1>
+	<p>Check out <a href="https://archivy.github.io/config" target="_blank" rel="noopener">the documentation</a> for more info on these options.</p>
+ 	<form action="/config" method="POST">
+		{{ render_form(conf, 1) }}
+	</form>
+	
+{% endblock %}

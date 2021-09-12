@@ -45,6 +45,8 @@ class Config(object):
             "url": "http://localhost:9200",
             "index_name": "dataobj",
             "engine": "",
+            "es_user": "",
+            "es_password": "",
             "es_processing_conf": {
                 "settings": {
                     "highlight": {"max_analyzed_offset": 100000000},
@@ -72,14 +74,23 @@ class Config(object):
             },
         }
 
-    def override(self, user_conf: dict):
+    def override(self, user_conf: dict, nested_dict=None):
         for k, v in user_conf.items():
             # handle ES options, don't override entire dict if one key is passed
-            if k == "SEARCH_CONF":
-                for subkey, subval in v.items():
-                    self.SEARCH_CONF[subkey] = subval
+            if (nested_dict and not k in nested_dict) or (
+                not nested_dict and not hasattr(self, k)
+            ):
+                continue
+            if type(v) is dict:
+                if nested_dict:
+                    self.override(v, nested_dict[k])
+                else:
+                    self.override(v, nested_dict=getattr(self, k))
             else:
-                setattr(self, k, v)
+                if nested_dict:
+                    nested_dict[k] = v
+                else:
+                    setattr(self, k, v)
 
 
 class BaseHooks:

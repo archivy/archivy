@@ -18,8 +18,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from archivy.models import DataObj, User
 from archivy import data, app, forms
-from archivy.helpers import get_db
+from archivy.helpers import get_db, write_config
 from archivy.search import search
+from archivy.config import Config
 
 
 @app.context_processor
@@ -169,11 +170,9 @@ def move_data(dataobj_id):
         return redirect(f"/dataobj/{dataobj_id}")
     try:
         if data.move_item(dataobj_id, form.path.data):
-            print("c")
             flash(f"Data successfully moved to {out_dir}.", "success")
             return redirect(f"/dataobj/{dataobj_id}")
         else:
-            print("k")
             flash(f"Data could not be moved to {out_dir}.", "error")
             return redirect(f"/dataobj/{dataobj_id}")
     except FileNotFoundError:
@@ -292,4 +291,30 @@ def custom_css():
     return send_from_directory(
         Path(app.config["USER_DIR"]) / "css",
         app.config["THEME_CONF"]["custom_css_file"],
+    )
+
+
+@app.route("/config", methods=["GET", "POST"])
+def config():
+    def update_config_value(key, val, dictionary):
+        if key != "SECRET_KEY":
+            if type(val) is dict:
+                for k, v in val.items():
+                    update_config_value(k, v, dictionary[key])
+            else:
+                dictionary[key] = val
+
+    form = forms.config_form(app.config)
+    default = vars(Config())
+    if form.validate_on_submit():
+        changed_config = Config()
+        changed_config.override(form.data)
+        for k, v in vars(changed_config).items():
+            update_config_value(k, v, app.config)
+        write_config(vars(changed_config))
+        flash("Config successfully updated.", "success")
+    elif request.method == "POST":
+        flash("Could not update config.", "error")
+    return render_template(
+        "config.html", conf=form, default=default, title="Edit Config"
     )

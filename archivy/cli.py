@@ -38,7 +38,6 @@ def init(ctx):
         pass
 
     config = Config()
-    delattr(config, "SECRET_KEY")
 
     click.echo("This is the archivy installation initialization wizard.")
     data_dir = click.prompt(
@@ -60,8 +59,6 @@ def init(ctx):
         if search_engine != "cancel":
             config.SEARCH_CONF["enabled"] = 1
             config.SEARCH_CONF["engine"] = search_engine
-        else:
-            delattr(config, "SEARCH_CONF")
 
     create_new_user = click.confirm("Would you like to create a new admin user?")
     if create_new_user:
