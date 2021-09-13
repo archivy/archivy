@@ -331,7 +331,6 @@ def test_post_updated_config(test_app, client):
     dark_theme = test_app.config["THEME_CONF"]["use_theme_dark"]
 
     resp = client.post(
-        "/config",
-        data={"submit": True, "THEME_CONF": {"use_theme_dark": not dark_theme}},
+        "/config", data={"submit": True, "THEME_CONF-use_theme_dark": not dark_theme}
     )
     assert test_app.config["THEME_CONF"]["use_theme_dark"] == (not dark_theme)
