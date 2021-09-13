@@ -1,6 +1,4 @@
-Once you've [initialized](install.md) your archivy install, a yaml archivy config is automatically generated.
-
-You can edit it by running `archivy config`.
+Once you've [initialized](install.md) your archivy install, an archivy config is automatically generated. You can edit it through the archivy interface by clicking on the gear icon on the top right of the navbar, or by running `archivy config` in your terminal.
 
 Here's an overview of the different values you can set and modify.
 
