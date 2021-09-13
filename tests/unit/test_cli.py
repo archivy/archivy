@@ -63,6 +63,10 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     assert "SEARCH_CONF" in conf
     assert "enabled: 1" in conf
 
+    # however, check that defaults are not saved, as they have not been modified:
+    assert not "es_password" in conf
+    assert not "EDITOR_CONF" in conf
+
     # check initialization in random directory
     # has resulted in change of user dir
     assert old_data_dir != test_app.config["USER_DIR"]
