@@ -4,7 +4,7 @@
 		{% if field.type == "FormField"%}
 		<div>
 			{% if field.data | length > 1 %}
-				<h{{ [4, depth + 1] | min}}>{{ field.label.text }}</h{{ [4, depth + 1] | min}}>
+				<h{{ [4, depth + 1] | min}} id="{{ field.id }}">{{ field.label.text }}</h{{ [4, depth + 1] | min}}>
 			{% endif %}
 			{{ render_form(field, depth + 1) }}
 		</div>
@@ -18,9 +18,22 @@
 		{% endif %}
 	{% endfor %}
 {%- endmacro -%}
+{% macro render_toc(form) %}
+	<ul>
+	{% for field in form %}
+		{% if field.type == "FormField" and field.data | length > 1 %}
+		<li>
+			<a href="#{{ field.id }}">{{ field.label.text }}</a>
+			{{ render_toc(field) }}
+		</li>
+		{% endif %}
+	{% endfor %}
+	</ul>
+{%- endmacro -%}
 {% block content %}
 	<h1>Config</h1>
 	<p>Check out <a href="https://archivy.github.io/config" target="_blank" rel="noopener">the documentation</a> for more info on these options.</p>
+	{{ render_toc(conf) }}
  	<form action="/config" method="POST">
 		{{ render_form(conf, 1) }}
 	</form>
