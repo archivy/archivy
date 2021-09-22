@@ -62,7 +62,7 @@ def config_form(current_conf, sub=0, allowed=vars(Config())):
     This function defines a Config form that loads default configuration values and creates inputs for each field option
 
     - current_conf: object of current configuration that we will use to set the defaults
-    - sub: this function is recursive and can return a sub form to represent the nesting of the config. 
+    - sub: this function is recursive and can return a sub form to represent the nesting of the config.
         Sub is a boolean value indicating whether the current form is nested.
 
     - allowed represents a dictionary of the keys that are allowed in our current level of nesting.

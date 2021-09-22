@@ -81,7 +81,7 @@ class Config(object):
         Acts smartly so as to only set options already set in the default config.
 
         - user_conf: current (nested) dictionary of user config key/values
-        - nested_dict: reference to the current object that should be modified. 
+        - nested_dict: reference to the current object that should be modified.
             If none it's just a reference to the current Config itself, otherwise it's a nested dict of the Config
         """
         for k, v in user_conf.items():

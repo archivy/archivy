@@ -42,7 +42,7 @@ def config_diff(curr_key, curr_val, parent_dict, defaults):
 
 def write_config(config: dict):
     """
-    Writes a new config dict to a `config.yml` file that will override defaults. 
+    Writes a new config dict to a `config.yml` file that will override defaults.
     Compares user config with defaults to only save changes.
     """
     defaults = vars(Config())
