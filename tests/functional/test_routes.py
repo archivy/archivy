@@ -318,3 +318,19 @@ def test_invalid_inputs_fail_move_data(test_app, note_fixture, client):
             "/dataobj/move/1", data={"path": p, "submit": "true"}, follow_redirects=True
         )
         assert b"Data could not be moved to " + bytes(p, "utf-8") in resp.data
+
+
+def test_get_config_page(test_app, client):
+    resp = client.get("/config")
+    assert resp.status_code == 200
+    assert b"Edit Config" in resp.data
+
+
+def test_post_updated_config(test_app, client):
+    # use dark theme as random conf value to change
+    dark_theme = test_app.config["THEME_CONF"]["use_theme_dark"]
+
+    resp = client.post(
+        "/config", data={"submit": True, "THEME_CONF-use_theme_dark": not dark_theme}
+    )
+    assert test_app.config["THEME_CONF"]["use_theme_dark"] == (not dark_theme)

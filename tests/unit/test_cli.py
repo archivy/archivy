@@ -38,7 +38,6 @@ def test_initialization(test_app, cli_runner, click_cli):
     conf = open(conf_path).read()
 
     # assert defaults are saved
-    assert "PANDOC_HIGHLIGHT_THEME: pygments" in conf
     assert f"USER_DIR: {test_app.config['USER_DIR']}" in conf
     assert "HOST: 127.0.0.1"
     # check ES config not saved
@@ -63,7 +62,10 @@ def test_initialization_with_es(test_app, cli_runner, click_cli):
     # assert ES Config is saved
     assert "SEARCH_CONF" in conf
     assert "enabled: 1" in conf
-    assert "url: http://localhost:9200" in conf
+
+    # however, check that defaults are not saved, as they have not been modified:
+    assert not "es_password" in conf
+    assert not "EDITOR_CONF" in conf
 
     # check initialization in random directory
     # has resulted in change of user dir

@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch
 from flask import current_app, g
 from tinydb import TinyDB, Query, operations
 
-from archivy.config import BaseHooks
+from archivy.config import BaseHooks, Config
 
 
 def load_config(path=""):
@@ -17,8 +17,38 @@ def load_config(path=""):
         return yaml.load(f.read(), Loader=yaml.SafeLoader)
 
 
+def config_diff(curr_key, curr_val, parent_dict, defaults):
+    """
+    This function diffs the user config with the defaults to only save what is actually different.
+
+    Returns 1 if the current element or its nested elements are different and have been preserved.
+    """
+    if type(curr_val) is dict:
+        # the any call here diffs all nested children of the current dict and returns whether any have modifications
+        if not any(
+            [
+                config_diff(k, v, curr_val, defaults[curr_key])
+                for k, v in list(curr_val.items())
+            ]
+        ):
+            parent_dict.pop(curr_key)
+            return 0
+    else:
+        if defaults[curr_key] == curr_val:
+            parent_dict.pop(curr_key)
+            return 0
+    return 1
+
+
 def write_config(config: dict):
-    """Writes a new config dict to a `config.yml` file that will override defaults"""
+    """
+    Writes a new config dict to a `config.yml` file that will override defaults.
+    Compares user config with defaults to only save changes.
+    """
+    defaults = vars(Config())
+    for k, v in list(config.items()):
+        if k != "SECRET_KEY":
+            config_diff(k, v, config, defaults)
     with (Path(current_app.config["INTERNAL_DIR"]) / "config.yml").open("w") as f:
         yaml.dump(config, f)
 
