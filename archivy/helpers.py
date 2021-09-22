@@ -18,7 +18,13 @@ def load_config(path=""):
 
 
 def config_diff(curr_key, curr_val, parent_dict, defaults):
+    """
+    This function diffs the user config with the defaults to only save what is actually different.
+
+    Returns 1 if the current element or its nested elements are different and have been preserved.
+    """
     if type(curr_val) is dict:
+        # the any call here diffs all nested children of the current dict and returns whether any have modifications
         if not any(
             [
                 config_diff(k, v, curr_val, defaults[curr_key])
@@ -35,7 +41,10 @@ def config_diff(curr_key, curr_val, parent_dict, defaults):
 
 
 def write_config(config: dict):
-    """Writes a new config dict to a `config.yml` file that will override defaults"""
+    """
+    Writes a new config dict to a `config.yml` file that will override defaults. 
+    Compares user config with defaults to only save changes.
+    """
     defaults = vars(Config())
     for k, v in list(config.items()):
         if k != "SECRET_KEY":

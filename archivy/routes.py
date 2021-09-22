@@ -296,6 +296,9 @@ def custom_css():
 
 @app.route("/config", methods=["GET", "POST"])
 def config():
+    """
+    Web View to edit and update configuration.
+    """
     def update_config_value(key, val, dictionary):
         if key != "SECRET_KEY":
             if type(val) is dict:
@@ -310,8 +313,9 @@ def config():
         changed_config = Config()
         changed_config.override(form.data)
         for k, v in vars(changed_config).items():
+            # propagate changes to configuration
             update_config_value(k, v, app.config)
-        write_config(vars(changed_config))
+        write_config(vars(changed_config)) # save to filesystem config
         flash("Config successfully updated.", "success")
     elif request.method == "POST":
         flash("Could not update config.", "error")

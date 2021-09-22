@@ -57,16 +57,31 @@ class TitleForm(FlaskForm):
     submit = SubmitField("✓")
 
 
-def config_form(example_conf, ignore=[], sub=0):
+def config_form(current_conf, sub=0, allowed=vars(Config())):
+    """
+    This function defines a Config form that loads default configuration values and creates inputs for each field option
+
+    - current_conf: object of current configuration that we will use to set the defaults
+    - sub: this function is recursive and can return a sub form to represent the nesting of the config. 
+        Sub is a boolean value indicating whether the current form is nested.
+
+    - allowed represents a dictionary of the keys that are allowed in our current level of nesting.
+        It's fetched from the default config.
+    """
+
     class ConfigForm(FlaskForm):
         pass
 
-    def process_conf_value(name, val, allowed):
+    def process_conf_value(name, val):
+        """
+        Create and set different form fields.
+
+        """
         val_type = type(val)
-        if not name in allowed and not sub:
+        if not name in allowed:
             return
         if val_type is dict:
-            sub_form = config_form(val, ignore, 1)
+            sub_form = config_form(val, 1, allowed[name])
             setattr(ConfigForm, name, FormField(sub_form))
         elif val_type is int:
             setattr(ConfigForm, name, IntegerField(name, default=val))
@@ -77,9 +92,8 @@ def config_form(example_conf, ignore=[], sub=0):
         elif val_type is list:
             setattr(ConfigForm, name, StringField(name, default=", ".join(val)))
 
-    for key, val in example_conf.items():
-        if not key in ignore:
-            process_conf_value(key, val, vars(Config()))
+    for key, val in current_conf.items():
+        process_conf_value(key, val)
     if sub:
         return ConfigForm
     else:

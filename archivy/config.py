@@ -75,18 +75,29 @@ class Config(object):
         }
 
     def override(self, user_conf: dict, nested_dict=None):
+        """
+        This function enables an override of the default configuration with user values.
+
+        Acts smartly so as to only set options already set in the default config.
+
+        - user_conf: current (nested) dictionary of user config key/values
+        - nested_dict: reference to the current object that should be modified. 
+            If none it's just a reference to the current Config itself, otherwise it's a nested dict of the Config
+        """
         for k, v in user_conf.items():
-            # handle ES options, don't override entire dict if one key is passed
             if (nested_dict and not k in nested_dict) or (
                 not nested_dict and not hasattr(self, k)
             ):
+                # check the key is indeed defined in our defaults
                 continue
+            curr_default_val = nested_dict[k] if nested_dict else getattr(self, k)
             if type(v) is dict:
-                if nested_dict:
-                    self.override(v, nested_dict[k])
-                else:
-                    self.override(v, nested_dict=getattr(self, k))
+                # pass on override to sub configuration dictionary if the current type of value being traversed is dict
+                self.override(v, curr_default_val)
             else:
+                # otherwise just set
+                if type(curr_default_val) == list and type(v) == str:
+                    v = v.split(", ")
                 if nested_dict:
                     nested_dict[k] = v
                 else:
