@@ -72,6 +72,7 @@
 	  let hitLi = document.createElement("li");
 	  let a = document.createElement("a");
 	  a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
+	  hitLi.append(a);
 	  {% if search_engine == "elasticsearch" %}
 		let body = document.createElement("div");
 		if ("highlight" in hit)
@@ -83,7 +84,6 @@
 		}
 		hitLi.append(body);
 	  {% endif %}
-	  hitLi.append(a);
 	  hitsDiv.appendChild(hitLi);
     }
 
@@ -100,10 +100,14 @@
           document.getElementById("searchHits").innerHTML = "";
           data.forEach(function(hit)
           {
+            if (query !== input.value) return;
             appendHit(hit);
           })
     
         }
+      }
+      else {
+        document.getElementById("searchHits").innerHTML = "";
       }
     });
   {% endif %}

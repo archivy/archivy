@@ -45,6 +45,8 @@ class Config(object):
             "url": "http://localhost:9200",
             "index_name": "dataobj",
             "engine": "",
+            "es_user": "",
+            "es_password": "",
             "es_processing_conf": {
                 "settings": {
                     "highlight": {"max_analyzed_offset": 100000000},
@@ -72,14 +74,34 @@ class Config(object):
             },
         }
 
-    def override(self, user_conf: dict):
+    def override(self, user_conf: dict, nested_dict=None):
+        """
+        This function enables an override of the default configuration with user values.
+
+        Acts smartly so as to only set options already set in the default config.
+
+        - user_conf: current (nested) dictionary of user config key/values
+        - nested_dict: reference to the current object that should be modified.
+            If none it's just a reference to the current Config itself, otherwise it's a nested dict of the Config
+        """
         for k, v in user_conf.items():
-            # handle ES options, don't override entire dict if one key is passed
-            if k == "SEARCH_CONF":
-                for subkey, subval in v.items():
-                    self.SEARCH_CONF[subkey] = subval
+            if (nested_dict and not k in nested_dict) or (
+                not nested_dict and not hasattr(self, k)
+            ):
+                # check the key is indeed defined in our defaults
+                continue
+            curr_default_val = nested_dict[k] if nested_dict else getattr(self, k)
+            if type(v) is dict:
+                # pass on override to sub configuration dictionary if the current type of value being traversed is dict
+                self.override(v, curr_default_val)
             else:
-                setattr(self, k, v)
+                # otherwise just set
+                if type(curr_default_val) == list and type(v) == str:
+                    v = v.split(", ")
+                if nested_dict:
+                    nested_dict[k] = v
+                else:
+                    setattr(self, k, v)
 
 
 class BaseHooks:
