@@ -6,32 +6,43 @@
     <ul id="searchHits"></ul>
 {% endif %}
 
-
 <div id="files">
     {% if not view_only %}
         <div class="d-flex" id="main-links">
-            <a class="btn" href="/notes/new?path={{current_path}}">
-                New Note
-                <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5zm1.75-.25a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-8.5a.25.25 0 00-.25-.25H1.75zM3.5 6.25a.75.75 0 01.75-.75h7a.75.75 0 010 1.5h-7a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5h4a.75.75 0 000-1.5h-4z"></path></svg>
-            </a>
-            <a class="btn" href="/bookmarks/new?path={{current_path}}">
-                New Bookmark
-                <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M4.75 2.5a.25.25 0 00-.25.25v9.91l3.023-2.489a.75.75 0 01.954 0l3.023 2.49V2.75a.25.25 0 00-.25-.25h-6.5zM3 2.75C3 1.784 3.784 1 4.75 1h6.5c.966 0 1.75.784 1.75 1.75v11.5a.75.75 0 01-1.227.579L8 11.722l-3.773 3.107A.75.75 0 013 14.25V2.75z"></path></svg>
-            </a>
-            <form action="/folders/delete" method="post" onsubmit="return confirm('Delete this folder and its items permanently?')" style="margin: 0px;">
-                {{ delete_form.csrf_token }}
-                {{ delete_form.dir_name(value=current_path) }}
-                <button class="btn btn-delete">
-                    Delete folder      
-                <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M6.5 1.75a.25.25 0 01.25-.25h2.5a.25.25 0 01.25.25V3h-3V1.75zm4.5 0V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675a.75.75 0 10-1.492.15l.66 6.6A1.75 1.75 0 005.405 15h5.19c.9 0 1.652-.681 1.741-1.576l.66-6.6a.75.75 0 00-1.492-.149l-.66 6.6a.25.25 0 01-.249.225h-5.19a.25.25 0 01-.249-.225l-.66-6.6z"></path></svg>
-                </button>
-            </form>
-            <form action="/folders/create" method="post" class="d-flex">
-                {{ new_folder_form.csrf_token }}
-                {{ new_folder_form.parent_dir(value=current_path) }}
-                {{ new_folder_form.new_dir(placeholder="New folder name") }}
-                {{ new_folder_form.submit() }}
-            </form>
+            <div style="width: 100%;" class="d-flex">
+                <a class="btn" href="/notes/new?path={{current_path}}">
+                    New Note
+                    <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5zm1.75-.25a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-8.5a.25.25 0 00-.25-.25H1.75zM3.5 6.25a.75.75 0 01.75-.75h7a.75.75 0 010 1.5h-7a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5h4a.75.75 0 000-1.5h-4z"></path></svg>
+                </a>
+                <a class="btn" href="/bookmarks/new?path={{current_path}}">
+                    New Bookmark
+                    <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M4.75 2.5a.25.25 0 00-.25.25v9.91l3.023-2.489a.75.75 0 01.954 0l3.023 2.49V2.75a.25.25 0 00-.25-.25h-6.5zM3 2.75C3 1.784 3.784 1 4.75 1h6.5c.966 0 1.75.784 1.75 1.75v11.5a.75.75 0 01-1.227.579L8 11.722l-3.773 3.107A.75.75 0 013 14.25V2.75z"></path></svg>
+                </a>
+                <form action="/folders/delete" method="post" onsubmit="return confirm('Delete this folder and its items permanently?')" style="margin: 0px;">
+                    {{ delete_form.csrf_token }}
+                    {{ delete_form.dir_name(value=current_path) }}
+                    <button class="btn btn-delete">
+                        Delete folder
+                    <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M6.5 1.75a.25.25 0 01.25-.25h2.5a.25.25 0 01.25.25V3h-3V1.75zm4.5 0V3h2.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675a.75.75 0 10-1.492.15l.66 6.6A1.75 1.75 0 005.405 15h5.19c.9 0 1.652-.681 1.741-1.576l.66-6.6a.75.75 0 00-1.492-.149l-.66 6.6a.25.25 0 01-.249.225h-5.19a.25.25 0 01-.249-.225l-.66-6.6z"></path></svg>
+                    </button>
+                </form>
+            </div>
+            <div class="d-flex">
+                <form action="/folders/create" method="post" class="d-flex">
+                    {{ new_folder_form.csrf_token }}
+                    {{ new_folder_form.parent_dir(value=current_path) }}
+                    {{ new_folder_form.new_dir(placeholder="New folder name") }}
+                    {{ new_folder_form.submit() }}
+                </form>
+                {% if current_path != "" %}
+                    <form action="/folders/rename" method="post" class="d-flex">
+                        {{ rename_form.csrf_token }}
+                        {{ rename_form.current_path(value=current_path) }}
+                        {{ rename_form.new_name(placeholder="Name") }}
+                        {{ rename_form.submit() }}
+                    </form>
+                {% endif %}
+            </div>
         </div>
     {% endif %}
     <ul>

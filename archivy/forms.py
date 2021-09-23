@@ -33,9 +33,15 @@ class NewFolderForm(FlaskForm):
     submit = SubmitField("Create sub directory")
 
 
-class MoveDataForm(FlaskForm):
+class MoveItemForm(FlaskForm):
     path = SelectField("Move to")
     submit = SubmitField("✓")
+
+
+class RenameDirectoryForm(FlaskForm):
+    new_name = StringField("New name", validators=[DataRequired()])
+    current_path = HiddenField()
+    submit = SubmitField("Rename current folder")
 
 
 class DeleteDataForm(FlaskForm):

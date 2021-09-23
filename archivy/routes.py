@@ -64,6 +64,7 @@ def index():
         current_path=path,
         new_folder_form=forms.NewFolderForm(),
         delete_form=forms.DeleteFolderForm(),
+        rename_form=forms.RenameDirectoryForm(),
         view_only=0,
         search_engine=app.config["SEARCH_CONF"]["engine"],
     )
@@ -139,7 +140,7 @@ def show_dataobj(dataobj_id):
                     backlinks.append({"title": hit["title"], "id": hit["id"]})
 
     # Form for moving data into another folder
-    move_form = forms.MoveDataForm()
+    move_form = forms.MoveItemForm()
     move_form.path.choices = [("", "root directory")] + [
         (pathname, pathname) for pathname in data.get_dirs()
     ]
@@ -162,8 +163,8 @@ def show_dataobj(dataobj_id):
 
 
 @app.route("/dataobj/move/<dataobj_id>", methods=["POST"])
-def move_data(dataobj_id):
-    form = forms.MoveDataForm()
+def move_item(dataobj_id):
+    form = forms.MoveItemForm()
     out_dir = form.path.data if form.path.data != "" else "root directory"
     if form.path.data == None:
         flash("No path specified.")
@@ -265,6 +266,24 @@ def delete_folder():
             return redirect(request.referrer or "/", 404)
     flash("Could not delete folder.", "error")
     return redirect(request.referrer or "/")
+
+
+@app.route("/folders/rename", methods=["POST"])
+def rename_folder():
+    form = forms.RenameDirectoryForm()
+    if form.validate_on_submit():
+        try:
+            new_path = data.rename_folder(form.current_path.data, form.new_name.data)
+            if not new_path:
+                flash("Invalid input.", "error")
+            else:
+                flash("Renamed successfully.", "success")
+                return redirect(f"/?path={new_path}")
+        except FileNotFoundError:
+            flash("Directory not found.", "error")
+        except FileExistsError:
+            flash("Target directory exists.", "error")
+    return redirect("/")
 
 
 @app.route("/bookmarklet")

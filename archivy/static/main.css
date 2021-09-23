@@ -240,6 +240,10 @@ form {
 	border-left: 4px #7848bb solid;
 }
 
+#files form {
+	margin: 0px;
+	padding: 0;
+}
 /* dataobj styles */
 .post-header {
 	margin: 10px 0 5px 0;
