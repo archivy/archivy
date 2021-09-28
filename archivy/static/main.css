@@ -522,3 +522,13 @@ form {
 	width: 100%;
 	}
 }
+
+
+/* Tag tooltip */
+#tag_tooltip {
+	/*display: fixed;*/
+}
+
+.display-none {
+	display: none !important;
+}

@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div id="tag_tooltip" class="display-none">
+  <input list="tags" id="tag_tooltip_input" /> 
+  <datalist id="tags">
+  {% for tag in list_of_tags %}
+    <option value="#{{tag}}">
+  {% endfor %}
+  </datalist>
+</div>
+
   {% include "markdown-parser.html" %}
   {% if not view_only %}
     <link rel="stylesheet" href="/static/editor.css">
@@ -83,6 +92,7 @@
 
     {% endif %}
   </div>
+
 
   <div id="content-cont" class="markdown-body">
     <div id="content"></div>
@@ -303,25 +313,51 @@
         document.body.scrollIntoView(true);
 
         // Tag autocompletion
-        tag_tooltip = document.createElement("div");
-        tag_tooltip.id = "tag_tooltip";
-        var cm = document.getElementsByClassName("CodeMirror")[0];
-        cm.appendChild(tag_tooltip);
+        var tag_tooltip = document.querySelector("#tag_tooltip")
+        var tag_tooltip_input = document.querySelector("#tag_tooltip_input")
+        var cm = document.getElementsByClassName("CodeMirror")[0].CodeMirror;
+
+        // Begin inputting of clicked text into editor
+        function insertText(data) {
+          var doc = cm.getDoc();
+          var cursor = doc.getCursor(); // gets the line number in the cursor position
+          var line = doc.getLine(cursor.line); // get the line contents
+          var pos = {
+            line: cursor.line
+          };
+          doc.replaceRange(data, pos);
+        }
+
+        document.onkeydown = function (e) {
+          e = e || window.event;
+          console.log(e.keyCode)
+          if (e.keyCode === 27) { // Escape
+            e.preventDefault()
+            tag_tooltip.classList.add("display-none")
+          }
+          if (e.keyCode === 51) { // #
+            tag_tooltip.classList.remove("display-none")
+            tag_tooltip_input.focus()
+          }
+          if (e.keyCode === 13 && e.shiftKey) { // Shift+Enter key
+            insertText(tag_tooltip_input.value)
+            tag_tooltip.classList.add("display-none")
+            tag_tooltip_input.value = ""
+          }
+        };
 
         editor.codemirror.on("cursorActivity", function() {
-          tag_tooltip = document.querySelector("#tag_tooltip")
-          var cursor = document.querySelector('.CodeMirror-cursor');
-          tag_tooltip.innerHTML = cursor.style.top + " " + cursor.style.left;
+          var cursor_coordinates = cm.cursorCoords()
 
-          document.querySelector("#tag_tooltip").style.zIndex += 1;
-          document.querySelector("#tag_tooltip").style.position = "absolute";
-          document.querySelector("#tag_tooltip").style.top = cursor.style.top;
-          document.querySelector("#tag_tooltip").style.left = cursor.style.left;
+          tag_tooltip.style.zIndex = 9999;
+          tag_tooltip.style.position = "absolute";
+          tag_tooltip.style.top = cursor_coordinates.top - 10 + "px";
+          tag_tooltip.style.left = cursor_coordinates.left + "px";
 
-          console.log("a", document.querySelector("#tag_tooltip").style.zIndex)
-          console.log("a", document.querySelector("#tag_tooltip").style.position)
-          console.log("a", document.querySelector("#tag_tooltip").style.top)
-          console.log("a", document.querySelector("#tag_tooltip").style.left)
+          // console.log("a", cursor_coordinates.top + 40 + "px")
+          // console.log("a", tag_tooltip.style.position)
+          // console.log("a", tag_tooltip.style.top)
+          // console.log("a", tag_tooltip.style.left)
         });
 
         /* Screenreader mode checkbox */
