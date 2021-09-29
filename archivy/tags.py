@@ -18,7 +18,7 @@ def get_all_tags_with_counts(all_items=None, force=False):
         print("searching for tags")
         all_tags = {}
         for item in all_items:
-            for this_tag in item["tags"]:
+            for this_tag in item.get("tags", []):
                 if this_tag not in list(all_tags):
                     all_tags[this_tag] = {"count": 1}
                 else:
