@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{{ tag_name }} ({{ all_dataobjs | length }})</h2>
+<h2>{{ tag_name }} ({{ tag_dataobjs | length }})</h2>
 <ul>
-  {% for dataobj in all_dataobjs %}
-    <a href="/dataobj/{{ dataobj['id'] }}">
-      <li>{{ dataobj['title'] }}</li>
+  {% for dataobj in tag_dataobjs %}
+    <a href="/dataobj/{{ dataobj[0] }}">
+      <li>{{ dataobj[1] }}</li>
     </a>
   {% endfor %}
 </ul>

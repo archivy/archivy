@@ -19,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
-from archivy.tags import get_all_tags_with_counts, get_all_tags
+from archivy.tags import get_all_tags
 from archivy.search import search
 from archivy.config import Config
 
@@ -120,39 +120,26 @@ def new_note():
 
 @app.route("/tags")
 def show_all_tags():
-    all_items = data.get_items(structured=False)
-    all_tags_with_counts = get_all_tags_with_counts(all_items)
+    tags = {k: v for k, v in sorted(get_all_tags().items(), key=lambda item: item[1]["count"], reverse=True)}
 
-    list_of_tags = []
-    for this_tag in list(all_tags_with_counts):
-        list_of_tags.append(
-            {"tagname": this_tag, "count": all_tags_with_counts[this_tag]["count"]}
-        )
-    number_of_tags = len(list_of_tags)
 
     return render_template(
         "tags/all.html",
         title="All Tags",
-        number_of_tags=number_of_tags,
-        tags=sorted(list_of_tags, key=lambda k: k["count"], reverse=True),
+        tags=tags,
     )
 
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
-    all_items = data.get_items(structured=False)
-
-    # Fetch all tags from the dataobjs and count how often they appear.
-    all_dataobjs = []
-    for item in all_items:
-        if tag_name in item["tags"]:
-            all_dataobjs.append(item)
+    tag_dataobjs = [(id, title) for id, title in get_all_tags()[tag_name].items() if id != "count"]
+    print(tag_dataobjs)
 
     return render_template(
         "tags/show.html",
         title=f"Tags - {tag_name}",
         tag_name=tag_name,
-        all_dataobjs=all_dataobjs,
+        tag_dataobjs=tag_dataobjs,
     )
 
 
@@ -188,7 +175,7 @@ def show_dataobj(dataobj_id):
     post_title_form = forms.TitleForm()
     post_title_form.title.data = dataobj["title"]
 
-    list_of_tags = get_all_tags()
+    list_of_tags = get_all_tags().keys()
 
     return render_template(
         "dataobjs/show.html",
