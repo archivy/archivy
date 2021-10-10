@@ -523,12 +523,7 @@ form {
 	}
 }
 
-
-/* Tag tooltip */
-#tag_tooltip {
-	/*display: fixed;*/
-}
-
-.display-none {
-	display: none !important;
+#tag_tooltip_input {
+	border-color: none !important;
+	
 }

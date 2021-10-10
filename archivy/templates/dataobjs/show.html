@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="tag_tooltip" class="display-none">
+<div id="tag_tooltip" class="hidden">
   <input list="tags" id="tag_tooltip_input" /> 
   <datalist id="tags">
   {% for tag in list_of_tags %}
@@ -330,18 +330,17 @@
 
         document.onkeydown = function (e) {
           e = e || window.event;
-          console.log(e.keyCode)
           if (e.keyCode === 27) { // Escape
             e.preventDefault()
-            tag_tooltip.classList.add("display-none")
+            tag_tooltip.classList.add("hidden")
           }
           if (e.keyCode === 51) { // #
-            tag_tooltip.classList.remove("display-none")
+            tag_tooltip.classList.remove("hidden")
             tag_tooltip_input.focus()
           }
-          if (e.keyCode === 13 && e.shiftKey) { // Shift+Enter key
+          if (e.keyCode === 13) { // Shift+Enter key
             insertText(tag_tooltip_input.value)
-            tag_tooltip.classList.add("display-none")
+            tag_tooltip.classList.add("hidden")
             tag_tooltip_input.value = ""
           }
         };
@@ -353,11 +352,6 @@
           tag_tooltip.style.position = "absolute";
           tag_tooltip.style.top = cursor_coordinates.top - 10 + "px";
           tag_tooltip.style.left = cursor_coordinates.left + "px";
-
-          // console.log("a", cursor_coordinates.top + 40 + "px")
-          // console.log("a", tag_tooltip.style.position)
-          // console.log("a", tag_tooltip.style.top)
-          // console.log("a", tag_tooltip.style.left)
         });
 
         /* Screenreader mode checkbox */
