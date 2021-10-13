@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="tag_tooltip" class="hidden">
+<form id="tag_tooltip" class="hidden">
   <input list="tags" id="tag_tooltip_input" /> 
   <datalist id="tags">
   {% for tag in list_of_tags %}
     <option value="#{{tag}}">
   {% endfor %}
   </datalist>
-</div>
+</form>
 
   {% include "markdown-parser.html" %}
   {% if not view_only %}
@@ -328,30 +328,60 @@
           doc.replaceRange(data, pos);
         }
 
-        document.onkeydown = function (e) {
-          e = e || window.event;
-          if (e.keyCode === 27) { // Escape
-            e.preventDefault()
-            tag_tooltip.classList.add("hidden")
+        function toggle_tag_tooltip() {
+          if (tag_tooltip.classList.contains("hidden")) {
+            tag_tooltip_input.value = "#";
+            tag_tooltip.classList.remove("hidden");
+            tag_tooltip_input.focus();
+          } else {
+            tag_tooltip.classList.add("hidden");
+            document.activeElement.blur();
           }
-          if (e.keyCode === 51) { // #
-            tag_tooltip.classList.remove("hidden")
-            tag_tooltip_input.focus()
+        }
+        editor.codemirror.on("change", function(ed, change) {
+          var line = ed.doc.getCursor().line, //Cursor line
+          ch = ed.doc.getCursor().ch;
+          let currChar = ed.doc.getLine(line)[ch - 1];
+          if (currChar === "#") {
+            ed.doc.replaceRange("", {
+              line: line,
+              ch: ch - 1
+            }, {
+              line: line,
+              ch: ch
+            })
+            toggle_tag_tooltip();
           }
-          if (e.keyCode === 13) { // Shift+Enter key
-            insertText(tag_tooltip_input.value)
-            tag_tooltip.classList.add("hidden")
-            tag_tooltip_input.value = ""
+        });
+
+        function add_tag() {
+          let tag = tag_tooltip_input.value;
+          toggle_tag_tooltip();
+          if (tag[0] != "#") {
+            tag = "#" + tag;
           }
+          insertText(tag);
+        }
+        tag_tooltip.onsubmit = function(e) {
+          e.preventDefault()
+          add_tag();
         };
+        tag_tooltip_input.oninput = function() {
+          tag_tooltip_input.focus();
+          if (tag_tooltip_input.value === "" || tag_tooltip_input.value.includes(" ")) {
+            toggle_tag_tooltip();
+          }
+        }
 
         editor.codemirror.on("cursorActivity", function() {
-          var cursor_coordinates = cm.cursorCoords()
-
-          tag_tooltip.style.zIndex = 9999;
-          tag_tooltip.style.position = "absolute";
-          tag_tooltip.style.top = cursor_coordinates.top - 10 + "px";
-          tag_tooltip.style.left = cursor_coordinates.left + "px";
+          if (tag_tooltip.classList.contains("hidden"))
+          {
+            var cursor_coordinates = cm.cursorCoords()
+            tag_tooltip.style.zIndex = 9999;
+            tag_tooltip.style.position = "absolute";
+            tag_tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
+            tag_tooltip.style.left = cursor_coordinates.left - 10 + "px";
+          }
         });
 
         /* Screenreader mode checkbox */

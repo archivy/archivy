@@ -524,6 +524,5 @@ form {
 }
 
 #tag_tooltip_input {
-	border-color: none !important;
-	
+	border: none !important;
 }
