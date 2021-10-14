@@ -1,6 +1,7 @@
 from flask import current_app
 from archivy import helpers, data
 from tinydb import Query, operations
+from archivy.search import query_ripgrep_tags
 
 # Get all tags with counts from all_items and return a list
 # all_tags = [
@@ -9,6 +10,14 @@ from tinydb import Query, operations
 #     ...
 # }
 def get_all_tags(all_items=None, force=False):
+    rg_tags = query_ripgrep_tags()
+    print(rg_tags)
+    return_tags = {}
+    for tag in rg_tags:
+        return_tags[tag] = 1
+
+    return return_tags
+
     db = helpers.get_db()
     if all_items is None:
         all_items = data.get_items(structured=False)

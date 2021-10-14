@@ -120,19 +120,21 @@ def new_note():
 
 @app.route("/tags")
 def show_all_tags():
-    tags = {k: v for k, v in sorted(get_all_tags().items(), key=lambda item: item[1]["count"], reverse=True)}
+    tags = {
+        k: v
+        for k, v in sorted(
+            get_all_tags().items(), key=lambda item: item[1]["count"], reverse=True
+        )
+    }
 
-
-    return render_template(
-        "tags/all.html",
-        title="All Tags",
-        tags=tags,
-    )
+    return render_template("tags/all.html", title="All Tags", tags=tags)
 
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
-    tag_dataobjs = [(id, title) for id, title in get_all_tags()[tag_name].items() if id != "count"]
+    tag_dataobjs = [
+        (id, title) for id, title in get_all_tags()[tag_name].items() if id != "count"
+    ]
     print(tag_dataobjs)
 
     return render_template(

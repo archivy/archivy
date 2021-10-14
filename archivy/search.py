@@ -6,8 +6,15 @@ from flask import current_app
 
 from archivy.helpers import get_elastic_client
 
+
+# Example command ["rg", RG_MISC_ARGS, RG_FILETYPE, RG_REGEX_ARG, query, str(get_data_dir())]
+#  rg -il -t md -e query files
+# -i -> case insensitive
+# -l -> only output filenames
+# -t -> file type
+# -e -> regexp
+RG_MISC_ARGS = "-ilt"
 RG_REGEX_ARG = "-e"
-RG_MISC_ARGS = "-ilt"  # i -> case insensitive and l -> only output filenames
 RG_FILETYPE = "md"
 
 
@@ -61,12 +68,7 @@ def query_es_index(query, strict=False):
             },
             "highlight": {
                 "fragment_size": 0,
-                "fields": {
-                    "content": {
-                        "pre_tags": "==",
-                        "post_tags": "==",
-                    }
-                },
+                "fields": {"content": {"pre_tags": "==", "post_tags": "=="}},
             },
         },
     )
@@ -101,6 +103,59 @@ def query_ripgrep(query):
         parsed = filename.replace(".md", "").split("-")
         hits.append({"id": int(parsed[0]), "title": "-".join(parsed[1:])})
     return hits
+
+
+def query_ripgrep_tags():
+    """
+    Uses ripgrep to search for tags.
+    Mandatory reference: https://xkcd.com/1171/
+    """
+
+    # Simple idea:
+    #  We look for `#` followed by characters that are not white-space
+    #                  followed by a terminating white-space.
+    # Problem: This also matches `####`
+    # PATTERN = r"#(\S+)\W"
+
+    # Still simple:
+    # Match a `#` and then something that's not a `#`
+    # Problem:
+    #   String #####asd
+    #   This matches #asd
+    # Problem 2:
+    # regex parse error:
+    #     #(?!#)(\S+)\W
+    #      ^^^
+    # error: look-around, including look-ahead and look-behind, is not supported
+    # PATTERN = r"#(?!#)(\S+)\W"
+
+    # Not nice:
+    # Problem: This only works for very limited character sets. Eg: #üöäèéàß doesn't match.
+    # Problem2: This also matches parts of URLs and other things like embedded CSS
+    # PATTERN = r"#([a-zA-Z0-9_-]+)"
+
+    # Compromise: Allow "####tag"
+    # PATTERN = r"#([\S0-9_-]+)"
+
+    # I cave
+    PATTERN = r"#([a-zA-Z0-9_-]+)\w"
+    from archivy.data import get_data_dir
+
+    if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
+        return None
+
+    # io: case insensitive, only return matches
+    rg_cmd = ["rg", "-ioI", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
+    tags = rg.stdout.splitlines()
+
+    rg_cmd = ["rg", "-ioIc", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
+    counts = rg.stdout.splitlines()
+
+    # rg returns a bytestring
+    #  including the `#`
+    return [str(t, "utf-8")[1:] for t in tags]
 
 
 def search(query, strict=False):
