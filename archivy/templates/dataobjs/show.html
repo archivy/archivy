@@ -312,34 +312,60 @@
         editorDiv.classList.add("hidden");
         document.body.scrollIntoView(true);
 
-        // Tag autocompletion
+        /////////////////////////////////////////////////////////////////
+        //                      Tag autocompletion                     //
+        /////////////////////////////////////////////////////////////////
+        // The container, datalist input and CoreMirror instance. 
         var tag_tooltip = document.querySelector("#tag_tooltip")
         var tag_tooltip_input = document.querySelector("#tag_tooltip_input")
         var cm = document.getElementsByClassName("CodeMirror")[0].CodeMirror;
 
-        // Begin inputting of clicked text into editor
+        // Put `data` where the cursor is right now
         function insertText(data) {
           var doc = cm.getDoc();
           var cursor = doc.getCursor(); // gets the line number in the cursor position
-          var line = doc.getLine(cursor.line); // get the line contents
-          var pos = {
-            line: cursor.line
-          };
-          doc.replaceRange(data, pos);
+          doc.replaceRange(data, cursor);
         }
 
+        // Add a tag
+        //  1. Put the value of the datalist into the editor
+        //  2. NOT IMPLEMENTED: ? Add to the index ? 
+        function add_tag() {
+          let tag = tag_tooltip_input.value;
+          toggle_tag_tooltip();
+          // This is an artifact of the previous implementation? Shouldn't evaluate to true, usually.
+          if (tag[0] != "#") {
+            tag = "#" + tag;
+          }
+          insertText(tag);
+          editor.codemirror.focus();
+        }
+
+        // When toggling the tag tooltip we want to position it right first.
+        // Otherwise, clear the input and hide it.
         function toggle_tag_tooltip() {
           if (tag_tooltip.classList.contains("hidden")) {
+            var cursor_coordinates = cm.cursorCoords()
+            tag_tooltip.style.zIndex = 9999;
+            tag_tooltip.style.position = "absolute";
+            tag_tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
+            tag_tooltip.style.left = cursor_coordinates.left - 10 + "px";
+
             tag_tooltip_input.value = "#";
             tag_tooltip.classList.remove("hidden");
             tag_tooltip_input.focus();
           } else {
             tag_tooltip.classList.add("hidden");
+            tag_tooltip_input.value = "";
             document.activeElement.blur();
           }
         }
+
+        // Whenever the content of the editor changes:
+        //   Check what the last character is. Is it a `#`?
+        //   Then get rid of the `#` and put it into the tag tooltip and show that.
         editor.codemirror.on("change", function(ed, change) {
-          var line = ed.doc.getCursor().line, //Cursor line
+          var line = ed.doc.getCursor().line, // Cursor line
           ch = ed.doc.getCursor().ch;
           let currChar = ed.doc.getLine(line)[ch - 1];
           if (currChar === "#") {
@@ -354,36 +380,30 @@
           }
         });
 
-        function add_tag() {
-          let tag = tag_tooltip_input.value;
-          toggle_tag_tooltip();
-          if (tag[0] != "#") {
-            tag = "#" + tag;
-          }
-          insertText(tag);
-        }
+        // When the user hits enter, add the tag.
         tag_tooltip.onsubmit = function(e) {
           e.preventDefault()
           add_tag();
         };
+
+        // We watch for two cases:
+        //  1. The input is empty => hide the tooltip
+        //  2. The tooltip contains a whitespace. Just put the value into the editor and hide the tooltip.
         tag_tooltip_input.oninput = function() {
           tag_tooltip_input.focus();
-          if (tag_tooltip_input.value === "" || tag_tooltip_input.value.includes(" ")) {
+          if (tag_tooltip_input.value === "") {
             toggle_tag_tooltip();
+            editor.codemirror.focus();
+          } else if ( tag_tooltip_input.value.includes(" ")) {
+            insertText(tag_tooltip_input.value);
+            toggle_tag_tooltip();
+            editor.codemirror.focus();
           }
         }
 
-        editor.codemirror.on("cursorActivity", function() {
-          if (tag_tooltip.classList.contains("hidden"))
-          {
-            var cursor_coordinates = cm.cursorCoords()
-            tag_tooltip.style.zIndex = 9999;
-            tag_tooltip.style.position = "absolute";
-            tag_tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
-            tag_tooltip.style.left = cursor_coordinates.left - 10 + "px";
-          }
-        });
-
+        /////////////////////////////////////////////////////////////////
+        //                      Screenreader stuff                     //
+        /////////////////////////////////////////////////////////////////
         /* Screenreader mode checkbox */
         function toggleScreenReaderMode(cbox, editor)
         {
