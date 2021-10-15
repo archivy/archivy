@@ -111,51 +111,22 @@ def query_ripgrep_tags():
     Mandatory reference: https://xkcd.com/1171/
     """
 
-    # Simple idea:
-    #  We look for `#` followed by characters that are not white-space
-    #                  followed by a terminating white-space.
-    # Problem: This also matches `####`
-    # PATTERN = r"#(\S+)\W"
-
-    # Still simple:
-    # Match a `#` and then something that's not a `#`
-    # Problem:
-    #   String #####asd
-    #   This matches #asd
-    # Problem 2:
-    # regex parse error:
-    #     #(?!#)(\S+)\W
-    #      ^^^
-    # error: look-around, including look-ahead and look-behind, is not supported
-    # PATTERN = r"#(?!#)(\S+)\W"
-
-    # Not nice:
-    # Problem: This only works for very limited character sets. Eg: #üöäèéàß doesn't match.
-    # Problem2: This also matches parts of URLs and other things like embedded CSS
-    # PATTERN = r"#([a-zA-Z0-9_-]+)"
-
-    # Compromise: Allow "####tag"
-    # PATTERN = r"#([\S0-9_-]+)"
-
-    # I cave
     PATTERN = r"#([a-zA-Z0-9_-]+)\w"
     from archivy.data import get_data_dir
 
     if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
         return None
 
-    # io: case insensitive, only return matches
-    rg_cmd = ["rg", "-ioI", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    # io: case insensitive
+    rg_cmd = ["rg", "-io", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
-    tags = rg.stdout.splitlines()
+    hits = []
+    for p in rg.stdout.splitlines():
+        pk = Path(p.decode()).parts[-1].replace(".md", "").split("-")[0]
+        tag = Path(p.decode()).parts[-1].split(":")[-1]
+        hits.append((pk, tag))
 
-    rg_cmd = ["rg", "-ioIc", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
-    rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
-    counts = rg.stdout.splitlines()
-
-    # rg returns a bytestring
-    #  including the `#`
-    return [str(t, "utf-8")[1:] for t in tags]
+    return hits
 
 
 def search(query, strict=False):

@@ -9,38 +9,37 @@ from archivy.search import query_ripgrep_tags
 #     { "tag2": count },
 #     ...
 # }
-def get_all_tags(all_items=None, force=False):
+def get_all_tags(force=False):
     rg_tags = query_ripgrep_tags()
-    print(rg_tags)
-    return_tags = {}
-    for tag in rg_tags:
-        return_tags[tag] = 1
-
-    return return_tags
 
     db = helpers.get_db()
-    if all_items is None:
-        all_items = data.get_items(structured=False)
     list_query = db.search(Query().name == "list_of_tags")
 
-    if not list_query or force:
-        all_tags = {}
-        for item in all_items:
-            for tag in item.get("tags", []):
-                if tag not in list(all_tags):
-                    all_tags[tag] = {item["id"]: item["title"], "count": 1}
-                else:
-                    if not item["id"] in all_tags[tag]:
-                        all_tags[tag]["count"] += 1
-                    all_tags[tag][item["id"]] = item["title"]
+    if not list_query or force or True:
+        return_tags = {}
+        for result in rg_tags:
+            pk = result[0]
+            tag = result[1][1:]  # Getting rid of the "#"
+
+            item = data.get_item(pk)
+
+            if tag not in list(return_tags):
+                return_tags[tag] = {item["id"]: item["title"], "count": 1}
+            else:
+                if not item["id"] in return_tags[tag]:
+                    return_tags[tag]["count"] += 1
+                return_tags[tag][item["id"]] = item["title"]
 
         if not list_query:
-            db.insert({"name": "list_of_tags", "val": all_tags})
+            db.insert({"name": "list_of_tags", "val": return_tags})
         else:
-            db.update(operations.set("val", all_tags), Query().name == "list_of_tags")
+            db.update(
+                operations.set("val", return_tags), Query().name == "list_of_tags"
+            )
     else:
-        all_tags = list_query[0]["val"]
-    return all_tags
+        return_tags = list_query[0]["val"]
+
+    return return_tags
 
 
 def add_tag_to_index(tagname):
