@@ -332,13 +332,31 @@
         //  2. NOT IMPLEMENTED: ? Add to the index ? 
         function add_tag() {
           let tag = tag_tooltip_input.value;
-          toggle_tag_tooltip();
-          // This is an artifact of the previous implementation? Shouldn't evaluate to true, usually.
           if (tag[0] != "#") {
             tag = "#" + tag;
           }
+
+          // 1.
+          toggle_tag_tooltip();
           insertText(tag);
+
           editor.codemirror.focus();
+
+          // 2.
+          let payload = {
+            method: "PUT",
+            body: JSON.stringify({
+              "dataobj_id": {{dataobj['id']}},
+              "tagname": tag.slice(1)
+            }),
+            headers: {
+              "content-type": "application/json"
+            }
+          };
+
+          response = fetch(`${SCRIPT_ROOT}/tags/add_to_index`, payload);
+          console.log(response)
+
         }
 
         // When toggling the tag tooltip we want to position it right first.

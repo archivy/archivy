@@ -73,13 +73,12 @@ class DataObj:
     the db with their contents.
     """
 
-    __searchable__ = ["title", "content", "tags"]
+    __searchable__ = ["title", "content"]
 
     id: Optional[int] = attrib(validator=optional(instance_of(int)), default=None)
     type: str = attrib(validator=instance_of(str))
     title: str = attrib(validator=instance_of(str), default="")
     content: str = attrib(validator=instance_of(str), default="")
-    tags: List[str] = attrib(validator=instance_of(list), default=[])
     url: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     date: Optional[datetime] = attrib(
         validator=optional(instance_of(datetime)), default=None
@@ -210,7 +209,6 @@ class DataObj:
                 "type": self.type,
                 "title": str(self.title),
                 "date": self.date.strftime("%x").replace("/", "-"),
-                "tags": self.tags,
                 "id": self.id,
                 "path": self.path,
             }
@@ -229,7 +227,6 @@ class DataObj:
             )
 
             hooks.on_dataobj_create(self)
-            [add_tag_to_index(tag) for tag in data["tags"]]
             self.index()
             return self.id
         return False
@@ -252,7 +249,7 @@ class DataObj:
         data = frontmatter.loads(md_content)
         dataobj = {}
         dataobj["content"] = data.content
-        for pair in ["tags", "id", "title", "path"]:
+        for pair in ["id", "title", "path"]:
             try:
                 dataobj[pair] = data[pair]
             except KeyError:

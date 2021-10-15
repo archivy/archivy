@@ -19,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
-from archivy.tags import get_all_tags
+from archivy.tags import get_all_tags, get_tags_for_dataobj
 from archivy.search import search
 from archivy.config import Config
 
@@ -106,8 +106,7 @@ def new_note():
     ]
     if form.validate_on_submit():
         path = form.path.data
-        tags = form.tags.data.split(",") if form.tags.data != "" else []
-        note = DataObj(title=form.title.data, tags=tags, path=path, type="note")
+        note = DataObj(title=form.title.data, path=path, type="note")
         note_id = note.insert()
         if note_id:
             flash("Note Saved!", "success")
@@ -123,7 +122,9 @@ def show_all_tags():
     tags = {
         k: v
         for k, v in sorted(
-            get_all_tags().items(), key=lambda item: item[1]["count"], reverse=True
+            get_all_tags(force=True).items(),
+            key=lambda item: (item[1]["count"], item[0]),
+            reverse=True,
         )
     }
 
@@ -145,9 +146,9 @@ def show_tag(tag_name):
     )
 
 
-@app.route("/dataobj/<dataobj_id>")
+@app.route("/dataobj/<int:dataobj_id>")
 def show_dataobj(dataobj_id):
-    dataobj = data.get_item(dataobj_id)
+    dataobj = data.get_item(dataobj_id, get_tags=True)
 
     if not dataobj:
         flash("Data could not be found!", "error")
@@ -178,6 +179,7 @@ def show_dataobj(dataobj_id):
     post_title_form.title.data = dataobj["title"]
 
     list_of_tags = get_all_tags().keys()
+    get_tags_for_dataobj(dataobj_id)
 
     return render_template(
         "dataobjs/show.html",
@@ -194,7 +196,7 @@ def show_dataobj(dataobj_id):
     )
 
 
-@app.route("/dataobj/move/<dataobj_id>", methods=["POST"])
+@app.route("/dataobj/move/<int:dataobj_id>", methods=["POST"])
 def move_item(dataobj_id):
     form = forms.MoveItemForm()
     out_dir = form.path.data if form.path.data != "" else "root directory"
@@ -216,7 +218,7 @@ def move_item(dataobj_id):
         return redirect(f"/dataobj/{dataobj_id}")
 
 
-@app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
+@app.route("/dataobj/delete/<int:dataobj_id>", methods=["DELETE", "GET"])
 def delete_data(dataobj_id):
     try:
         data.delete_item(dataobj_id)
