@@ -111,7 +111,7 @@ def query_ripgrep_tags():
     Mandatory reference: https://xkcd.com/1171/
     """
 
-    PATTERN = r"#([a-zA-Z0-9_-]+)\w"
+    PATTERN = r"($| )#([a-zA-Z0-9_-]+)\w"
     from archivy.data import get_data_dir
 
     if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
