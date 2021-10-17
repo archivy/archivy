@@ -92,7 +92,7 @@
       let query = input.value;
       if (input.value !== "")
       {
-        let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
+        let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${encodeURIComponent(input.value)}`, {
           "method": "GET"
         });
         if (searchQuery.ok && query == input.value) {  
