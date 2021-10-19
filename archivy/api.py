@@ -153,23 +153,17 @@ def get_dataobjs():
     return jsonify(cur_dir)
 
 
-# The request should be
-# {
-#     "tagname": ,
-#     "dataobj_id": ,
-# }
 @api_bp.route("/tags/add_to_index", methods=["PUT"])
 def add_tag_to_index():
     """Add a tag to the database."""
     tagname = request.json.get("tagname", False)
-    dataobj_id = request.json.get("dataobj_id", False)
-    if tagname and dataobj_id:
-        if tags.add_tag_to_index(tagname, dataobj_id):
+    if tagname:
+        if tags.add_tag_to_index(tagname):
             return Response(status=200)
         else:
             return Response(status=404)
 
-    return Response("Must provide tag and dataobj_id parameters", status=401)
+    return Response("Must provide tagname", status=401)
 
 
 @api_bp.route("/dataobj/local_edit/<dataobj_id>", methods=["GET"])

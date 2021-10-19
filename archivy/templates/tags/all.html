@@ -2,12 +2,11 @@
 
 {% block content %}
 <h2>All tags ({{ tags | length }})</h2>
-<ul>
-  {% for tag in tags.keys() %}
-    <a href="/tags/{{ tag }}">
-      <li>{{ tag }} ({{ tags[tag]["count"] }})</li>
-    </a>
-  {% endfor %}
+<ul class="post-tags">
+{% for tag in tags %}
+  <a href="/tags/{{ tag }}">
+    <span class="post-tag">#{{ tag }}</span>
+  </a>
+{% endfor %}
 </ul>
-
 {% endblock %}

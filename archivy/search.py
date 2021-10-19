@@ -111,22 +111,22 @@ def query_ripgrep_tags():
     Mandatory reference: https://xkcd.com/1171/
     """
 
-    PATTERN = r"($| )#([a-zA-Z0-9_-]+)\w"
+    PATTERN = r"(\n| )#([a-zA-Z0-9_-]+)\w"
     from archivy.data import get_data_dir
 
     if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
         return None
 
     # io: case insensitive
-    rg_cmd = ["rg", "-io", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    rg_cmd = ["rg", "-Uio", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     hits = []
-    for p in rg.stdout.splitlines():
-        pk = Path(p.decode()).parts[-1].replace(".md", "").split("-")[0]
-        tag = Path(p.decode()).parts[-1].split(":")[-1]
-        hits.append((pk, tag))
+    for line in rg.stdout.splitlines():
+        tag = Path(line.decode()).parts[-1].split(":")[-1]
+        tag = tag.replace("#", "").lstrip()
+        hits.append(tag)
 
-    return hits
+    return set(hits)
 
 
 def search(query, strict=False):

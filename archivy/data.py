@@ -84,13 +84,11 @@ def get_items(collections=[], path="", structured=True, json_format=False):
                 current_dir = current_dir.child_dirs[last_seg]
             elif last_seg.endswith(".md"):
                 data = frontmatter.load(filepath)
-                data["tags"] = get_tags_for_dataobj(data["id"])
                 current_dir.child_files.append(data)
     else:
         for filepath in root_dir.rglob("*.md"):
             data = frontmatter.load(filepath)
             data["fullpath"] = str(filepath.parent.relative_to(root_dir))
-            data["tags"] = get_tags_for_dataobj(data["id"])
             if len(collections) == 0 or any(
                 [collection == data["type"] for collection in collections]
             ):
@@ -133,8 +131,6 @@ def get_item(dataobj_id, get_tags=False):
         data = frontmatter.load(file)
         data["fullpath"] = str(file)
         data["dir"] = str(file.parent.relative_to(get_data_dir()))
-        if get_tags:
-            data["tags"] = get_tags_for_dataobj(dataobj_id)
         # replace . for root items to ''
         if data["dir"] == ".":
             data["dir"] = ""

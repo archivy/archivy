@@ -119,30 +119,20 @@ def new_note():
 
 @app.route("/tags")
 def show_all_tags():
-    tags = {
-        k: v
-        for k, v in sorted(
-            get_all_tags(force=True).items(),
-            key=lambda item: (item[1]["count"], item[0]),
-            reverse=True,
-        )
-    }
+    tags = sorted(get_all_tags(force=True))
 
     return render_template("tags/all.html", title="All Tags", tags=tags)
 
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
-    tag_dataobjs = [
-        (id, title) for id, title in get_all_tags()[tag_name].items() if id != "count"
-    ]
-    print(tag_dataobjs)
+    search_result = search(f"#{tag_name}")
 
     return render_template(
         "tags/show.html",
         title=f"Tags - {tag_name}",
         tag_name=tag_name,
-        tag_dataobjs=tag_dataobjs,
+        search_result=search_result,
     )
 
 
@@ -178,8 +168,8 @@ def show_dataobj(dataobj_id):
     post_title_form = forms.TitleForm()
     post_title_form.title.data = dataobj["title"]
 
-    list_of_tags = get_all_tags().keys()
-    get_tags_for_dataobj(dataobj_id)
+    list_of_tags = get_all_tags()
+    # get_tags_for_dataobj(dataobj_id)
 
     return render_template(
         "dataobjs/show.html",
