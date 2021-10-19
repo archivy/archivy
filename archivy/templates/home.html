@@ -90,7 +90,6 @@
     let input = document.getElementById("searchBar");
     input.addEventListener('input', async function(e) {
       let query = encodeURIComponent(input.value);
-      console.log(query);
       if (input.value !== "") {
         let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${query}`, {
           "method": "GET"
