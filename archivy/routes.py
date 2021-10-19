@@ -23,6 +23,8 @@ from archivy.tags import get_all_tags, get_tags_for_dataobj
 from archivy.search import search
 from archivy.config import Config
 
+import re
+
 
 @app.context_processor
 def pass_defaults():
@@ -168,8 +170,13 @@ def show_dataobj(dataobj_id):
     post_title_form = forms.TitleForm()
     post_title_form.title.data = dataobj["title"]
 
+    # Get all tags
     list_of_tags = get_all_tags()
-    # get_tags_for_dataobj(dataobj_id)
+    # and the ones present in this dataobj
+    dataobj_tags = []
+    PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
+    for match in re.finditer(PATTERN, dataobj.content):
+        dataobj_tags.append(match.group(0).replace("#", "").lstrip())
 
     return render_template(
         "dataobjs/show.html",
@@ -183,6 +190,7 @@ def show_dataobj(dataobj_id):
         post_title_form=post_title_form,
         move_form=move_form,
         list_of_tags=list_of_tags,
+        dataobj_tags=dataobj_tags,
     )
 
 
