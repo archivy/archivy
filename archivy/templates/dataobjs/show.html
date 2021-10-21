@@ -329,12 +329,14 @@
 
         // Add a tag
         //  1. Put the value of the datalist into the editor
-        //  2. NOT IMPLEMENTED: ? Add to the index ? 
+        //  2. Add to the index
+        //  3. Add it to the .post-tags
         function add_tag() {
           let tag = tag_tooltip_input.value;
           if (tag[0] != "#") {
             tag = "#" + tag;
           }
+          tagname = tag.slice(1);
 
           // 1.
           toggle_tag_tooltip();
@@ -347,7 +349,7 @@
             method: "PUT",
             body: JSON.stringify({
               "dataobj_id": {{dataobj['id']}},
-              "tagname": tag.slice(1)
+              "tagname": tagname
             }),
             headers: {
               "content-type": "application/json"
@@ -355,7 +357,21 @@
           };
 
           response = fetch(`${SCRIPT_ROOT}/tags/add_to_index`, payload);
-          console.log(response)
+          
+          //  3.
+          var post_tags = document.querySelector(".post-tags");
+          var children = post_tags.children;
+          var current_tags = [];
+          for (var i = children.length - 1; i >= 0; i--) {
+            current_tags.push(children[i].innerText)
+          }
+
+          if (!current_tags.includes(tagname)) {
+            var new_tag = document.createElement("span")
+            new_tag.classList.add("post-tag")
+            new_tag.innerHTML = tagname
+            post_tags.appendChild(new_tag)
+          }
 
         }
 
