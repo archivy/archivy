@@ -19,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
-from archivy.tags import get_all_tags, get_tags_for_dataobj
+from archivy.tags import get_all_tags
 from archivy.search import search
 from archivy.config import Config
 

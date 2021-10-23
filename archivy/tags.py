@@ -15,22 +15,12 @@ def get_all_tags(force=False):
 
     # Then update it if needed
     if newly_created or force:
-        return_tags = query_ripgrep_tags()
+        tags = query_ripgrep_tags()
         db.update(
-            operations.set("val", list(return_tags)), Query().name == "list_of_tags"
+            operations.set("val", list(tags)), Query().name == "list_of_tags"
         )
     else:
-        return_tags = list_query[0]["val"]
-
-    return return_tags
-
-
-def get_tags_for_dataobj(dataobj_id):
-    all_tags = get_all_tags()
-    tags = []
-    for tag_name, tag_entry in all_tags.items():
-        if str(dataobj_id) in tag_entry:
-            tags.append(tag_name)
+        tags = list_query[0]["val"]
 
     return tags
 
@@ -39,8 +29,6 @@ def add_tag_to_index(tagname):
     all_tags = get_all_tags()
     if tagname not in all_tags:
         all_tags.append(tagname)
-        print("new all_tags", all_tags)
-
         db = helpers.get_db()
         db.update(operations.set("val", all_tags), Query().name == "list_of_tags")
 

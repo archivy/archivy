@@ -10,8 +10,6 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from archivy.search import remove_from_index
-from archivy.tags import get_tags_for_dataobj
-
 
 # FIXME: ugly hack to make sure the app path is evaluated at the right time
 def get_data_dir():
