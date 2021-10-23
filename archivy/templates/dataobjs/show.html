@@ -259,6 +259,21 @@
                 statusBtn.classList.add("fa-check-circle");
                 statusBtn.classList.remove("fa-times");
                 savedContent = editor.value();
+                // update dataobj tags
+                var post_tags = document.querySelector(".post-tags");
+                var matches = [...savedContent.matchAll("(^|\\n| )#([a-zA-Z0-9_-]+)\\w")];
+                var all_tags = []
+                for (i=0; i < matches.length; i++) {
+                  all_tags.push(matches[i][0].trim())
+                }
+                post_tags.innerHTML = ""
+                var uniq_tags = [...new Set(all_tags)];
+                for (i=0; i < uniq_tags.length; i++) {
+                  var new_tag = document.createElement("span")
+                  new_tag.classList.add("post-tag")
+                  new_tag.innerHTML = uniq_tags[i]
+                  post_tags.appendChild(new_tag)
+                }
               }, // action
             }, // save-button
             {
@@ -330,7 +345,6 @@
         // Add a tag
         //  1. Put the value of the datalist into the editor
         //  2. Add to the index
-        //  3. Add it to the .post-tags
         function add_tag() {
           let tag = tag_tooltip_input.value;
           if (tag[0] != "#") {
@@ -355,43 +369,9 @@
               "content-type": "application/json"
             }
           };
-
           response = fetch(`${SCRIPT_ROOT}/tags/add_to_index`, payload);
-          
-          //  3.
-          // var post_tags = document.querySelector(".post-tags");
-          // var children = post_tags.children;
-          // var current_tags = [];
-          // for (var i = children.length - 1; i >= 0; i--) {
-          //   current_tags.push(children[i].innerText)
-          // }
-
-          // if (!current_tags.includes(tagname)) {
-          //   var new_tag = document.createElement("span")
-          //   new_tag.classList.add("post-tag")
-          //   new_tag.innerHTML = tagname
-          //   post_tags.appendChild(new_tag)
-          // }
-
-          // 3. alternative
-          var post_tags = document.querySelector(".post-tags");
-          var content = cm.getValue();
-          var matches = [...content.matchAll("[^#| #]([a-zA-Z0-9_-]+)\\w")];
-          var all_tags = []
-
-          for (i=0; i < matches.length; i++) {
-              all_tags.push(matches[i][0].trim())
-          }
-
-          post_tags.innerHTML = ""
-          var uniq_tags = [...new Set(all_tags)];
-          for (i=0; i < uniq_tags.length; i++) {
-              var new_tag = document.createElement("span")
-              new_tag.classList.add("post-tag")
-              new_tag.innerHTML = uniq_tags[i]
-              post_tags.appendChild(new_tag)
-          }
         }
+
 
         // When toggling the tag tooltip we want to position it right first.
         // Otherwise, clear the input and hide it.
