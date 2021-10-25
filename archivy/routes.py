@@ -108,7 +108,8 @@ def new_note():
     ]
     if form.validate_on_submit():
         path = form.path.data
-        note = DataObj(title=form.title.data, path=path, type="note")
+        tags = form.tags.data.split(",") if form.tags.data != "" else []
+        note = DataObj(title=form.title.data, path=path, tags=tags, type="note")
         note_id = note.insert()
         if note_id:
             flash("Note Saved!", "success")
@@ -122,13 +123,12 @@ def new_note():
 @app.route("/tags")
 def show_all_tags():
     tags = sorted(get_all_tags(force=True))
-
     return render_template("tags/all.html", title="All Tags", tags=tags)
 
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
-    search_result = search(f"#{tag_name}")
+    search_result = search(f"#{tag_name}", strict=True)
 
     return render_template(
         "tags/show.html",

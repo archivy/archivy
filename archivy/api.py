@@ -69,6 +69,7 @@ def create_note():
     All parameters are sent through the JSON body.
     - **title** (required)
     - **content** (required)
+    - **tags**
     - **path**
     """
     json_data = request.get_json()
@@ -76,6 +77,7 @@ def create_note():
         title=json_data["title"],
         content=json_data["content"],
         path=json_data.get("path", ""),
+        tags=json_data.get("tags", []),
         type="note",
     )
 

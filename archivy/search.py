@@ -119,7 +119,7 @@ def query_ripgrep_tags():
     PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
     from archivy.data import get_data_dir
 
-    if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
+    if not which("rg"):
         return None
 
     # io: case insensitive

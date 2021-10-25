@@ -26,10 +26,10 @@
   {% endif %}
   {% if search_enabled %}
     <div id="link-form" style="display: none">
-  <div>
+      <div>
         <input type="text" id="searchBar" placeholder="Search for linked note.">
-    <button onclick="toggleLinkForm()" class="btn">Cancel</button>
-  </div>
+        <button onclick="toggleLinkForm()" class="btn">Cancel</button>
+      </div>
         <ul id="searchHits"></ul>
     </div>
   {% endif %}
@@ -38,8 +38,8 @@
     {% if not view_only %}
     <form id="post-title-form">
       {{ post_title_form.hidden_tag() }}
-        {{ post_title_form.title() }}
-        {{ post_title_form.submit() }}
+      {{ post_title_form.title() }}
+      {{ post_title_form.submit() }}
     </form>
     {% else %}
       <h2 id="post-title">
@@ -47,14 +47,17 @@
       </h2>
     {% endif %}
 
-    <div class="post-tags">
+    <div class="embedded-tags post-tags">
       {% for tag in dataobj_tags %}
         <span class="post-tag">{{ tag }}</span>
       {% endfor %}
     </div>
-
+    <div class="metadata-tags post-tags">
+      {% for tag in dataobj["tags"] %}
+	<span class="post-tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
     <span class="post-date">{{ dataobj['date'] }}</span>
-
 
     {% if dataobj['type'] == 'bookmark' or dataobj['type'] == 'pocket_bookmark' %}
       <a href="{{ dataobj['url'] }}" rel="noopener">
@@ -131,7 +134,7 @@
     {% if not view_only %}
       // Also show the editing options
       // The form for editing the front matter
-      var update_frontmatter_callback = function(e) {
+      let update_frontmatter_callback = function(e) {
         let payload = {
           method: "PUT",
           body: JSON.stringify({
@@ -147,7 +150,7 @@
         e.preventDefault();
       }
 
-      var post_title_form = document.getElementById("post-title-form");
+      let post_title_form = document.getElementById("post-title-form");
       post_title_form.addEventListener("submit", update_frontmatter_callback, true);
 
       // Render the editor and put the dataobj in it
@@ -260,16 +263,16 @@
                 statusBtn.classList.remove("fa-times");
                 savedContent = editor.value();
                 // update dataobj tags
-                var post_tags = document.querySelector(".post-tags");
-                var matches = [...savedContent.matchAll("(^|\\n| )#([a-zA-Z0-9_-]+)\\w")];
-                var all_tags = []
+                let post_tags = document.querySelector(".embedded-tags");
+                let matches = [...savedContent.matchAll("(^|\\n| )#([a-zA-Z0-9_-]+)\\w")];
+                let all_tags = []
                 for (i=0; i < matches.length; i++) {
                   all_tags.push(matches[i][0].trim())
                 }
                 post_tags.innerHTML = ""
-                var uniq_tags = [...new Set(all_tags)];
+                let uniq_tags = [...new Set(all_tags)];
                 for (i=0; i < uniq_tags.length; i++) {
-                  var new_tag = document.createElement("span")
+                  let new_tag = document.createElement("span")
                   new_tag.classList.add("post-tag")
                   new_tag.innerHTML = uniq_tags[i]
                   post_tags.appendChild(new_tag)
@@ -331,14 +334,14 @@
         //                      Tag autocompletion                     //
         /////////////////////////////////////////////////////////////////
         // The container, datalist input and CoreMirror instance. 
-        var tag_tooltip = document.querySelector("#tag_tooltip")
-        var tag_tooltip_input = document.querySelector("#tag_tooltip_input")
-        var cm = document.getElementsByClassName("CodeMirror")[0].CodeMirror;
+        let tag_tooltip = document.querySelector("#tag_tooltip")
+        let tag_tooltip_input = document.querySelector("#tag_tooltip_input")
+        let cm = document.getElementsByClassName("CodeMirror")[0].CodeMirror;
 
         // Put `data` where the cursor is right now
         function insertText(data) {
-          var doc = cm.getDoc();
-          var cursor = doc.getCursor(); // gets the line number in the cursor position
+          let doc = cm.getDoc();
+          let cursor = doc.getCursor(); // gets the line number in the cursor position
           doc.replaceRange(data, cursor);
         }
 
@@ -377,7 +380,7 @@
         // Otherwise, clear the input and hide it.
         function toggle_tag_tooltip() {
           if (tag_tooltip.classList.contains("hidden")) {
-            var cursor_coordinates = cm.cursorCoords()
+            let cursor_coordinates = cm.cursorCoords()
             tag_tooltip.style.zIndex = 9999;
             tag_tooltip.style.position = "absolute";
             tag_tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
@@ -397,7 +400,7 @@
         //   Check what the last character is. Is it a `#`?
         //   Then get rid of the `#` and put it into the tag tooltip and show that.
         editor.codemirror.on("change", function(ed, change) {
-          var line = ed.doc.getCursor().line, // Cursor line
+          let line = ed.doc.getCursor().line, // Cursor line
           ch = ed.doc.getCursor().ch;
           let currLine = ed.doc.getLine(line);
           let currChar = currLine[ch - 1];

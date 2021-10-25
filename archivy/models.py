@@ -73,7 +73,7 @@ class DataObj:
     the db with their contents.
     """
 
-    __searchable__ = ["title", "content"]
+    __searchable__ = ["title", "content", "tags"]
 
     id: Optional[int] = attrib(validator=optional(instance_of(int)), default=None)
     type: str = attrib(validator=instance_of(str))
@@ -249,7 +249,7 @@ class DataObj:
         data = frontmatter.loads(md_content)
         dataobj = {}
         dataobj["content"] = data.content
-        for pair in ["id", "title", "path"]:
+        for pair in ["id", "title", "path", "tags"]:
             try:
                 dataobj[pair] = data[pair]
             except KeyError:
