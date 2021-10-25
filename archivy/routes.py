@@ -19,8 +19,11 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
+from archivy.tags import get_all_tags
 from archivy.search import search
 from archivy.config import Config
+
+import re
 
 
 @app.context_processor
@@ -81,6 +84,7 @@ def new_bookmark():
     if form.validate_on_submit():
         path = form.path.data
         tags = form.tags.data.split(",") if form.tags.data != "" else []
+        tags = [tag.strip() for tag in tags]
         bookmark = DataObj(url=form.url.data, tags=tags, path=path, type="bookmark")
         bookmark.process_bookmark_url()
         bookmark_id = bookmark.insert()
@@ -104,8 +108,7 @@ def new_note():
     ]
     if form.validate_on_submit():
         path = form.path.data
-        tags = form.tags.data.split(",") if form.tags.data != "" else []
-        note = DataObj(title=form.title.data, tags=tags, path=path, type="note")
+        note = DataObj(title=form.title.data, path=path, type="note")
         note_id = note.insert()
         if note_id:
             flash("Note Saved!", "success")
@@ -116,7 +119,26 @@ def new_note():
     return render_template("/dataobjs/new.html", title="New Note", form=form)
 
 
-@app.route("/dataobj/<dataobj_id>")
+@app.route("/tags")
+def show_all_tags():
+    tags = sorted(get_all_tags(force=True))
+
+    return render_template("tags/all.html", title="All Tags", tags=tags)
+
+
+@app.route("/tags/<tag_name>")
+def show_tag(tag_name):
+    search_result = search(f"#{tag_name}")
+
+    return render_template(
+        "tags/show.html",
+        title=f"Tags - {tag_name}",
+        tag_name=tag_name,
+        search_result=search_result,
+    )
+
+
+@app.route("/dataobj/<int:dataobj_id>")
 def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
 
@@ -148,6 +170,14 @@ def show_dataobj(dataobj_id):
     post_title_form = forms.TitleForm()
     post_title_form.title.data = dataobj["title"]
 
+    # Get all tags
+    list_of_tags = get_all_tags()
+    # and the ones present in this dataobj
+    dataobj_tags = []
+    PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
+    for match in re.finditer(PATTERN, dataobj.content):
+        dataobj_tags.append(match.group(0).replace("#", "").lstrip())
+
     return render_template(
         "dataobjs/show.html",
         title=dataobj["title"],
@@ -159,10 +189,12 @@ def show_dataobj(dataobj_id):
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
         post_title_form=post_title_form,
         move_form=move_form,
+        list_of_tags=list_of_tags,
+        dataobj_tags=dataobj_tags,
     )
 
 
-@app.route("/dataobj/move/<dataobj_id>", methods=["POST"])
+@app.route("/dataobj/move/<int:dataobj_id>", methods=["POST"])
 def move_item(dataobj_id):
     form = forms.MoveItemForm()
     out_dir = form.path.data if form.path.data != "" else "root directory"
@@ -184,7 +216,7 @@ def move_item(dataobj_id):
         return redirect(f"/dataobj/{dataobj_id}")
 
 
-@app.route("/dataobj/delete/<dataobj_id>", methods=["DELETE", "GET"])
+@app.route("/dataobj/delete/<int:dataobj_id>", methods=["DELETE", "GET"])
 def delete_data(dataobj_id):
     try:
         data.delete_item(dataobj_id)

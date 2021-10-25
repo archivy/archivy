@@ -6,8 +6,15 @@ from flask import current_app
 
 from archivy.helpers import get_elastic_client
 
+
+# Example command ["rg", RG_MISC_ARGS, RG_FILETYPE, RG_REGEX_ARG, query, str(get_data_dir())]
+#  rg -il -t md -e query files
+# -i -> case insensitive
+# -l -> only output filenames
+# -t -> file type
+# -e -> regexp
+RG_MISC_ARGS = "-ilt"
 RG_REGEX_ARG = "-e"
-RG_MISC_ARGS = "-ilt"  # i -> case insensitive and l -> only output filenames
 RG_FILETYPE = "md"
 
 
@@ -101,6 +108,30 @@ def query_ripgrep(query):
         parsed = filename.replace(".md", "").split("-")
         hits.append({"id": int(parsed[0]), "title": "-".join(parsed[1:])})
     return hits
+
+
+def query_ripgrep_tags():
+    """
+    Uses ripgrep to search for tags.
+    Mandatory reference: https://xkcd.com/1171/
+    """
+
+    PATTERN = r"(\n| )#([a-zA-Z0-9_-]+)\w"
+    from archivy.data import get_data_dir
+
+    if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
+        return None
+
+    # io: case insensitive
+    rg_cmd = ["rg", "-Uio", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
+    hits = []
+    for line in rg.stdout.splitlines():
+        tag = Path(line.decode()).parts[-1].split(":")[-1]
+        tag = tag.replace("#", "").lstrip()
+        hits.append(tag)
+
+    return set(hits)
 
 
 def search(query, strict=False):

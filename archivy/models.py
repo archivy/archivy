@@ -21,6 +21,7 @@ from werkzeug.datastructures import FileStorage
 from archivy import helpers
 from archivy.data import create, save_image, valid_image_filename
 from archivy.search import add_to_index
+from archivy.tags import add_tag_to_index
 
 
 # TODO: use this as 'type' field
@@ -72,17 +73,15 @@ class DataObj:
     the db with their contents.
     """
 
-    __searchable__ = ["title", "content", "tags"]
+    __searchable__ = ["title", "content"]
 
     id: Optional[int] = attrib(validator=optional(instance_of(int)), default=None)
     type: str = attrib(validator=instance_of(str))
     title: str = attrib(validator=instance_of(str), default="")
     content: str = attrib(validator=instance_of(str), default="")
-    tags: List[str] = attrib(validator=instance_of(list), default=[])
     url: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     date: Optional[datetime] = attrib(
-        validator=optional(instance_of(datetime)),
-        default=None,
+        validator=optional(instance_of(datetime)), default=None
     )
     path: str = attrib(validator=instance_of(str), default="")
     fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
@@ -210,7 +209,6 @@ class DataObj:
                 "type": self.type,
                 "title": str(self.title),
                 "date": self.date.strftime("%x").replace("/", "-"),
-                "tags": self.tags,
                 "id": self.id,
                 "path": self.path,
             }
@@ -251,7 +249,7 @@ class DataObj:
         data = frontmatter.loads(md_content)
         dataobj = {}
         dataobj["content"] = data.content
-        for pair in ["tags", "id", "title", "path"]:
+        for pair in ["id", "title", "path"]:
             try:
                 dataobj[pair] = data[pair]
             except KeyError:

@@ -522,3 +522,7 @@ form {
 	width: 100%;
 	}
 }
+
+#tag_tooltip_input {
+	border: none !important;
+}

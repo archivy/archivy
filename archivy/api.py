@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash
 from flask_login import login_user
 from tinydb import Query
 
-from archivy import data
+from archivy import data, tags
 from archivy.search import search
 from archivy.models import DataObj, User
 from archivy.helpers import get_db
@@ -69,14 +69,12 @@ def create_note():
     All parameters are sent through the JSON body.
     - **title** (required)
     - **content** (required)
-    - **tags**
     - **path**
     """
     json_data = request.get_json()
     note = DataObj(
         title=json_data["title"],
         content=json_data["content"],
-        tags=json_data.get("tags"),
         path=json_data.get("path", ""),
         type="note",
     )
@@ -157,6 +155,19 @@ def get_dataobjs():
     """Gets all dataobjs"""
     cur_dir = data.get_items(structured=False, json_format=True)
     return jsonify(cur_dir)
+
+
+@api_bp.route("/tags/add_to_index", methods=["PUT"])
+def add_tag_to_index():
+    """Add a tag to the database."""
+    tagname = request.json.get("tagname", False)
+    if tagname:
+        if tags.add_tag_to_index(tagname):
+            return Response(status=200)
+        else:
+            return Response(status=404)
+
+    return Response("Must provide tagname", status=401)
 
 
 @api_bp.route("/dataobj/local_edit/<dataobj_id>", methods=["GET"])
