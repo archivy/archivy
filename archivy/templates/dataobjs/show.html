@@ -382,7 +382,6 @@
             tag_tooltip.style.position = "absolute";
             tag_tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
             tag_tooltip.style.left = cursor_coordinates.left - 10 + "px";
-
             tag_tooltip_input.value = "#";
             tag_tooltip.classList.remove("hidden");
             tag_tooltip_input.focus();
@@ -400,7 +399,8 @@
           var line = ed.doc.getCursor().line, // Cursor line
           ch = ed.doc.getCursor().ch;
           let currChar = ed.doc.getLine(line)[ch - 1];
-          if (currChar === "#") {
+          let is_tag_beginning = (currChar === "#" && (ch == 1 || ed.doc.getLine(line)[ch-2] === ' '));
+          if (is_tag_beginning) {
             ed.doc.replaceRange("", {
               line: line,
               ch: ch - 1
