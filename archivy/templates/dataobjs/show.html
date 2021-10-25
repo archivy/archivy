@@ -399,8 +399,9 @@
         editor.codemirror.on("change", function(ed, change) {
           var line = ed.doc.getCursor().line, // Cursor line
           ch = ed.doc.getCursor().ch;
-          let currChar = ed.doc.getLine(line)[ch - 1];
-          let is_tag_beginning = (currChar === "#" && (ch == 1 || ed.doc.getLine(line)[ch-2] === ' '));
+          let currLine = ed.doc.getLine(line);
+          let currChar = currLine[ch - 1];
+          let is_tag_beginning = (currChar === "#" && (ch == 1 || currLine[ch-2] === ' ') && (ch == currLine.length || currLine[ch] === ' '));
           if (is_tag_beginning) {
             ed.doc.replaceRange("", {
               line: line,
