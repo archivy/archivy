@@ -79,6 +79,7 @@ class DataObj:
     type: str = attrib(validator=instance_of(str))
     title: str = attrib(validator=instance_of(str), default="")
     content: str = attrib(validator=instance_of(str), default="")
+    tags: List[str] = attrib(validator=instance_of(list), default=[])
     url: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     date: Optional[datetime] = attrib(
         validator=optional(instance_of(datetime)), default=None
