@@ -210,6 +210,7 @@ class DataObj:
                 "type": self.type,
                 "title": str(self.title),
                 "date": self.date.strftime("%x").replace("/", "-"),
+                "tags": self.tags,
                 "id": self.id,
                 "path": self.path,
             }
