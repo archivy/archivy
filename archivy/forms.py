@@ -22,6 +22,7 @@ class NewBookmarkForm(FlaskForm):
 
 class NewNoteForm(FlaskForm):
     title = StringField("title", validators=[DataRequired()])
+    tags = StringField("tags")
     path = SelectField("Folder")
     submit = SubmitField("Save")
 
