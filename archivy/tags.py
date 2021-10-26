@@ -15,8 +15,8 @@ def get_all_tags(force=False):
 
     # Then update it if needed
     if newly_created or force:
-        tags = query_ripgrep_tags()
-        db.update(operations.set("val", list(tags)), Query().name == "list_of_tags")
+        tags = list(query_ripgrep_tags())
+        db.update(operations.set("val", tags), Query().name == "list_of_tags")
     else:
         tags = list_query[0]["val"]
 
