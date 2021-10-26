@@ -48,7 +48,7 @@
     {% endif %}
 
     <div class="embedded-tags post-tags">
-      {% for tag in dataobj_tags %}
+      {% for tag in embedded_tags %}
         <span class="post-tag">{{ tag }}</span>
       {% endfor %}
     </div>
@@ -366,7 +366,7 @@
             method: "PUT",
             body: JSON.stringify({
               "dataobj_id": {{dataobj['id']}},
-              "tagname": tagname
+              "tag": tagname
             }),
             headers: {
               "content-type": "application/json"

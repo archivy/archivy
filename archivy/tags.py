@@ -23,11 +23,10 @@ def get_all_tags(force=False):
     return tags
 
 
-def add_tag_to_index(tagname):
+def add_tag_to_index(tag_name):
     all_tags = get_all_tags()
-    if tagname not in all_tags:
-        all_tags.append(tagname)
+    if tag_name not in all_tags:
+        all_tags.append(tag_name)
         db = helpers.get_db()
         db.update(operations.set("val", all_tags), Query().name == "list_of_tags")
-
     return True

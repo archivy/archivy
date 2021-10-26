@@ -109,6 +109,7 @@ def new_note():
     if form.validate_on_submit():
         path = form.path.data
         tags = form.tags.data.split(",") if form.tags.data != "" else []
+        tags = [tag.strip() for tag in tags]
         note = DataObj(title=form.title.data, path=path, tags=tags, type="note")
         note_id = note.insert()
         if note_id:
@@ -128,13 +129,13 @@ def show_all_tags():
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
-    search_result = search(f"#{tag_name}", strict=True)
+    search_results = search(f"#{tag_name}", strict=True)
 
     return render_template(
         "tags/show.html",
         title=f"Tags - {tag_name}",
         tag_name=tag_name,
-        search_result=search_result,
+        search_result=search_results,
     )
 
 
@@ -173,10 +174,10 @@ def show_dataobj(dataobj_id):
     # Get all tags
     list_of_tags = get_all_tags()
     # and the ones present in this dataobj
-    dataobj_tags = []
+    embedded_tags = set()
     PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
     for match in re.finditer(PATTERN, dataobj.content):
-        dataobj_tags.append(match.group(0).replace("#", "").lstrip())
+        embedded_tags.add(match.group(0).replace("#", "").lstrip())
 
     return render_template(
         "dataobjs/show.html",
@@ -190,7 +191,7 @@ def show_dataobj(dataobj_id):
         post_title_form=post_title_form,
         move_form=move_form,
         list_of_tags=list_of_tags,
-        dataobj_tags=dataobj_tags,
+        embedded_tags=embedded_tags,
     )
 
 

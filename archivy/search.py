@@ -125,13 +125,13 @@ def query_ripgrep_tags():
     # io: case insensitive
     rg_cmd = ["rg", "-Uio", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
-    hits = []
+    hits = set()
     for line in rg.stdout.splitlines():
         tag = Path(line.decode()).parts[-1].split(":")[-1]
         tag = tag.replace("#", "").lstrip()
-        hits.append(tag)
+        hits.add(tag)
 
-    return set(hits)
+    return hits
 
 
 def search(query, strict=False):

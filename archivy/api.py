@@ -162,14 +162,14 @@ def get_dataobjs():
 @api_bp.route("/tags/add_to_index", methods=["PUT"])
 def add_tag_to_index():
     """Add a tag to the database."""
-    tagname = request.json.get("tagname", False)
-    if tagname:
-        if tags.add_tag_to_index(tagname):
+    tag = request.json.get("tag", False)
+    if tag:
+        if tags.add_tag_to_index(tags):
             return Response(status=200)
         else:
             return Response(status=404)
 
-    return Response("Must provide tagname", status=401)
+    return Response("Must provide tag name.", status=401)
 
 
 @api_bp.route("/dataobj/local_edit/<dataobj_id>", methods=["GET"])

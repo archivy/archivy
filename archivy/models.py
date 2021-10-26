@@ -198,7 +198,8 @@ class DataObj:
     def insert(self):
         """Creates a new file with the object's attributes"""
         if self.validate():
-
+            for tag in self.tags:
+                add_tag_to_index(tag)
             helpers.set_max_id(helpers.get_max_id() + 1)
             self.id = helpers.get_max_id()
             self.date = datetime.now()
