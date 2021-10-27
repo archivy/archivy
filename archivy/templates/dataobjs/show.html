@@ -264,7 +264,7 @@
                 savedContent = editor.value();
                 // update dataobj tags
                 let post_tags = document.querySelector(".embedded-tags");
-                let matches = [...savedContent.matchAll("(^|\\n| )#([a-zA-Z0-9_-]+)\\w")];
+                let matches = [...savedContent.matchAll("(?:^|\\n| )#(?:[a-zA-Z0-9_-]+)\\w")];
                 let all_tags = []
                 for (i=0; i < matches.length; i++) {
                   all_tags.push(matches[i][0].trim())
