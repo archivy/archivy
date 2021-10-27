@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ tag_name }} ({{ search_result | length }})</h2>
+<ul>
+  {% for res in search_result %}
+    <a href="/dataobj/{{ res.id }}">
+      <li>{{ res.title }}</li>
+    </a>
+  {% endfor %}
+</ul>
+
+{% endblock %}

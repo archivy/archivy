@@ -130,7 +130,6 @@ def query_ripgrep_tags():
         tag = Path(line.decode()).parts[-1].split(":")[-1]
         tag = tag.replace("#", "").lstrip()
         hits.add(tag)
-
     return hits
 
 
