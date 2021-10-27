@@ -1,6 +1,7 @@
 from pathlib import Path
 from os.path import sep
 from pkg_resources import require
+from shutil import which
 
 import frontmatter
 from flask import (
@@ -123,12 +124,19 @@ def new_note():
 
 @app.route("/tags")
 def show_all_tags():
+    if not app.config["SEARCH_CONF"]["engine"] == "ripgrep" and not which("rg"): 
+        flash("Ripgrep must be installed to view pages about embedded tags.", "error")
+        return redirect("/")
     tags = sorted(get_all_tags(force=True))
     return render_template("tags/all.html", title="All Tags", tags=tags)
 
 
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
+    if not app.config["SEARCH_CONF"]["enabled"] and not which("rg"):
+        flash("Search (for example ripgrep) must be installed to view pages about embedded tags.", "error")
+        return redirect("/")
+
     search_results = search(f"#{tag_name}", strict=True)
 
     return render_template(

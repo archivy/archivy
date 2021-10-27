@@ -141,5 +141,5 @@ def search(query, strict=False):
     """
     if current_app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
         return query_es_index(query, strict=strict)
-    elif current_app.config["SEARCH_CONF"]["engine"] == "ripgrep":
+    elif current_app.config["SEARCH_CONF"]["engine"] == "ripgrep" or which("rg"):
         return query_ripgrep(query)
