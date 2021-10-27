@@ -172,7 +172,7 @@ def show_dataobj(dataobj_id):
     post_title_form.title.data = dataobj["title"]
 
     # Get all tags
-    list_of_tags = get_all_tags()
+    tag_list = get_all_tags()
     # and the ones present in this dataobj
     embedded_tags = set()
     PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
@@ -190,7 +190,7 @@ def show_dataobj(dataobj_id):
         search_enabled=app.config["SEARCH_CONF"]["enabled"],
         post_title_form=post_title_form,
         move_form=move_form,
-        list_of_tags=list_of_tags,
+        tag_list=tag_list,
         embedded_tags=embedded_tags,
     )
 

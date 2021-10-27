@@ -1,25 +1,31 @@
+import re
+
 from flask import current_app
 from archivy import helpers, data
 from tinydb import Query, operations
 from archivy.search import query_ripgrep_tags
 
 
+def is_tag_format(tag_name):
+    t = re.match("^[a-zA-Z0-9_-]+$", tag_name)
+    return t
+
 def get_all_tags(force=False):
     db = helpers.get_db()
-    list_query = db.search(Query().name == "list_of_tags")
+    list_query = db.search(Query().name == "tag_list")
 
-    # If the "list_of_tags" doesn't exist in the database: create it.
+    # If the "tag_list" doesn't exist in the database: create it.
     newly_created = list_query == []
     if newly_created:
-        db.insert({"name": "list_of_tags", "val": []})
+        db.insert({"name": "tag_list", "val": []})
 
     # Then update it if needed
+    tags = []
     if newly_created or force:
         tags = list(query_ripgrep_tags())
-        db.update(operations.set("val", tags), Query().name == "list_of_tags")
+        db.update(operations.set("val", tags), Query().name == "tag_list")
     else:
         tags = list_query[0]["val"]
-
     return tags
 
 
@@ -28,5 +34,5 @@ def add_tag_to_index(tag_name):
     if tag_name not in all_tags:
         all_tags.append(tag_name)
         db = helpers.get_db()
-        db.update(operations.set("val", all_tags), Query().name == "list_of_tags")
+        db.update(operations.set("val", all_tags), Query().name == "tag_list")
     return True

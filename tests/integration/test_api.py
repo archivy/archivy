@@ -4,8 +4,10 @@ from os import remove
 import responses
 from flask import Flask
 from flask.testing import FlaskClient
+from tinydb import Query
 from archivy.data import create_dir, get_items, create_dir
 from archivy.models import DataObj
+from archivy.helpers import get_db
 
 
 def test_bookmark_not_found(test_app, client: FlaskClient):
@@ -231,3 +233,19 @@ def test_uploading_image_with_same_name_doesnt_collide(test_app, client):
     assert resp.status_code == 200
     assert open(test_app.config["USER_DIR"] + resp.json["data"]["filePath"], "r")
     remove("image.png")
+
+
+def test_add_tag_to_index(test_app, client):
+    resp = client.put("/api/tags/add_to_index", json={"tag": "new-tag"})
+    assert resp.status_code == 200
+    db = get_db()
+    tag_list = db.search(Query().name == "tag_list")[0]["val"]
+    assert "new-tag" in tag_list
+
+
+def test_adding_invalid_tag_name_fails(test_app, client):
+    tag_names = ["", "_#dsd;", "sd!!"]
+    for tag in tag_names:
+        resp = client.put("/api/tags/add_to_index", json={"tag": tag})
+        assert b"Must provide valid tag name" in resp.data
+        assert resp.status_code == 401
