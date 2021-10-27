@@ -10,6 +10,7 @@ def is_tag_format(tag_name):
     t = re.match("^[a-zA-Z0-9_-]+$", tag_name)
     return t
 
+
 def get_all_tags(force=False):
     db = helpers.get_db()
     list_query = db.search(Query().name == "tag_list")
