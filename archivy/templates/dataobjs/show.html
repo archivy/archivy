@@ -127,7 +127,7 @@
     // Render the content with TOC
     let contentDiv = document.getElementById("content");
     function renderContent(content) {
-      return window.parser.render("${toc}\n\n" + content);
+      return window.parser.customRender("${toc}\n\n" + content);
     }
     contentDiv.innerHTML = renderContent(`{{ content }}`);
 
