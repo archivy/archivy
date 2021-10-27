@@ -124,7 +124,7 @@ def new_note():
 
 @app.route("/tags")
 def show_all_tags():
-    if not app.config["SEARCH_CONF"]["engine"] == "ripgrep" and not which("rg"): 
+    if not app.config["SEARCH_CONF"]["engine"] == "ripgrep" and not which("rg"):
         flash("Ripgrep must be installed to view pages about embedded tags.", "error")
         return redirect("/")
     tags = sorted(get_all_tags(force=True))
@@ -134,7 +134,10 @@ def show_all_tags():
 @app.route("/tags/<tag_name>")
 def show_tag(tag_name):
     if not app.config["SEARCH_CONF"]["enabled"] and not which("rg"):
-        flash("Search (for example ripgrep) must be installed to view pages about embedded tags.", "error")
+        flash(
+            "Search (for example ripgrep) must be installed to view pages about embedded tags.",
+            "error",
+        )
         return redirect("/")
 
     search_results = search(f"#{tag_name}", strict=True)
