@@ -45,7 +45,44 @@ def get_by_id(dataobj_id):
     return results[0] if results else None
 
 
-def get_items(collections=[], path="", structured=True, json_format=False):
+def build_dir_tree(path, query_dir, load_content=True):
+    """
+    Builds a structured tree of directories and data objects.
+
+    - **path**: name of the directory relative to the root directory.
+    - **query_dir**: absolute path of the directory we're building the tree of.
+    - **load_content**: internal option to not save post contents in memory
+        if they're not going to be accessed.
+    """
+    datacont = Directory(path or "root")
+    for filepath in query_dir.rglob("*"):
+        current_path = filepath.relative_to(query_dir)
+        current_dir = datacont
+
+        # iterate through parent directories
+        for segment in current_path.parts[:-1]:
+            # directory has not been saved in tree yet
+            if segment not in current_dir.child_dirs:
+                current_dir.child_dirs[segment] = Directory(segment)
+            current_dir = current_dir.child_dirs[segment]
+
+        # handle last part of current_path
+        last_seg = current_path.parts[-1]
+        if filepath.is_dir():
+            if last_seg not in current_dir.child_dirs:
+                current_dir.child_dirs[last_seg] = Directory(last_seg)
+            current_dir = current_dir.child_dirs[last_seg]
+        elif last_seg.endswith(".md"):
+            data = frontmatter.load(filepath)
+            if not load_content:
+                data.content = ""
+            current_dir.child_files.append(data)
+    return datacont
+
+
+def get_items(
+    collections=[], path="", structured=True, json_format=False, load_content=True
+):
     """
     Gets all dataobjs.
 
@@ -57,37 +94,21 @@ def get_items(collections=[], path="", structured=True, json_format=False):
       data will just be returned as a list of dataobjs
     - **json_format**: boolean value used internally to pre-process dataobjs
       to send back a json response.
+    - **load_content**: internal value to disregard post content and not save them in memory if they won't be accessed.
     """
-    datacont = Directory(path or "root") if structured else []
     data_dir = get_data_dir()
-    root_dir = data_dir / path
-    if not is_relative_to(root_dir, data_dir) or not root_dir.exists():
+    query_dir = data_dir / path
+    if not is_relative_to(query_dir, data_dir) or not query_dir.exists():
         raise FileNotFoundError
     if structured:
-        for filepath in root_dir.rglob("*"):
-            current_path = filepath.relative_to(root_dir)
-            current_dir = datacont
-
-            # iterate through parent directories
-            for segment in current_path.parts[:-1]:
-                # directory has not been saved in tree yet
-                if segment not in current_dir.child_dirs:
-                    current_dir.child_dirs[segment] = Directory(segment)
-                current_dir = current_dir.child_dirs[segment]
-
-            # handle last part of current_path
-            last_seg = current_path.parts[-1]
-            if filepath.is_dir():
-                if last_seg not in current_dir.child_dirs:
-                    current_dir.child_dirs[last_seg] = Directory(last_seg)
-                current_dir = current_dir.child_dirs[last_seg]
-            elif last_seg.endswith(".md"):
-                data = frontmatter.load(filepath)
-                current_dir.child_files.append(data)
+        return build_dir_tree(path, query_dir)
     else:
-        for filepath in root_dir.rglob("*.md"):
+        datacont = []
+        for filepath in query_dir.rglob("*.md"):
             data = frontmatter.load(filepath)
-            data["fullpath"] = str(filepath.parent.relative_to(root_dir))
+            if not load_content:
+                data.content = ""
+            data["fullpath"] = str(filepath.parent.relative_to(query_dir))
             if len(collections) == 0 or any(
                 [collection == data["type"] for collection in collections]
             ):
@@ -98,7 +119,7 @@ def get_items(collections=[], path="", structured=True, json_format=False):
                     datacont.append(dict_dataobj)
                 else:
                     datacont.append(data)
-    return datacont
+        return datacont
 
 
 def create(contents, title, path=""):

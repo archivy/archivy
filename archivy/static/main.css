@@ -523,7 +523,7 @@ form {
 	}
 }
 
-#tag_tooltip_input {
+.floating_input {
 	border: none !important;
 }
 .all-tags .post-tag {
