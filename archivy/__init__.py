@@ -39,7 +39,8 @@ if app.config["SEARCH_CONF"]["enabled"]:
         ):
             # try to guess desired search engine if present
             app.logger.warning(
-                "Search is enabled but engine option is invalid or absent. Archivy will try to guess preferred search engine."
+                "Search is enabled but engine option is invalid or absent. Archivy will"
+                " try to guess preferred search engine."
             )
             app.config["SEARCH_CONF"]["engine"] = "none"
 

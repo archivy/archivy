@@ -21,6 +21,7 @@ from werkzeug.datastructures import FileStorage
 from archivy import helpers
 from archivy.data import create, save_image, valid_image_filename
 from archivy.search import add_to_index
+from archivy.tags import add_tag_to_index
 
 
 # TODO: use this as 'type' field
@@ -81,8 +82,7 @@ class DataObj:
     tags: List[str] = attrib(validator=instance_of(list), default=[])
     url: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     date: Optional[datetime] = attrib(
-        validator=optional(instance_of(datetime)),
-        default=None,
+        validator=optional(instance_of(datetime)), default=None
     )
     path: str = attrib(validator=instance_of(str), default="")
     fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
@@ -198,7 +198,8 @@ class DataObj:
     def insert(self):
         """Creates a new file with the object's attributes"""
         if self.validate():
-
+            for tag in self.tags:
+                add_tag_to_index(tag)
             helpers.set_max_id(helpers.get_max_id() + 1)
             self.id = helpers.get_max_id()
             self.date = datetime.now()
@@ -251,7 +252,7 @@ class DataObj:
         data = frontmatter.loads(md_content)
         dataobj = {}
         dataobj["content"] = data.content
-        for pair in ["tags", "id", "title", "path"]:
+        for pair in ["id", "title", "path", "tags"]:
             try:
                 dataobj[pair] = data[pair]
             except KeyError:

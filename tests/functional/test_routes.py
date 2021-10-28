@@ -1,4 +1,5 @@
 import os
+import re
 
 from flask.testing import FlaskClient
 from flask import request
@@ -373,3 +374,19 @@ def test_post_updated_config(test_app, client):
         "/config", data={"submit": True, "THEME_CONF-use_theme_dark": not dark_theme}
     )
     assert test_app.config["THEME_CONF"]["use_theme_dark"] == (not dark_theme)
+
+
+def test_getting_all_tags(test_app, client, bookmark_fixture):
+    # bookmark fixture has embedded tags
+    resp = client.get("/tags")
+    bookmark_tags = ["embedded-tag", "tag2"]
+    assert resp.status_code == 200
+    for tag in bookmark_tags:
+        assert f"#{tag}" in str(resp.data)
+
+
+def test_getting_matches_for_specific_tag(test_app, client, bookmark_fixture):
+    resp = client.get("/tags/tag2")
+    assert resp.status_code == 200
+    assert bookmark_fixture.title in str(resp.data)
+    assert str(bookmark_fixture.id) in str(resp.data)

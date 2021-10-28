@@ -6,8 +6,15 @@ from flask import current_app
 
 from archivy.helpers import get_elastic_client
 
+
+# Example command ["rg", RG_MISC_ARGS, RG_FILETYPE, RG_REGEX_ARG, query, str(get_data_dir())]
+#  rg -il -t md -e query files
+# -i -> case insensitive
+# -l -> only output filenames
+# -t -> file type
+# -e -> regexp
+RG_MISC_ARGS = "-ilt"
 RG_REGEX_ARG = "-e"
-RG_MISC_ARGS = "-ilt"  # i -> case insensitive and l -> only output filenames
 RG_FILETYPE = "md"
 
 
@@ -103,6 +110,29 @@ def query_ripgrep(query):
     return hits
 
 
+def query_ripgrep_tags():
+    """
+    Uses ripgrep to search for tags.
+    Mandatory reference: https://xkcd.com/1171/
+    """
+
+    PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
+    from archivy.data import get_data_dir
+
+    if not which("rg"):
+        return None
+
+    # io: case insensitive
+    rg_cmd = ["rg", "-Uio", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
+    hits = set()
+    for line in rg.stdout.splitlines():
+        tag = Path(line.decode()).parts[-1].split(":")[-1]
+        tag = tag.replace("#", "").lstrip()
+        hits.add(tag)
+    return hits
+
+
 def search(query, strict=False):
     """
     Wrapper to search methods for different engines.
@@ -111,5 +141,5 @@ def search(query, strict=False):
     """
     if current_app.config["SEARCH_CONF"]["engine"] == "elasticsearch":
         return query_es_index(query, strict=strict)
-    elif current_app.config["SEARCH_CONF"]["engine"] == "ripgrep":
+    elif current_app.config["SEARCH_CONF"]["engine"] == "ripgrep" or which("rg"):
         return query_ripgrep(query)

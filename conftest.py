@@ -108,7 +108,7 @@ def bookmark_fixture(test_app, mocked_responses):
         <img src="/images/image1.png">
         <a href="/testing-absolute-url">link</a>
         <a href"/empty-link"></a>
-        </p></body></html>
+        </p></body></html> #embedded-tag #tag2
     """,
     )
 

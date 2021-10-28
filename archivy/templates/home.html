@@ -79,7 +79,7 @@
 		{
 		  for(let i = 0; i < hit["highlight"].length; i++)
 		  {
-			body.innerHTML += "\n" + window.parser.render(hit["highlight"][i]);
+			body.innerHTML += "\n" + window.parser.customRender(hit["highlight"][i]);
 		  }
 		}
 		hitLi.append(body);
