@@ -7,8 +7,7 @@ from archivy.search import query_ripgrep_tags
 
 
 def is_tag_format(tag_name):
-    t = re.match("^[a-zA-Z0-9_-]+$", tag_name)
-    return t
+    return re.match("^[a-zA-Z0-9_-]+$", tag_name)
 
 
 def get_all_tags(force=False):
