@@ -106,7 +106,12 @@
       <ul id="backlinks" style="padding: 0">
         <h1>Backlinks</h3>
         {% for backlink in backlinks %}
-          <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}</a></li>
+          <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}:</a></li>
+          {% if "matches" in backlink %}
+            {% for link in backlink["matches"] %}
+	      <div class="backlink-markdown">{{ link }}</div>
+	    {% endfor %}
+	  {% endif %}
         {% endfor %}
       </ul>
     {% endif %}
@@ -484,6 +489,12 @@
         }
         oldContent.classList.toggle("hidden"), editorDiv.classList.toggle("hidden");
       }
+
+      // render backlinks
+
+      document.querySelectorAll(".backlink-markdown").forEach((link) => {
+	link.innerHTML = window.parser.customRender(`> ${link.innerHTML}`);
+      })
     {% endif %}
   </script>
 {% endblock %}

@@ -171,11 +171,7 @@ def show_dataobj(dataobj_id):
             query = f"\|{dataobj_id}]]"
         else:
             query = f"|{dataobj_id})]]"
-        incoming_links = search(query, strict=True)
-        if incoming_links:
-            for hit in incoming_links:
-                if hit["id"] != dataobj_id:
-                    backlinks.append({"title": hit["title"], "id": hit["id"]})
+        backlinks = search(query, strict=True)
 
     # Form for moving data into another folder
     move_form = forms.MoveItemForm()

@@ -67,24 +67,25 @@
 <script>
   // search functionality
   {% if search_enabled %}  
-    function appendHit(hit) {
+    function appendHit(hit, q) {
       let hitsDiv = document.getElementById("searchHits");
       let hitLi = document.createElement("li");
       let a = document.createElement("a");
       a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
       hitLi.append(a);
       let body = document.createElement("div");
-      let max_matches = 4;
       if ("matches" in hit)
       {
+        let max_matches = 4, rendered_matches = "";
         for(let i = 0; i < max_matches; i++)
         {
-          body.innerHTML += "\n" + window.parser.customRender(hit["matches"][i]);
+          rendered_matches += "\n" + window.parser.customRender(hit["matches"][i]);
         }
-      }
-      if (hit["matches"].length > max_matches)
-      {
-        body.innerHTML += `\n<a href="${a.href}">More Matches</a>`;
+        body.innerHTML += rendered_matches.replace(/(q)/ig, "==$1==");
+        if (hit["matches"].length > max_matches)
+        {
+          body.innerHTML += `\n<a href="${a.href}">More Matches</a>`;
+        }
       }
       hitLi.append(body);
       hitsDiv.appendChild(hitLi);
@@ -104,7 +105,7 @@
           data.forEach(function(hit)
           {
             if (query !== input.value) return;
-            appendHit(hit);
+            appendHit(hit, query);
           })
     
         }

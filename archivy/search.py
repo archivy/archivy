@@ -2,7 +2,6 @@ from pathlib import Path
 from shutil import which
 from subprocess import run, PIPE
 import json
-import re
 
 from flask import current_app
 
@@ -72,8 +71,8 @@ def query_es_index(query, strict=False):
                 "fragment_size": 0,
                 "fields": {
                     "content": {
-                        "pre_tags": "==",
-                        "post_tags": "==",
+                        "pre_tags": "",
+                        "post_tags": "",
                     }
                 },
             },
@@ -85,11 +84,12 @@ def query_es_index(query, strict=False):
         formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"]}
         if "highlight" in hit:
             formatted_hit["matches"] = hit["highlight"]["content"]
-            reformatted_match = " ".join(formatted_hit["matches"]).replace("==", "")
+            reformatted_match = " ".join(formatted_hit["matches"])
             if strict and not (query in reformatted_match):
                 continue
         hits.append(formatted_hit)
     return hits
+
 
 def query_ripgrep_detailed_matches(query):
     """
@@ -107,17 +107,20 @@ def query_ripgrep_detailed_matches(query):
     output = rg.stdout.decode().splitlines()
     hits = {}
     curr_id = -1
-    match_pattern = re.compile(f"({query})", re.IGNORECASE)
     for line in output:
         hit = json.loads(line)
         if hit["type"] == "begin":
-            curr_file = hit["data"]["path"]["text"].split("/")[-1].replace(".md", "").split("-")
-            curr_id = curr_file[0]
+            curr_file = (
+                hit["data"]["path"]["text"].split("/")[-1].replace(".md", "").split("-")
+            )  # parse target note data from path
+            curr_id = int(curr_file[0])
             hits[curr_id] = {"title": curr_file[-1], "matches": [], "id": curr_id}
         elif hit["type"] == "match":
-            match_text = match_pattern.sub(r'==\1==', hit["data"]["lines"]["text"].strip())
+            match_text = hit["data"]["lines"]["text"].strip()
             hits[curr_id]["matches"].append(match_text)
-    return sorted(list(hits.values()), key=lambda x: len(x["matches"]), reverse=True)
+    return sorted(
+        list(hits.values()), key=lambda x: len(x["matches"]), reverse=True
+    )  # sort by number of matches
 
 
 def query_ripgrep_files_only(query):
