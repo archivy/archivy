@@ -186,7 +186,7 @@ def show_dataobj(dataobj_id):
     tag_list = get_all_tags()
     # and the ones present in this dataobj
     embedded_tags = set()
-    PATTERN = r"(?:^|\n| )#(?:[a-zA-Z0-9_-]+)\w"
+    PATTERN = r"(^|\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)\w"
     for match in re.finditer(PATTERN, dataobj.content):
         embedded_tags.add(match.group(0).replace("#", "").lstrip())
 

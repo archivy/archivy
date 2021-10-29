@@ -153,7 +153,7 @@ def query_ripgrep_tags():
     Mandatory reference: https://xkcd.com/1171/
     """
 
-    PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
+    PATTERN = r"(^|\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)\w"
     from archivy.data import get_data_dir
 
     if not which("rg"):

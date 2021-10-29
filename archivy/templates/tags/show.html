@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include "markdown-parser.html" %}
 <h2>{{ tag_name }} ({{ search_result | length }})</h2>
 <ul>
   {% for res in search_result %}
-    <a href="/dataobj/{{ res.id }}">
-      <li>{{ res.title }}</li>
-    </a>
+    <li><a href="/dataobj/{{ res['id'] }}">{{ res['title'] }}</li></a>
+      {% if "matches" in res %}
+        {% for match in res["matches"] %}
+          <div class="markdown-result">{{ match }}</div>
+	{% endfor %}
+      {% endif %}
   {% endfor %}
 </ul>
+<script>
+  document.querySelectorAll(".markdown-result").forEach((match) => {
+    match.innerHTML = window.parser.customRender(`> ${match.innerHTML.trim()}`)
+  })
+</script>
+
 
 {% endblock %}
