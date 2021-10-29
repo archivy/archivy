@@ -69,22 +69,25 @@
   {% if search_enabled %}  
     function appendHit(hit) {
       let hitsDiv = document.getElementById("searchHits");
-	  let hitLi = document.createElement("li");
-	  let a = document.createElement("a");
-	  a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
-	  hitLi.append(a);
-	  {% if search_engine == "elasticsearch" %}
-		let body = document.createElement("div");
-		if ("highlight" in hit)
-		{
-		  for(let i = 0; i < hit["highlight"].length; i++)
-		  {
-			body.innerHTML += "\n" + window.parser.customRender(hit["highlight"][i]);
-		  }
-		}
-		hitLi.append(body);
-	  {% endif %}
-	  hitsDiv.appendChild(hitLi);
+      let hitLi = document.createElement("li");
+      let a = document.createElement("a");
+      a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
+      hitLi.append(a);
+      let body = document.createElement("div");
+      let max_matches = 4;
+      if ("matches" in hit)
+      {
+        for(let i = 0; i < max_matches; i++)
+        {
+          body.innerHTML += "\n" + window.parser.customRender(hit["matches"][i]);
+        }
+      }
+      if (hit["matches"].length > max_matches)
+      {
+        body.innerHTML += `\n<a href="${a.href}">More Matches</a>`;
+      }
+      hitLi.append(body);
+      hitsDiv.appendChild(hitLi);
     }
 
     let input = document.getElementById("searchBar");

@@ -168,7 +168,7 @@ def show_dataobj(dataobj_id):
     backlinks = []
     if app.config["SEARCH_CONF"]["enabled"]:
         if app.config["SEARCH_CONF"]["engine"] == "ripgrep":
-            query = f"\|{dataobj_id}\]\]"
+            query = f"\|{dataobj_id}]]"
         else:
             query = f"|{dataobj_id})]]"
         incoming_links = search(query, strict=True)
