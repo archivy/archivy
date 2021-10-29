@@ -99,7 +99,7 @@ def query_ripgrep_detailed_matches(query):
 
     from archivy.data import get_data_dir
 
-    if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
+    if not which("rg"):
         return None
 
     rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, "--json", query, str(get_data_dir())]
@@ -132,11 +132,10 @@ def query_ripgrep_files_only(query):
 
     from archivy.data import get_data_dir
 
-    if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
+    if not which("rg"):
         return None
 
     rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, "-l", query, str(get_data_dir())]
-    print(" ".join(rg_cmd))
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     file_paths = [Path(p.decode()).parts[-1] for p in rg.stdout.splitlines()]
 
