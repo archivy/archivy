@@ -256,9 +256,7 @@ def test_backlinks_are_saved(
 
     resp = client.put(
         f"/api/dataobjs/{note_fixture.id}",
-        json={
-            "content": f"[[[{bookmark_fixture.id}](/dataobj/{bookmark_fixture.id})]]"
-        },
+        json={"content": f"[[{bookmark_fixture.title}|{bookmark_fixture.id}]]"},
     )
     assert resp.status_code == 200
 

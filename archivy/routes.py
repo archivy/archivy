@@ -29,7 +29,7 @@ import re
 
 @app.context_processor
 def pass_defaults():
-    dataobjs = data.get_items()
+    dataobjs = data.get_items(load_content=False)
     version = require("archivy")[0].version
     SEP = sep
     # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
@@ -153,6 +153,10 @@ def show_tag(tag_name):
 @app.route("/dataobj/<int:dataobj_id>")
 def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
+    get_title_id_pairs = lambda x: (x["title"], x["id"])
+    titles = list(
+        map(get_title_id_pairs, data.get_items(structured=False, load_content=False))
+    )
 
     if not dataobj:
         flash("Data could not be found!", "error")
@@ -164,9 +168,9 @@ def show_dataobj(dataobj_id):
     backlinks = []
     if app.config["SEARCH_CONF"]["enabled"]:
         if app.config["SEARCH_CONF"]["engine"] == "ripgrep":
-            query = f"/{dataobj_id}\)]]"  # escape query for rg
+            query = f"\|{dataobj_id}\]\]"
         else:
-            query = f"/{dataobj_id})]]"
+            query = f"|{dataobj_id})]]"
         incoming_links = search(query, strict=True)
         if incoming_links:
             for hit in incoming_links:
@@ -203,6 +207,7 @@ def show_dataobj(dataobj_id):
         move_form=move_form,
         tag_list=tag_list,
         embedded_tags=embedded_tags,
+        titles=titles,
     )
 
 

@@ -1,14 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form id="tag_tooltip" class="hidden">
-  <input list="tags" id="tag_tooltip_input" /> 
-  <datalist id="tags">
-  {% for tag in tag_list %}
-    <option value="#{{tag}}">
-  {% endfor %}
-  </datalist>
-</form>
+  <form id="tag_tooltip" class="hidden">
+    <input list="tags" id="tag_tooltip_input" class="floating_input" required />
+    <datalist id="tags">
+      {% for tag in tag_list %}
+        <option value="#{{tag}}">
+      {% endfor %}
+    </datalist>
+  </form>
+
+  <form id="note_link_tooltip" class="hidden">
+    <input list="titles" id="title_tooltip_input" class="floating_input" required placeholder="Title of linked note" />
+    <datalist id="titles">
+      {% for dataobj_title, id in titles %}
+	<option value="{{ dataobj_title }}" data-id="{{ id }}">
+      {% endfor %}
+    </datalist>
+  </form
 
   {% include "markdown-parser.html" %}
   {% if not view_only %}
@@ -18,20 +27,10 @@
     {% endif %}
     <link rel="stylesheet" href="/static/accessibility.css">
     <script async src="/static/editor.js"></script>
-
   {% endif %}
   <link rel="stylesheet" href="/static/markdown.css">
   {% if config.THEME_CONF.get('use_theme_dark', False) %}
     <link rel="stylesheet" href="/static/markdown_dark.css">
-  {% endif %}
-  {% if search_enabled %}
-    <div id="link-form" style="display: none">
-      <div>
-        <input type="text" id="searchBar" placeholder="Search for linked note.">
-        <button onclick="toggleLinkForm()" class="btn">Cancel</button>
-      </div>
-        <ul id="searchHits"></ul>
-    </div>
   {% endif %}
   <div class="post-header">
     <!-- Form for editing the frontmatter -->
@@ -156,13 +155,6 @@
       // Render the editor and put the dataobj in it
       let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
 
-      // Set up search
-      {% if search_enabled %}
-        let input = document.getElementById("searchBar");
-      {% else %}
-        let input = null;
-      {% endif %}
-
       // Show the form for embedding links
       let searchHits = document.getElementById("searchHits");
       let linkForm = document.getElementById("link-form");
@@ -238,13 +230,6 @@
                 }
               }  // action
             },  // archive-btn
-            {% if search_enabled %}
-            {
-              name: "bidirBtn",
-              action: (editor) => { toggleLinkForm(); },
-              className: "fa fa-arrow-alt-h"
-            },
-            {% endif %}
             {
               name: "save",
               title: "Save note contents",
@@ -297,30 +282,6 @@
 
         editor.value(`{{ content }}`)
 
-        input?.addEventListener("input", async function() {
-          let query = input.value;
-          if (input.value !== "") {
-            let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${input.value}`, {
-              "method": "GET"
-            });
-
-            if (searchQuery.ok && query == input.value) {
-              let data = await searchQuery.json(), i = 0;
-              searchHits.innerHTML = "";
-              data.forEach(function(hit) {
-                let resBtn = document.createElement("button");
-                resBtn.textContent = hit["title"];
-                resBtn.onclick = () => {
-                editor.codemirror.replaceSelection(`[[[${hit["title"]}](/dataobj/${hit["id"]})]]`);
-                linkForm.style.dislay = "none";
-                toggleLinkForm();
-                }
-                searchHits.appendChild(resBtn);
-              })
-            }  // if searchQuery.ok
-          }  // if input.value !== ""
-        })  // addEventListener
-
         let statusBtn = document.querySelector(".status .fa");
         editor.codemirror.on("change", function() {
           statusBtn.classList.remove("fa-check-circle");
@@ -331,11 +292,13 @@
         document.body.scrollIntoView(true);
 
         /////////////////////////////////////////////////////////////////
-        //                      Tag autocompletion                     //
+        //                      Tag and note link autocompletion       //
         /////////////////////////////////////////////////////////////////
         // The container, datalist input and CoreMirror instance. 
-        let tag_tooltip = document.querySelector("#tag_tooltip")
+        let tag_tooltip = document.querySelector("#tag_tooltip");
+        let note_link_tooltip = document.querySelector("#note_link_tooltip")
         let tag_tooltip_input = document.querySelector("#tag_tooltip_input")
+        let title_tooltip_input = document.querySelector("#title_tooltip_input");
         let cm = document.getElementsByClassName("CodeMirror")[0].CodeMirror;
 
         // Put `data` where the cursor is right now
@@ -376,24 +339,28 @@
         }
 
 
-        // When toggling the tag tooltip we want to position it right first.
+        // When toggling the tooltips we want to position it right first.
         // Otherwise, clear the input and hide it.
-        function toggle_tag_tooltip() {
-          if (tag_tooltip.classList.contains("hidden")) {
+        // initVal is just the value we wanna set the tooltip input to when we display it
+        function toggle_tooltip(tooltip, input, initVal = '') {
+          if (tooltip.classList.contains("hidden")) {
             let cursor_coordinates = cm.cursorCoords()
-            tag_tooltip.style.zIndex = 9999;
-            tag_tooltip.style.position = "absolute";
-            tag_tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
-            tag_tooltip.style.left = cursor_coordinates.left - 10 + "px";
-
-            tag_tooltip_input.value = "#";
-            tag_tooltip.classList.remove("hidden");
-            tag_tooltip_input.focus();
+            tooltip.style.zIndex = 9999;
+            tooltip.style.position = "absolute";
+            tooltip.style.top = cursor_coordinates.top - cm.defaultTextHeight() + "px";
+            tooltip.style.left = cursor_coordinates.left - 10 + "px";
+            tooltip.classList.remove("hidden");
+            input.value = initVal;
+            input.focus();
           } else {
-            tag_tooltip.classList.add("hidden");
-            tag_tooltip_input.value = "";
+            tooltip.classList.add("hidden");
+            input.value = "";
             document.activeElement.blur();
           }
+        }
+        function toggle_tag_tooltip()
+        {
+          toggle_tooltip(tag_tooltip, tag_tooltip_input, "#")
         }
 
         // Whenever the content of the editor changes:
@@ -405,6 +372,8 @@
           let currLine = ed.doc.getLine(line);
           let currChar = currLine[ch - 1];
           let is_tag_beginning = (currChar === "#" && (ch == 1 || currLine[ch-2] === ' ') && (ch == currLine.length || currLine[ch] === ' '));
+          // checks the user inputted "[[" on a line without other text adjacent to it.
+          let is_note_link_beginning = currChar === '[' && ch != 1 && currLine[ch-2] === '[' && (ch == 2 || currLine[ch-3] === ' ') && (ch == currLine.length || currLine[ch] === ' ');
           if (is_tag_beginning) {
             ed.doc.replaceRange("", {
               line: line,
@@ -415,6 +384,17 @@
             })
             toggle_tag_tooltip();
           }
+          else if (is_note_link_beginning)
+          {
+            ed.doc.replaceRange("", {
+              line: line,
+              ch: ch - 2
+            }, {
+              line: line,
+              ch: ch
+            })
+            toggle_tooltip(note_link_tooltip, title_tooltip_input)
+          }
         });
 
         // When the user hits enter, add the tag.
@@ -422,6 +402,17 @@
           e.preventDefault()
           add_tag();
         };
+
+        note_link_tooltip.onsubmit = function(e) {
+          e.preventDefault();
+          let title = title_tooltip_input.value.replace("|", "-").trim();
+          if (title === "") return;
+          let currOption = document.querySelector(`option[value="${title}"]`)
+          if (!currOption) { return; }
+          let id = currOption.getAttribute("data-id");
+          insertText(`[[${title}|${id}]]`);
+          toggle_tooltip(note_link_tooltip, title_tooltip_input);
+        }
 
         // We watch for two cases:
         //  1. The input is empty => hide the tooltip

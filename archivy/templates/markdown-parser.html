@@ -31,7 +31,9 @@
   {% endfor %}
   window.parser.customRender = function(content) {
     let tag_regex = new RegExp("((?:^|\\n| )#([a-zA-Z0-9_-]+\\w))", "g");
+    let note_link_regex = /\[\[(.+)\|([0-9]+)\]\]/g;
     content = content.replace(tag_regex, "[$1](/tags/$2)");
+    content = content.replace(note_link_regex, "[[[$1]]](/dataobj/$2)");
     return window.parser.render(content);
   }
 </script>
