@@ -493,7 +493,7 @@
       // render backlinks
 
       document.querySelectorAll(".backlink-markdown").forEach((link) => {
-	link.innerHTML = window.parser.customRender(`> ${link.innerHTML}`);
+        link.innerHTML = window.parser.customRender(`> ${link.innerHTML}`);
       })
     {% endif %}
   </script>
