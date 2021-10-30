@@ -185,7 +185,16 @@ def test_search_using_ripgrep(test_app, client: FlaskClient, note_fixture):
     resp = client.get("/api/search?query=test")
     assert resp.status_code == 200
     assert resp.json[0]["id"] == note_fixture.id
+    assert "matches" in resp.json[0]
+    assert "test" in resp.json[0]["matches"][0]
     test_app.config["SEARCH_CONF"]["enabled"] = 0
+
+
+def test_searching_on_disabled(test_app, client):
+    test_app.config["SEARCH_CONF"]["enabled"] = 0
+    resp = client.get("/api/search?query=shouldn't-work")
+    assert resp.status_code == 401
+    assert b"Search is disabled" in resp.data
 
 
 def test_upload_image(test_app, client: FlaskClient):

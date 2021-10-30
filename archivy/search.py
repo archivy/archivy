@@ -1,6 +1,7 @@
 from pathlib import Path
 from shutil import which
 from subprocess import run, PIPE
+import json
 
 from flask import current_app
 
@@ -13,7 +14,7 @@ from archivy.helpers import get_elastic_client
 # -l -> only output filenames
 # -t -> file type
 # -e -> regexp
-RG_MISC_ARGS = "-ilt"
+RG_MISC_ARGS = "-it"
 RG_REGEX_ARG = "-e"
 RG_FILETYPE = "md"
 
@@ -70,8 +71,8 @@ def query_es_index(query, strict=False):
                 "fragment_size": 0,
                 "fields": {
                     "content": {
-                        "pre_tags": "==",
-                        "post_tags": "==",
+                        "pre_tags": "",
+                        "post_tags": "",
                     }
                 },
             },
@@ -82,8 +83,8 @@ def query_es_index(query, strict=False):
     for hit in search["hits"]["hits"]:
         formatted_hit = {"id": hit["_id"], "title": hit["_source"]["title"]}
         if "highlight" in hit:
-            formatted_hit["highlight"] = hit["highlight"]["content"]
-            reformatted_match = " ".join(formatted_hit["highlight"]).replace("==", "")
+            formatted_hit["matches"] = hit["highlight"]["content"]
+            reformatted_match = " ".join(formatted_hit["matches"])
             if strict and not (query in reformatted_match):
                 continue
         hits.append(formatted_hit)
@@ -91,23 +92,38 @@ def query_es_index(query, strict=False):
 
 
 def query_ripgrep(query):
-    """Uses ripgrep to search data with a simpler setup than ES"""
+    """
+    Uses ripgrep to search data with a simpler setup than ES.
+    Returns a list of dicts with detailed matches.
+    """
 
     from archivy.data import get_data_dir
 
-    if current_app.config["SEARCH_CONF"]["engine"] != "ripgrep" or not which("rg"):
+    if not which("rg"):
         return None
 
-    rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, RG_REGEX_ARG, query, str(get_data_dir())]
+    rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, "--json", query, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
-    file_paths = [Path(p.decode()).parts[-1] for p in rg.stdout.splitlines()]
-
-    # don't open file just find info from filename for speed
-    hits = []
-    for filename in file_paths:
-        parsed = filename.replace(".md", "").split("-")
-        hits.append({"id": int(parsed[0]), "title": "-".join(parsed[1:])})
-    return hits
+    output = rg.stdout.decode().splitlines()
+    hits = {}
+    curr_id = -1
+    for line in output:
+        hit = json.loads(line)
+        if hit["type"] == "begin":
+            curr_file = (
+                hit["data"]["path"]["text"].split("/")[-1].replace(".md", "").split("-")
+            )  # parse target note data from path
+            curr_id = int(curr_file[0])
+            hits[curr_id] = {"title": curr_file[-1], "matches": [], "id": curr_id}
+        elif hit["type"] == "match":
+            match_text = hit["data"]["lines"]["text"].strip()
+            if not match_text.startswith("tags: [") and not match_text.startswith(
+                "title:"
+            ):  # don't send matches on metadata
+                hits[curr_id]["matches"].append(match_text)
+    return sorted(
+        list(hits.values()), key=lambda x: len(x["matches"]), reverse=True
+    )  # sort by number of matches
 
 
 def query_ripgrep_tags():
@@ -116,7 +132,7 @@ def query_ripgrep_tags():
     Mandatory reference: https://xkcd.com/1171/
     """
 
-    PATTERN = r"(^|\n| )#([a-zA-Z0-9_-]+)\w"
+    PATTERN = r"(^|\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)"
     from archivy.data import get_data_dir
 
     if not which("rg"):

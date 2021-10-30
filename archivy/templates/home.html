@@ -67,24 +67,41 @@
 <script>
   // search functionality
   {% if search_enabled %}  
-    function appendHit(hit) {
+    function sanitize_match_html(rendered, q)
+    {
+      let stripped_tags = new RegExp("(?:<img.*>|<mark>|</mark>|<bold>|<bold>)", "ig"); // remove unnecessary tags
+      let replace_headings = new RegExp("<h[0-9][^>]*>(.*)</h[0-9]>", "ig"); // replace headings with <p>
+      let highlight_regex = new RegExp(`(?![^<>]*>)(${q})`, "ig"); // replace query in html text, not attributes, with highlights
+      let output = rendered.replace(stripped_tags, "").replace(replace_headings, "<p>$1</p>").replace(highlight_regex, "<mark>$1</mark>");
+      if (!output.match("(?![^<>]*>)\\w+")) { output = ""; } // check there is actual text, not html, in the output
+      return output;
+    }
+    function appendHit(hit, q) {
       let hitsDiv = document.getElementById("searchHits");
-	  let hitLi = document.createElement("li");
-	  let a = document.createElement("a");
-	  a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
-	  hitLi.append(a);
-	  {% if search_engine == "elasticsearch" %}
-		let body = document.createElement("div");
-		if ("highlight" in hit)
-		{
-		  for(let i = 0; i < hit["highlight"].length; i++)
-		  {
-			body.innerHTML += "\n" + window.parser.customRender(hit["highlight"][i]);
-		  }
-		}
-		hitLi.append(body);
-	  {% endif %}
-	  hitsDiv.appendChild(hitLi);
+      let hitLi = document.createElement("li");
+      let a = document.createElement("a");
+      a.href = `/dataobj/${hit["id"]}`, a.textContent = hit["title"];
+      hitLi.append(a);
+      let body = document.createElement("div");
+      if ("matches" in hit)
+      {
+        let max_matches = 4, rendered_matches = "<p>Matches:</p>", n_rendered_matches = 0;
+        hit["matches"].every((match) => {
+          let curr_match_output = sanitize_match_html(window.parser.customRender(match), q);
+          if (curr_match_output != "") { // only render if there is text remaining after sanitization
+            rendered_matches += "<hr>" + curr_match_output;
+            n_rendered_matches++;
+          }
+          if (n_rendered_matches == max_matches) {
+            rendered_matches += "...";
+            return false; // stop looping
+          }
+          return true; // keep going
+        })
+        body.innerHTML += rendered_matches;
+      }
+      hitLi.append(body);
+      hitsDiv.appendChild(hitLi);
     }
 
     let input = document.getElementById("searchBar");
@@ -101,7 +118,7 @@
           data.forEach(function(hit)
           {
             if (query !== input.value) return;
-            appendHit(hit);
+            appendHit(hit, query);
           })
     
         }

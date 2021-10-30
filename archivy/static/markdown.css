@@ -44,7 +44,7 @@
 .markdown-body .anchor:focus {
     outline: none;
 }
-.markdown-body blockquote,
+blockquote
 .markdown-body details,
 .markdown-body dl,
 .markdown-body ol,
@@ -54,24 +54,6 @@
 .markdown-body ul {
     margin-top: 0;
     margin-bottom: 16px;
-}
-.markdown-body hr {
-    height: 0.25em;
-    padding: 0;
-    margin: 24px 0;
-    background-color: #e1e4e8;
-    border: 0;
-}
-.markdown-body blockquote {
-    padding: 0 1em;
-    color: #6a737d;
-    border-left: 0.25em solid #dfe2e5;
-}
-.markdown-body blockquote > :first-child {
-    margin-top: 0;
-}
-.markdown-body blockquote > :last-child {
-    margin-bottom: 0;
 }
 .markdown-body h1,
 .markdown-body h2,
