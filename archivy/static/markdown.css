@@ -55,13 +55,6 @@ blockquote
     margin-top: 0;
     margin-bottom: 16px;
 }
-.markdown-body hr {
-    height: 0.25em;
-    padding: 0;
-    margin: 24px 0;
-    background-color: #e1e4e8;
-    border: 0;
-}
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
