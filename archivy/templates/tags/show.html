@@ -6,11 +6,11 @@
 <ul>
   {% for res in search_result %}
     <li><a href="/dataobj/{{ res['id'] }}">{{ res['title'] }}</li></a>
-      {% if "matches" in res %}
-        {% for match in res["matches"] %}
-          <div class="markdown-result">{{ match }}</div>
-        {% endfor %}
-      {% endif %}
+    {% if "matches" in res %}
+      {% for match in res["matches"] %}
+        <div class="markdown-result">{{ match }}</div>
+      {% endfor %}
+    {% endif %}
   {% endfor %}
 </ul>
 <script>

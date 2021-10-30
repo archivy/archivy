@@ -109,9 +109,9 @@
           <li><a href="/dataobj/{{ backlink['id'] }}">{{ backlink["title"] }}:</a></li>
           {% if "matches" in backlink %}
             {% for link in backlink["matches"] %}
-	      <div class="backlink-markdown">{{ link }}</div>
-	    {% endfor %}
-	  {% endif %}
+              <div class="backlink-markdown">{{ link }}</div>
+            {% endfor %}
+          {% endif %}
         {% endfor %}
       </ul>
     {% endif %}
