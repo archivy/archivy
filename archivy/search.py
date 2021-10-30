@@ -117,7 +117,9 @@ def query_ripgrep(query):
             hits[curr_id] = {"title": curr_file[-1], "matches": [], "id": curr_id}
         elif hit["type"] == "match":
             match_text = hit["data"]["lines"]["text"].strip()
-            if not match_text.startswith("tags: [") and not match_text.startswith("title:"): # don't send matches on metadata
+            if not match_text.startswith("tags: [") and not match_text.startswith(
+                "title:"
+            ):  # don't send matches on metadata
                 hits[curr_id]["matches"].append(match_text)
     return sorted(
         list(hits.values()), key=lambda x: len(x["matches"]), reverse=True
