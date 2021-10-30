@@ -30,7 +30,7 @@
     .use(window.{{plugin_name}}{% if plugin_params | length %}, {{plugin_params|tojson}}{% endif %})
   {% endfor %}
   window.parser.customRender = function(content) {
-    let tag_regex = new RegExp("(^|\\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)\\w", "g");
+    let tag_regex = new RegExp("(^|\\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)", "g");
     let note_link_regex = /\[\[(.+)\|([0-9]+)\]\]/g;
     content = content.replace(tag_regex, "$1[#$2](/tags/$2)");
     content = content.replace(note_link_regex, "[[[$1]]](/dataobj/$2)");
