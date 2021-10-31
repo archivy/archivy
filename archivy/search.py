@@ -114,7 +114,8 @@ def query_ripgrep(query):
                 hit["data"]["path"]["text"].split("/")[-1].replace(".md", "").split("-")
             )  # parse target note data from path
             curr_id = int(curr_file[0])
-            hits[curr_id] = {"title": curr_file[-1], "matches": [], "id": curr_id}
+            title = curr_file[-1].replace("_", " ")
+            hits[curr_id] = {"title": title, "matches": [], "id": curr_id}
         elif hit["type"] == "match":
             match_text = hit["data"]["lines"]["text"].strip()
             if not match_text.startswith("tags: [") and not match_text.startswith(
