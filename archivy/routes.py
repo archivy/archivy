@@ -92,6 +92,9 @@ def new_bookmark():
         if bookmark_id:
             flash("Bookmark Saved!", "success")
             return redirect(f"/dataobj/{bookmark_id}")
+        else:
+            flash(bookmark.error, "error")
+            return redirect("/bookmarks/new")
     # for bookmarklet
     form.url.data = request.args.get("url", "")
     path = request.args.get("path", default_dir).strip("/")

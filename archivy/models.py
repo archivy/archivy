@@ -86,6 +86,7 @@ class DataObj:
     )
     path: str = attrib(validator=instance_of(str), default="")
     fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
+    error: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
 
     def process_bookmark_url(self):
         """Process url to get content for bookmark"""
@@ -110,21 +111,21 @@ class DataObj:
                 headers={"User-agent": f"Archivy/v{require('archivy')[0].version}"},
             )
         except Exception:
-            flash(f"Could not retrieve {self.url}\n", "error")
+            self.error = f"Could not retrieve {self.url}\n"
             self.wipe()
             return
 
         try:
             parsed_html = BeautifulSoup(url_request.text, features="html.parser")
         except Exception:
-            flash(f"Could not parse {self.url}\n", "error")
+            self.error = f"Could not parse {self.url}\n"
             self.wipe()
             return
 
         try:
             self.content = self.extract_content(parsed_html, selector)
         except Exception:
-            flash(f"Could not extract content from {self.url}\n", "error")
+            self.error = f"Could not extract content from {self.url}\n"
             return
 
         parsed_title = parsed_html.title
