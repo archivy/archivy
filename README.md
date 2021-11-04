@@ -9,7 +9,7 @@ Features:
 
 - If you add bookmarks, their web-pages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
 - Bidirectional links between notes.
-- Authentication for hosting the service on a server
+- Authentication for hosting your instance publicly
 - Plugin system to publish and write extensions to archivy
 - [Git integration](https://github.com/archivy/archivy-git)
 - Everything is a file! For ease of access and editing, all the content is stored in extended markdown files with yaml front matter. This format supports footnotes, LaTeX math rendering, syntax highlighting and more. 
