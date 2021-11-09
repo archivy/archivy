@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from tempfile import mkdtemp
 
 from tinydb import Query
@@ -238,3 +239,13 @@ def test_unformat_directory(
         f"Unformatted and moved {nested_note.fullpath} to {out_dir}/{note_dir}/{nested_note.title}"
         in res.output
     )
+
+
+def test_create_plugin_dir(test_app, cli_runner, click_cli):
+    with cli_runner.isolated_filesystem():
+        res = cli_runner.invoke(cli, ["plugin-new", "archivy_test_plugin"])
+        plugin_dir = Path("archivy_test_plugin")
+        assert plugin_dir.exists()
+        files = ["README.md", "requirements.txt", "archivy_test_plugin/__init__.py", "setup.py"]
+        for file in files:
+            assert (plugin_dir / file).exists()
