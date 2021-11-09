@@ -246,6 +246,11 @@ def test_create_plugin_dir(test_app, cli_runner, click_cli):
         res = cli_runner.invoke(cli, ["plugin-new", "archivy_test_plugin"])
         plugin_dir = Path("archivy_test_plugin")
         assert plugin_dir.exists()
-        files = ["README.md", "requirements.txt", "archivy_test_plugin/__init__.py", "setup.py"]
+        files = [
+            "README.md",
+            "requirements.txt",
+            "archivy_test_plugin/__init__.py",
+            "setup.py",
+        ]
         for file in files:
             assert (plugin_dir / file).exists()
