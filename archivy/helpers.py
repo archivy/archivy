@@ -160,70 +160,72 @@ def get_elastic_client(error_if_invalid=True):
     return es
 
 
-def create_directory(name):
-    """Creates a directory structure where one can make plugins
-
-    Args:
-        name: Name of the plugin.
-
-    Returns:
-        bool: True if successfully created else False
-
-    """
+def create_plugin_dir(name):
+    """Creates a sample plugin directory"""
+    raw_name = name.replace("archivy_", "").replace("archivy-", "")
     try:
-        os.makedirs(f"archivy_{name}/archivy_{name}")
+        os.makedirs(f"{name}/{name}")
 
         # Creates requirements.txt.
-        with open(f"archivy_{name}/requirements.txt", "w") as fp:
-            fp.writelines(["archivy", "\ntinydb", "\nclick", "\nrequests"])
+        with open(f"{name}/requirements.txt", "w") as fp:
+            fp.writelines(["archivy", "\nclick"])
 
         # Creates an empty readme file to be filled
-        with open(f"archivy_{name}/README.md", "w+") as fp:
-            fp.writelines(['<!-- Plugin Description -->',
-                           '\n\n## Install',
-                           '\n\nYou need to have `archivy` already installed.',
-                           f'\n\nRun `pip install archivy_{name}`',
-                           '\n\n## Usage'])
+        with open(f"{name}/README.md", "w+") as fp:
+            fp.writelines(
+                [
+                    f"# {name}",
+                    "\n\n## Install",
+                    "\n\nYou need to have `archivy` already installed.",
+                    f"\n\nRun `pip install archivy_{name}`",
+                    "\n\n## Usage",
+                ]
+            )
 
         # Creates a setup.py file
-        with open(f"archivy_{name}/setup.py", "w") as setup_f:
-            setup_f.writelines(["from setuptools import setup, find_packages",
-                                '\n\nwith open("README.md", "r") as fh:',
-                                '\n\tlong_description = fh.read()',
-                                '\n\nwith open("requirements.txt", encoding="utf-8") as f:',
-                                '\n\tall_reqs = f.read().split("\\n")',
-                                '\n\tinstall_requires = [x.strip() for x in all_reqs]',
-                                '\n\n#Fill in the details below for distribution purposes'
-                                f'\nsetup(\n\tname="archivy_{name}",',
-                                '\n\tversion="0.0.1",',
-                                '\n\tauthor="",',
-                                '\n\tauthor_email="",',
-                                '\n\tdescription="",',
-                                '\n\tlong_description=long_description,',
-                                '\n\tlong_description_content_type="text/markdown",',
-                                '\n\tclassifiers=[\n\t\t"Programming Language :: Python :: 3",'
-                                '\n\t\t"License :: OSI Approved :: MIT License"],',
-                                '\n\tpackages=find_packages(),',
-                                '\n\tinstall_requires=install_requires,',
-                                f'\n\tentry_points="""\n\t\t[archivy.plugins]'
-                                f'\n\t\t{name}=archivy_{name}:{name}""",\n)'])
+        with open(f"{name}/setup.py", "w") as setup_f:
+            setup_f.writelines(
+                [
+                    "from setuptools import setup, find_packages",
+                    '\n\nwith open("README.md", "r") as fh:',
+                    "\n\tlong_description = fh.read()",
+                    '\n\nwith open("requirements.txt", encoding="utf-8") as f:',
+                    '\n\tall_reqs = f.read().split("\\n")',
+                    "\n\tinstall_requires = [x.strip() for x in all_reqs]",
+                    "\n\n#Fill in the details below for distribution purposes"
+                    f'\nsetup(\n\tname="{name}",',
+                    '\n\tversion="0.0.1",',
+                    '\n\tauthor="",',
+                    '\n\tauthor_email="",',
+                    '\n\tdescription="",',
+                    "\n\tlong_description=long_description,",
+                    '\n\tlong_description_content_type="text/markdown",',
+                    '\n\tclassifiers=["Programming Language :: Python :: 3"],'
+                    "\n\tpackages=find_packages(),",
+                    "\n\tinstall_requires=install_requires,",
+                    f'\n\tentry_points="""\n\t\t[archivy.plugins]'
+                    f'\n\t\t{raw_name}={name}:{raw_name}"""\n)',
+                ]
+            )
 
         # Creating a basic __init__.py file where the main function of the plugin goes
-        with open(f"archivy_{name}/archivy_{name}/__init__.py", "w") as fp:
-            fp.writelines(['import archivy',
-                           '\nimport click',
-                           '\nimport requests',
-                           '\nimport tinydb',
-                           '\n\n# Fill in the functionality for the commands (Check plugins.md in archivy repository)',
-                           '\n@click.group()',
-                           f'\ndef {name}:',
-                           '\n\tpass',
-                           f'\n\n@{name}.command()',
-                           '\ndef command1():',
-                           '\n\tpass',
-                           f'\n\n@{name}.command()',
-                           '\ndef command2():',
-                           '\n\tpass'])
+        with open(f"{name}/{name}/__init__.py", "w") as fp:
+            fp.writelines(
+                [
+                    "import archivy",
+                    "\nimport click",
+                    "\n\n# Fill in the functionality for the commands (see https://archivy.github.io/plugins/)",
+                    "\n@click.group()",
+                    f"\ndef {raw_name}():",
+                    "\n\tpass",
+                    f"\n\n@{raw_name}.command()",
+                    "\ndef command1():",
+                    "\n\tpass",
+                    f"\n\n@{raw_name}.command()",
+                    "\ndef command2():",
+                    "\n\tpass",
+                ]
+            )
 
         return True
     except FileExistsError:

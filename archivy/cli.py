@@ -10,7 +10,7 @@ from archivy import app
 from archivy.config import Config
 from archivy.click_web import create_click_web_app
 from archivy.data import open_file, format_file, unformat_file
-from archivy.helpers import load_config, write_config, create_directory
+from archivy.helpers import load_config, write_config, create_plugin_dir
 from archivy.models import User, DataObj
 
 
@@ -166,11 +166,14 @@ def index():
         else:
             click.echo(f"Failed to index {dataobj.title}")
 
-@cli.command(short_help="Helper command to auto-generate plugin directory with structure")
+
+@cli.command(
+    short_help="Helper command to auto-generate plugin directory with structure"
+)
 @click.argument("name")
 def plugin_new(name):
-    if create_directory(name):
-        click.echo(f"Successfully Created the plugin directory structure with name 'archivy_{name}'.")
+    if create_plugin_dir(name):
+        click.echo(f"Successfully Created the plugin directory structure at '{name}'/.")
     else:
         click.echo(f"Directory with name '{name}' already exists.")
 
