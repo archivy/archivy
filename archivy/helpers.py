@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import os
 
 import elasticsearch
 import yaml
@@ -157,3 +158,73 @@ def get_elastic_client(error_if_invalid=True):
         except elasticsearch.exceptions.ConnectionError:
             return False
     return es
+
+
+def create_directory(name):
+    """Creates a directory structure where one can make plugins
+
+    Args:
+        name: Name of the plugin.
+
+    Returns:
+        bool: True if successfully created else False
+
+    """
+    try:
+        os.makedirs(f"archivy_{name}/archivy_{name}")
+
+        # Creates requirements.txt.
+        with open(f"archivy_{name}/requirements.txt", "w") as fp:
+            fp.writelines(["archivy", "\ntinydb", "\nclick", "\nrequests"])
+
+        # Creates an empty readme file to be filled
+        with open(f"archivy_{name}/README.md", "w+") as fp:
+            fp.writelines(['<!-- Plugin Description -->',
+                           '\n\n## Install',
+                           '\n\nYou need to have `archivy` already installed.',
+                           f'\n\nRun `pip install archivy_{name}`',
+                           '\n\n## Usage'])
+
+        # Creates a setup.py file
+        with open(f"archivy_{name}/setup.py", "w") as setup_f:
+            setup_f.writelines(["from setuptools import setup, find_packages",
+                                '\n\nwith open("README.md", "r") as fh:',
+                                '\n\tlong_description = fh.read()',
+                                '\n\nwith open("requirements.txt", encoding="utf-8") as f:',
+                                '\n\tall_reqs = f.read().split("\\n")',
+                                '\n\tinstall_requires = [x.strip() for x in all_reqs]',
+                                '\n\n#Fill in the details below for distribution purposes'
+                                f'\nsetup(\n\tname="archivy_{name}",',
+                                '\n\tversion="0.0.1",',
+                                '\n\tauthor="",',
+                                '\n\tauthor_email="",',
+                                '\n\tdescription="",',
+                                '\n\tlong_description=long_description,',
+                                '\n\tlong_description_content_type="text/markdown",',
+                                '\n\tclassifiers=[\n\t\t"Programming Language :: Python :: 3",'
+                                '\n\t\t"License :: OSI Approved :: MIT License"],',
+                                '\n\tpackages=find_packages(),',
+                                '\n\tinstall_requires=install_requires,',
+                                f'\n\tentry_points="""\n\t\t[archivy.plugins]'
+                                f'\n\t\t{name}=archivy_{name}:{name}""",\n)'])
+
+        # Creating a basic __init__.py file where the main function of the plugin goes
+        with open(f"archivy_{name}/archivy_{name}/__init__.py", "w") as fp:
+            fp.writelines(['import archivy',
+                           '\nimport click',
+                           '\nimport requests',
+                           '\nimport tinydb',
+                           '\n\n# Fill in the functionality for the commands (Check plugins.md in archivy repository)',
+                           '\n@click.group()',
+                           f'\ndef {name}:',
+                           '\n\tpass',
+                           f'\n\n@{name}.command()',
+                           '\ndef command1():',
+                           '\n\tpass',
+                           f'\n\n@{name}.command()',
+                           '\ndef command2():',
+                           '\n\tpass'])
+
+        return True
+    except FileExistsError:
+        return False
