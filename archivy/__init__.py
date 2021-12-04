@@ -72,7 +72,6 @@ if app.config["SEARCH_CONF"]["enabled"]:
             app.config["SEARCH_CONF"]["enabled"] = 0
 
 
-
 # login routes / setup
 login_manager = LoginManager()
 login_manager.login_view = "login"
