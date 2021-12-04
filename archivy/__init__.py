@@ -27,6 +27,7 @@ app.config.from_object(config)
 (Path(app.config["USER_DIR"]) / "images").mkdir(parents=True, exist_ok=True)
 
 with app.app_context():
+    app.config["RG_INSTALLED"] = which("rg") != None
     app.config["HOOKS"] = helpers.load_hooks()
     app.config["SCRAPING_PATTERNS"] = helpers.load_scraper()
 if app.config["SEARCH_CONF"]["enabled"]:
@@ -66,6 +67,10 @@ if app.config["SEARCH_CONF"]["enabled"]:
                 )
             except elasticsearch.exceptions.RequestError:
                 app.logger.info("Elasticsearch index already created")
+        if app.config["SEARCH_CONF"]["engine"] == "ripgrep" and not which("rg"):
+            app.logger.info("Ripgrep not found on system. Disabling search.")
+            app.config["SEARCH_CONF"]["enabled"] = 0
+
 
 
 # login routes / setup

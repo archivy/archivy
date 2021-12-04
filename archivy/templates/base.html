@@ -67,9 +67,11 @@
             </div>
 
             {% if current_user.is_authenticated and not view_only %}
-                <a href="/tags" class="Header-link Header-item">
-                    <h3>Tags</h3>
-                </a>
+		{% if config["RG_INSTALLED"] %}
+		    <a href="/tags" class="Header-link Header-item">
+		        <h3>Tags</h3>
+		    </a>
+		{% endif %}
                 <a href="/plugins" class="Header-link Header-item">
                     <h3>Plugins</h3>
                 </a>
