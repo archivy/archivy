@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from shutil import which
 
-import elasticsearch
+from elasticsearch.exceptions import RequestError
 from flask import Flask
 from flask_compress import Compress
 from flask_login import LoginManager
@@ -65,7 +65,7 @@ if app.config["SEARCH_CONF"]["enabled"]:
                     index=app.config["SEARCH_CONF"]["index_name"],
                     body=app.config["SEARCH_CONF"]["es_processing_conf"],
                 )
-            except elasticsearch.exceptions.RequestError:
+            except RequestError:
                 app.logger.info("Elasticsearch index already created")
         if app.config["SEARCH_CONF"]["engine"] == "ripgrep" and not which("rg"):
             app.logger.info("Ripgrep not found on system. Disabling search.")
