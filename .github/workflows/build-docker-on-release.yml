@@ -52,5 +52,5 @@ jobs:
             --build-arg VERSION="$( cat VERSION )" --build-arg BUILD_DATE="$( cat TIMESTAMP )" \
             --build-arg VCS_REF="$( cat SHORT_SHA )" \
             --tag "$( cat DOCKER_IMAGE ):$( cat VERSION )-lite" \
-            --tag "$( cat DOCKER_IMAGE ):latest" \
+            --tag "$( cat DOCKER_IMAGE ):latest-lite" \
             --file ./Dockerfile .
