@@ -14,7 +14,7 @@
     <input list="titles" id="title_tooltip_input" class="floating_input" required placeholder="Title of linked note" />
     <datalist id="titles">
       {% for dataobj_title, id in titles %}
-	<option value="{{ dataobj_title }}" data-id="{{ id }}">
+        <option value="[[{{ dataobj_title }}|{{id}}]]" data-id="{{ id }}">
       {% endfor %}
     </datalist>
   </form
@@ -367,6 +367,10 @@
         {
           toggle_tooltip(tag_tooltip, tag_tooltip_input, "#")
         }
+        function toggle_link_tooltip()
+        {
+          toggle_tooltip(note_link_tooltip, title_tooltip_input, '[[')
+        }
 
         // Whenever the content of the editor changes:
         //   Check what the last character is. Is it a `#`?
@@ -398,7 +402,7 @@
               line: line,
               ch: ch
             })
-            toggle_tooltip(note_link_tooltip, title_tooltip_input)
+            toggle_link_tooltip();
           }
         });
 
@@ -408,15 +412,16 @@
           add_tag();
         };
 
+
         note_link_tooltip.onsubmit = function(e) {
           e.preventDefault();
-          let title = title_tooltip_input.value.replace("|", "-").trim();
-          if (title === "") return;
-          let currOption = document.querySelector(`option[value="${title}"]`)
+          let note_link = title_tooltip_input.value;
+          if (note_link === "") return;
+          let currOption = document.querySelector(`option[value="${note_link}"]`)
           if (!currOption) { return; }
           let id = currOption.getAttribute("data-id");
-          insertText(`[[${title}|${id}]]`);
-          toggle_tooltip(note_link_tooltip, title_tooltip_input);
+          insertText(note_link);
+          toggle_link_tooltip();
         }
 
         // We watch for two cases:
@@ -424,13 +429,21 @@
         //  2. The tooltip contains a whitespace. Just put the value into the editor and hide the tooltip.
         tag_tooltip_input.oninput = function() {
           tag_tooltip_input.focus();
-          if (tag_tooltip_input.value === "") {
-            toggle_tag_tooltip();
-            editor.codemirror.focus();
-          } else if ( tag_tooltip_input.value.includes(" ")) {
+          if (tag_tooltip_input.value === "" || tag_tooltip_input.value.includes(" ")) {
             insertText(tag_tooltip_input.value);
             toggle_tag_tooltip();
             editor.codemirror.focus();
+          }
+        }
+
+        title_tooltip_input.oninput = function()
+	{
+	  title_tooltip_input.focus();
+	  if (!title_tooltip_input.value.startsWith("[["))
+	  {
+	    toggle_link_tooltip();
+	    insertText(title_tooltip_input.value)
+	    editor.codemirror.focus();
           }
         }
 
