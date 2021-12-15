@@ -1,5 +1,8 @@
 ![logo](docs/img/logo.png)
 
+
+**We just launched v1.6.0!! Lots of UI improvements and new features, including embedding tags directly inside content, ie: `I love #archivy#`. More details [here](https://github.com/archivy/archivy/releases/tag/v1.6.0).
+
 # Archivy
 
 Archivy is a self-hostable knowledge repository that allows you to preserve content in your own personal, searchable and extensible wiki.
