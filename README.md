@@ -1,6 +1,5 @@
 ![logo](docs/img/logo.png)
 
-
 # Archivy
 
 Archivy is a self-hostable knowledge repository that allows you to preserve content in your own personal, searchable and extensible wiki.
@@ -8,7 +7,7 @@ Archivy is a self-hostable knowledge repository that allows you to preserve cont
 Features:
 
 - If you add bookmarks, their web-pages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
-- Bidirectional links between notes.
+- Bidirectional links between notes, and embedded tags.
 - Authentication for hosting your instance publicly
 - Plugin system to publish and write extensions to archivy
 - [Git integration](https://github.com/archivy/archivy-git)
