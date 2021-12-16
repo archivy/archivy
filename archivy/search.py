@@ -111,7 +111,10 @@ def query_ripgrep(query):
         hit = json.loads(line)
         if hit["type"] == "begin":
             curr_file = (
-                Path(hit["data"]["path"]["text"]).parts[-1].replace(".md", "").split("-")
+                Path(hit["data"]["path"]["text"])
+                .parts[-1]
+                .replace(".md", "")
+                .split("-")
             )  # parse target note data from path
             curr_id = int(curr_file[0])
             title = curr_file[-1].replace("_", " ")
