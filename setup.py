@@ -15,7 +15,7 @@ setuptools.setup(
     name="archivy",
     version="1.6.1",
     author="Uzay-G",
-    author_email="uzgirit@gmail.com",
+    author_email="halcyon@disroot.org",
     description=(
         "Minimalist knowledge base focused on digital preservation"
         " and building your second brain."
