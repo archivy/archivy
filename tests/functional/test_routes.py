@@ -61,12 +61,12 @@ def test_get_dataobj(test_app, client: FlaskClient, note_fixture):
 
 
 def test_get_delete_dataobj_not_found(test_app, client: FlaskClient):
-    response = client.get("/dataobj/delete/1")
+    response = client.post("/dataobj/delete/1")
     assert response.status_code == 302
 
 
 def test_get_delete_dataobj(test_app, client: FlaskClient, note_fixture):
-    response = client.get("/dataobj/delete/1")
+    response = client.post("/dataobj/delete/1")
     assert response.status_code == 302
 
 

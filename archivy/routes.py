@@ -232,7 +232,7 @@ def move_item(dataobj_id):
         return redirect(f"/dataobj/{dataobj_id}")
 
 
-@app.route("/dataobj/delete/<int:dataobj_id>", methods=["DELETE", "GET"])
+@app.route("/dataobj/delete/<int:dataobj_id>", methods=["POST"])
 def delete_data(dataobj_id):
     try:
         data.delete_item(dataobj_id)

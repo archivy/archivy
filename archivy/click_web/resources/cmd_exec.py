@@ -137,10 +137,8 @@ def _get_download_link(field_info):
 
 class RequestToCommandArgs:
     def __init__(self):
-        field_infos = [
-            FieldInfo.factory(key)
-            for key in list(request.form.keys()) + list(request.files.keys())
-        ]
+        keys = [key for key in list(request.form.keys()) + list(request.files.keys())]
+        field_infos = [FieldInfo.factory(key) for key in keys if key != "csrf_token"]
         # important to sort them so they will be in expected order on command line
         self.field_infos = list(sorted(field_infos))
 

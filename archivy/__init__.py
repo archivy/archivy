@@ -6,6 +6,7 @@ from elasticsearch.exceptions import RequestError
 from flask import Flask
 from flask_compress import Compress
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 
 from archivy import helpers
 from archivy.api import api_bp
@@ -77,6 +78,7 @@ login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
 app.register_blueprint(api_bp, url_prefix="/api")
+csrf = CSRFProtect(app)
 
 # compress files
 Compress(app)
