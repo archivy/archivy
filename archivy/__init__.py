@@ -79,6 +79,7 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 app.register_blueprint(api_bp, url_prefix="/api")
 csrf = CSRFProtect(app)
+csrf.exempt(api_bp)
 
 # compress files
 Compress(app)
