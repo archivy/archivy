@@ -9,7 +9,10 @@ class Config(object):
         self.SECRET_KEY = os.urandom(32)
         self.PORT = 5000
         self.HOST = "127.0.0.1"
-        self.INTERNAL_DIR = appdirs.user_data_dir("archivy")
+
+        overridden_internal_dir = os.environ.get("ARCHIVY_INTERNAL_DIR_PATH")
+        self.INTERNAL_DIR = overridden_internal_dir or appdirs.user_data_dir("archivy")
+
         self.USER_DIR = self.INTERNAL_DIR
         self.DEFAULT_BOOKMARKS_DIR = ""
         self.SITE_TITLE = "Archivy"
