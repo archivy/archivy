@@ -416,10 +416,10 @@
         note_link_tooltip.onsubmit = function(e) {
           e.preventDefault();
           let note_link = title_tooltip_input.value;
+          let note_id = note_link.replace('[[', '').replace(']]', '').split("|").at(-1);
           if (note_link === "") return;
-          let currOption = document.querySelector(`option[value="${note_link}"]`)
+          let currOption = document.querySelector(`option[data-id="${note_id}"]`)
           if (!currOption) { return; }
-          let id = currOption.getAttribute("data-id");
           insertText(note_link);
           toggle_link_tooltip();
         }
