@@ -59,3 +59,4 @@ flask-login == 0.5.0
 click_plugins
 html2text
 flask_compress
+readability

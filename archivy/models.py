@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from flask import flash, current_app
 from flask_login import UserMixin
 from html2text import html2text
+from readability import Document
 from tinydb import Query
 from werkzeug.security import generate_password_hash
 from werkzeug.datastructures import FileStorage
@@ -116,7 +117,11 @@ class DataObj:
             return
 
         try:
-            parsed_html = BeautifulSoup(url_request.text, features="html.parser")
+            document = Document(url_request.text)
+            self.title = document.short_title() or self.url
+            parsed_html = BeautifulSoup(
+                Document(url_request.text).summary(), features="html.parser"
+            )
         except Exception:
             self.error = f"Could not parse {self.url}\n"
             self.wipe()
@@ -128,9 +133,6 @@ class DataObj:
             self.error = f"Could not extract content from {self.url}\n"
             return
 
-        parsed_title = parsed_html.title
-        self.title = parsed_title.string if parsed_title is not None else self.url
-
     def wipe(self):
         """Resets and invalidates dataobj"""
         self.title = ""
@@ -139,7 +141,6 @@ class DataObj:
     def extract_content(self, beautsoup, selector=None):
         """converts html bookmark url to optimized markdown and saves images"""
 
-        stripped_tags = ["footer", "nav"]
         url = self.url.rstrip("/")
 
         if selector:
@@ -147,9 +148,6 @@ class DataObj:
             # if the custom selector matched, take the first occurrence
             if selected_soup:
                 beautsoup = selected_soup[0]
-        for tag in stripped_tags:
-            if getattr(beautsoup, tag):
-                getattr(beautsoup, tag).extract()
         resources = beautsoup.find_all(["a", "img"])
         for tag in resources:
             if tag.name == "a":
