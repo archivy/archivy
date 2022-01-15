@@ -94,7 +94,7 @@ def load_user(user_id):
     return None
 
 
-app.jinja_options["extensions"].append("jinja2.ext.do")
+app.jinja_env.add_extension('jinja2.ext.do')
 
 
 @app.template_filter("pluralize")
