@@ -92,6 +92,7 @@ def query_es_index(query, strict=False):
 
 
 def parse_ripgrep_line(line):
+    """Parses a line of ripgrep JSON output"""
     hit = json.loads(line)
     data = {}
     if hit["type"] == "begin":
@@ -103,10 +104,8 @@ def parse_ripgrep_line(line):
         data = {"title": title, "matches": [], "id": curr_id}
     elif hit["type"] == "match":
         data = hit["data"]["lines"]["text"].strip()
-        if data.startswith("tags: [") or data.startswith("title:"):
-            return None
     else:
-        return None
+        return None  # only process begin and match events, we don't care about endings
     return (data, hit["type"])
 
 
@@ -124,19 +123,18 @@ def query_ripgrep(query):
     rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, "--json", query, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     output = rg.stdout.decode().splitlines()
-    hits = {}
-    curr_id = None
+    hits = []
     for line in output:
         parsed = parse_ripgrep_line(line)
         if not parsed:
             continue
         if parsed[1] == "begin":
-            curr_id = parsed[0]["id"]
-            hits[curr_id] = parsed[0]
+            hits.append(parsed[0])
         if parsed[1] == "match":
-            hits[curr_id]["matches"].append(parsed[0])
+            if not (parsed[0].startswith("tags: [") or parsed[0].startswith("title:")):
+                hits[-1]["matches"].append(parsed[0])
     return sorted(
-        list(hits.values()), key=lambda x: len(x["matches"]), reverse=True
+        hits, key=lambda x: len(x["matches"]), reverse=True
     )  # sort by number of matches
 
 
@@ -164,13 +162,13 @@ def search_frontmatter_tags(tag=None):
     output = rg.stdout.decode().splitlines()
     for line in output:
         parsed = parse_ripgrep_line(line)
-        if not parsed:
+        if not parsed:  # the event doesn't interest us
             continue
         if parsed[1] == "begin":
-            hits.append(parsed[0])
+            hits.append(parsed[0])  # append current hit data
         if parsed[1] == "match":
             sanitized = parsed[0].replace("- ", "").split("\n")[2:]
-            hits[-1]["tags"] = hits[-1].get("tags", []) + sanitized
+            hits[-1]["tags"] = hits[-1].get("tags", []) + sanitized  # get tags
     if tag:
         hits = list(filter(lambda x: tag in x["tags"], hits))
     return hits
