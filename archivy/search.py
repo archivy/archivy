@@ -90,15 +90,13 @@ def query_es_index(query, strict=False):
         hits.append(formatted_hit)
     return hits
 
+
 def parse_ripgrep_line(line):
     hit = json.loads(line)
     data = {}
     if hit["type"] == "begin":
         curr_file = (
-            Path(hit["data"]["path"]["text"])
-            .parts[-1]
-            .replace(".md", "")
-            .split("-")
+            Path(hit["data"]["path"]["text"]).parts[-1].replace(".md", "").split("-")
         )  # parse target note data from path
         curr_id = int(curr_file[0])
         title = curr_file[-1].replace("_", " ")
@@ -107,7 +105,8 @@ def parse_ripgrep_line(line):
         data = hit["data"]["lines"]["text"].strip()
         if data.startswith("tags: [") or data.startswith("title:"):
             return None
-    else: return None
+    else:
+        return None
     return (data, hit["type"])
 
 
@@ -129,7 +128,8 @@ def query_ripgrep(query):
     curr_id = None
     for line in output:
         parsed = parse_ripgrep_line(line)
-        if not parsed: continue
+        if not parsed:
+            continue
         if parsed[1] == "begin":
             curr_id = parsed[0]["id"]
             hits[curr_id] = parsed[0]
@@ -138,6 +138,7 @@ def query_ripgrep(query):
     return sorted(
         list(hits.values()), key=lambda x: len(x["matches"]), reverse=True
     )  # sort by number of matches
+
 
 def search_frontmatter_tags(tag=None):
     """
@@ -149,12 +150,22 @@ def search_frontmatter_tags(tag=None):
         return []
     META_PATTERN = r"(^|\n)tags:(\n- [_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)+"
     hits = []
-    rg_cmd = ["rg", "-Uo", RG_MISC_ARGS, RG_FILETYPE, "--json", RG_REGEX_ARG, META_PATTERN, str(get_data_dir())]
+    rg_cmd = [
+        "rg",
+        "-Uo",
+        RG_MISC_ARGS,
+        RG_FILETYPE,
+        "--json",
+        RG_REGEX_ARG,
+        META_PATTERN,
+        str(get_data_dir()),
+    ]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     output = rg.stdout.decode().splitlines()
     for line in output:
         parsed = parse_ripgrep_line(line)
-        if not parsed: continue
+        if not parsed:
+            continue
         if parsed[1] == "begin":
             hits.append(parsed[0])
         if parsed[1] == "match":
@@ -163,6 +174,7 @@ def search_frontmatter_tags(tag=None):
     if tag:
         hits = list(filter(lambda x: tag in x["tags"], hits))
     return hits
+
 
 def query_ripgrep_tags():
     """

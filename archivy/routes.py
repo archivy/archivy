@@ -143,13 +143,19 @@ def show_tag(tag_name):
         )
         return redirect("/")
 
-    search_results = search(f"#{tag_name}#", strict=True) + search_frontmatter_tags(tag_name)
+    results = search(f"#{tag_name}#", strict=True)
+    res_ids = set(
+        [item["id"] for item in results]
+    )  # avoid duplication of results between context-aware embedded tags and metadata ones
+    for res in search_frontmatter_tags(tag_name):
+        if res["id"] not in res_ids:
+            results.append(res)
 
     return render_template(
         "tags/show.html",
         title=f"Tags - {tag_name}",
         tag_name=tag_name,
-        search_result=search_results,
+        search_result=results,
     )
 
 
