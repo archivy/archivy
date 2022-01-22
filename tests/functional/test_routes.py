@@ -96,8 +96,14 @@ def test_create_new_bookmark(
 
     resp = client.post("/bookmarks/new", data=bookmark_data, follow_redirects=True)
     assert resp.status_code == 200
-    assert b'<span class="post-tag"><a href="/tags/bookmark">bookmark</a></span>' in resp.data
-    assert b'<span class="post-tag"><a href="/tags/testing">testing</a></span>' in resp.data
+    assert (
+        b'<span class="post-tag"><a href="/tags/bookmark">bookmark</a></span>'
+        in resp.data
+    )
+    assert (
+        b'<span class="post-tag"><a href="/tags/testing">testing</a></span>'
+        in resp.data
+    )
     assert b"https://example.com" in resp.data
     assert b"Random" in resp.data
 
@@ -138,7 +144,10 @@ def test_create_note(test_app, client: FlaskClient):
     resp = client.post("/notes/new", data=note_data, follow_redirects=True)
     assert resp.status_code == 200
     assert b'<span class="post-tag"><a href="/tags/note">note</a></span>' in resp.data
-    assert b'<span class="post-tag">testing</span>' in resp.data
+    assert (
+        b'<span class="post-tag"><a href="/tags/testing">testing</a></span>'
+        in resp.data
+    )
     assert b"Testing the create route" in resp.data
 
 
