@@ -21,7 +21,7 @@ from archivy.models import DataObj, User
 from archivy import data, app, forms
 from archivy.helpers import get_db, write_config
 from archivy.tags import get_all_tags
-from archivy.search import search
+from archivy.search import search, search_frontmatter_tags
 from archivy.config import Config
 
 import re
@@ -143,7 +143,7 @@ def show_tag(tag_name):
         )
         return redirect("/")
 
-    search_results = search(f"#{tag_name}#", strict=True)
+    search_results = search(f"#{tag_name}#", strict=True) + search_frontmatter_tags(tag_name)
 
     return render_template(
         "tags/show.html",

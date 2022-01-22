@@ -4,6 +4,7 @@ from flask import current_app
 from archivy import helpers, data
 from tinydb import Query, operations
 from archivy.search import query_ripgrep_tags
+from archivy.data import get_items
 
 
 def is_tag_format(tag_name):

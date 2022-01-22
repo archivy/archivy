@@ -90,6 +90,26 @@ def query_es_index(query, strict=False):
         hits.append(formatted_hit)
     return hits
 
+def parse_ripgrep_line(line):
+    hit = json.loads(line)
+    data = {}
+    if hit["type"] == "begin":
+        curr_file = (
+            Path(hit["data"]["path"]["text"])
+            .parts[-1]
+            .replace(".md", "")
+            .split("-")
+        )  # parse target note data from path
+        curr_id = int(curr_file[0])
+        title = curr_file[-1].replace("_", " ")
+        data = {"title": title, "matches": [], "id": curr_id}
+    elif hit["type"] == "match":
+        data = hit["data"]["lines"]["text"].strip()
+        if data.startswith("tags: [") or data.startswith("title:"):
+            return None
+    else: return None
+    return (data, hit["type"])
+
 
 def query_ripgrep(query):
     """
@@ -100,35 +120,49 @@ def query_ripgrep(query):
     from archivy.data import get_data_dir
 
     if not which("rg"):
-        return None
+        return []
 
     rg_cmd = ["rg", RG_MISC_ARGS, RG_FILETYPE, "--json", query, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     output = rg.stdout.decode().splitlines()
     hits = {}
-    curr_id = -1
+    curr_id = None
     for line in output:
-        hit = json.loads(line)
-        if hit["type"] == "begin":
-            curr_file = (
-                Path(hit["data"]["path"]["text"])
-                .parts[-1]
-                .replace(".md", "")
-                .split("-")
-            )  # parse target note data from path
-            curr_id = int(curr_file[0])
-            title = curr_file[-1].replace("_", " ")
-            hits[curr_id] = {"title": title, "matches": [], "id": curr_id}
-        elif hit["type"] == "match":
-            match_text = hit["data"]["lines"]["text"].strip()
-            if not match_text.startswith("tags: [") and not match_text.startswith(
-                "title:"
-            ):  # don't send matches on metadata
-                hits[curr_id]["matches"].append(match_text)
+        parsed = parse_ripgrep_line(line)
+        if not parsed: continue
+        if parsed[1] == "begin":
+            curr_id = parsed[0]["id"]
+            hits[curr_id] = parsed[0]
+        if parsed[1] == "match":
+            hits[curr_id]["matches"].append(parsed[0])
     return sorted(
         list(hits.values()), key=lambda x: len(x["matches"]), reverse=True
     )  # sort by number of matches
 
+def search_frontmatter_tags(tag=None):
+    """
+    Returns a list of dataobj ids that have the given tag.
+    """
+    from archivy.data import get_data_dir
+
+    if not which("rg"):
+        return []
+    META_PATTERN = r"(^|\n)tags:(\n- [_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)+"
+    hits = []
+    rg_cmd = ["rg", "-Uo", RG_MISC_ARGS, RG_FILETYPE, "--json", RG_REGEX_ARG, META_PATTERN, str(get_data_dir())]
+    rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
+    output = rg.stdout.decode().splitlines()
+    for line in output:
+        parsed = parse_ripgrep_line(line)
+        if not parsed: continue
+        if parsed[1] == "begin":
+            hits.append(parsed[0])
+        if parsed[1] == "match":
+            sanitized = parsed[0].replace("- ", "").split("\n")[2:]
+            hits[-1]["tags"] = hits[-1].get("tags", []) + sanitized
+    if tag:
+        hits = list(filter(lambda x: tag in x["tags"], hits))
+    return hits
 
 def query_ripgrep_tags():
     """
@@ -136,20 +170,25 @@ def query_ripgrep_tags():
     Mandatory reference: https://xkcd.com/1171/
     """
 
-    PATTERN = r"(^|\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)#"
+    EMB_PATTERN = r"(^|\n| )#([-_a-zA-ZÀ-ÖØ-öø-ÿ0-9]+)#"
     from archivy.data import get_data_dir
 
     if not which("rg"):
-        return None
+        return []
 
+    # embedded tags
     # io: case insensitive
-    rg_cmd = ["rg", "-Uio", RG_FILETYPE, RG_REGEX_ARG, PATTERN, str(get_data_dir())]
+    rg_cmd = ["rg", "-Uio", RG_FILETYPE, RG_REGEX_ARG, EMB_PATTERN, str(get_data_dir())]
     rg = run(rg_cmd, stdout=PIPE, stderr=PIPE, timeout=60)
     hits = set()
     for line in rg.stdout.splitlines():
         tag = Path(line.decode()).parts[-1].split(":")[-1]
         tag = tag.replace("#", "").lstrip()
         hits.add(tag)
+    # metadata tags
+    for item in search_frontmatter_tags():
+        for tag in item["tags"]:
+            hits.add(tag)
     return hits
 
 
