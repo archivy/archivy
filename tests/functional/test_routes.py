@@ -379,6 +379,7 @@ def test_getting_all_tags(test_app, client, bookmark_fixture):
     resp = client.get("/tags")
     bookmark_tags = ["embedded-tag", "tag2"]
     assert resp.status_code == 200
+    print(bookmark_fixture.content)
     for tag in bookmark_tags:
         assert f"#{tag}" in str(resp.data)
 
