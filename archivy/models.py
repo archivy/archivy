@@ -119,9 +119,7 @@ class DataObj:
         try:
             document = Document(url_request.text)
             self.title = document.short_title() or self.url
-            parsed_html = BeautifulSoup(
-                document.summary(), features="html.parser"
-            )
+            parsed_html = BeautifulSoup(document.summary(), features="html.parser")
         except Exception:
             self.error = f"Could not parse {self.url}\n"
             self.wipe()
