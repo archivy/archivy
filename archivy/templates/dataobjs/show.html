@@ -422,8 +422,33 @@
           let note_id = note_link.replace('[[', '').replace(']]', '').split("|").at(-1);
           if (note_link === "") return;
           let currOption = document.querySelector(`option[data-id="${note_id}"]`)
-          if (!currOption) { return; }
-          insertText(note_link);
+          if (!currOption) {
+            let payload = {
+              method: "POST",
+              body: JSON.stringify({
+                "title": note_id,
+                "content": ""
+              }),
+              headers: {
+                "content-type": "application/json"
+              }
+            };
+            let note_title = note_link.replace('[[', '').replace(']]', '');
+            fetch(`${SCRIPT_ROOT}/notes`, payload).then(function(response) {
+              return response.json();
+            }).then(function(data) {
+              let option = document.createElement("option");
+              option.setAttribute("data-id", data.note_id);
+              option.innerText = note_id;
+              document.querySelector("#titles").appendChild(option);
+              note_id = data.note_id;
+              option.value = `[[${note_title}|${note_id}]]`;
+              insertText(option.value);
+            });
+          }
+          else {
+            insertText(note_link);
+          }
           toggle_link_tooltip();
         }
 
