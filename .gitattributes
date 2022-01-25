@@ -1,1 +1,3 @@
 archivy/static/*.js linguist-vendored
+archivy/static/math.css linguist-vendored
+archivy/static/monokai.css linguist-vendored
