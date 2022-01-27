@@ -4,7 +4,7 @@ Archivy files are in the [markdown](https://daringfireball.net/projects/markdown
 
 We've also included a few powerful extensions:
 
-- **Bidirectional links**: You can easily link to a new note in the web editor by typing `[[`: an input box will appear where you can enter the title of the note you want to link to. Otherwise, links between notes are in the format `[[linked note title|linked note id]]`.
+- **Bidirectional links**: You can easily link to a new note in the web editor by typing `[[`: an input box will appear where you can enter the title of the note you want to link to. Otherwise, links between notes are in the format `[[linked note title|linked note id]]`. If the title you wrote doesn't refer to an existing note, you can click enter and Archivy will create a new note.
 
 - **Embedded tags**: You can directly add tags inside your notes with this `#tag#` syntax (see below). These tags and their groupings can then be viewed by clicking `Tags` on the navigation bar. Starting to type `#` in the web editor will display an input where you can search existing tags.
 
