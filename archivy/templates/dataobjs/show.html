@@ -128,7 +128,7 @@
                           | replace("${", "\\${")
        %} */
     // Render the content with TOC
-    let content = (new DOMParser().parseFromString(`{{ content }}`, "text/html")).documentElement.textContent;
+    let content = (new DOMParser().parseFromString(`{{ content }}`, "text/html")).documentElement.textContent; // jinja escapes html characters, we render them and then they're escaped by easyMDE / markdown-it
     let contentDiv = document.getElementById("content");
     function renderContent(content) {
       return window.parser.customRender("${toc}\n\n" + content);
