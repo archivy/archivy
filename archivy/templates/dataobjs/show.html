@@ -128,12 +128,12 @@
                           | replace("${", "\\${")
        %} */
     // Render the content with TOC
+    let content = (new DOMParser().parseFromString(`{{ content }}`, "text/html")).documentElement.textContent;
     let contentDiv = document.getElementById("content");
     function renderContent(content) {
       return window.parser.customRender("${toc}\n\n" + content);
     }
-    contentDiv.innerHTML = renderContent(`{{ content }}`);
-
+    contentDiv.innerHTML = renderContent(content);
     {% if not view_only %}
       // Also show the editing options
       // The form for editing the front matter
@@ -157,7 +157,7 @@
       post_title_form.addEventListener("submit", update_frontmatter_callback, true);
 
       // Render the editor and put the dataobj in it
-      let editorDiv, oldContent, editor, savedContent = `{{ content }}`;
+      let editorDiv, oldContent, editor, savedContent = content;
 
       // Show the form for embedding links
       let searchHits = document.getElementById("searchHits");
@@ -288,7 +288,7 @@
           },
         });  // EasyMDE
 
-        editor.value(`{{ content }}`)
+        editor.value(content)
 
         let statusBtn = document.querySelector(".status .fa");
         editor.codemirror.on("change", function() {
