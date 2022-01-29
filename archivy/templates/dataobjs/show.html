@@ -289,6 +289,11 @@
         });  // EasyMDE
 
         editor.value(content)
+        {% if config.EDITOR_CONF.get('spellcheck', True) %}
+          // Spellcheck is on by default
+        {% else %}
+          editor.codemirror.setOption('mode', 'markdown');
+        {% endif %}
 
         let statusBtn = document.querySelector(".status .fa");
         editor.codemirror.on("change", function() {

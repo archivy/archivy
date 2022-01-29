@@ -41,6 +41,7 @@ class Config(object):
                 "markdownItAnchor": {"permalink": True, "permalinkSymbol": "¶"},
                 "markdownItTocDoneRight": {},
             },
+            "spellcheck": False,
         }
 
         self.SEARCH_CONF = {
