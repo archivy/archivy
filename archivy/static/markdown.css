@@ -310,7 +310,7 @@ blockquote
     word-break: normal;
     white-space: pre;
     border: 0;
-	background: transparent;
+    background: transparent;
 }
 .markdown-body .highlight {
     margin-bottom: 16px;

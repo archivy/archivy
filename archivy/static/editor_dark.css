@@ -10,7 +10,7 @@
 
 .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected, .CodeMirror-selectedtext, .CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {
     background: #3297fd;
-	color: white;
+    color: white;
 }
 
 .editor-toolbar {
