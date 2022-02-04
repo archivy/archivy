@@ -21,7 +21,8 @@ def get_data_dir():
 def is_relative_to(sub_path, parent):
     """Implement pathlib `is_relative_to` only available in python 3.9"""
     try:
-        sub_path.resolve().relative_to(parent)
+        parent_path = Path(parent).resolve()
+        sub_path.resolve().relative_to(parent_path)
         return True
     except ValueError:
         return False
