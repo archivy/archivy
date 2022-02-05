@@ -243,3 +243,21 @@ def image_upload():
         saved_to = data.save_image(image)
         return jsonify({"data": {"filePath": f"/images/{saved_to}"}}), 200
     return jsonify({"error": "415"}), 415
+
+
+@api_bp.route("/raw_bookmark", methods=["POST"])
+def raw_bookmark():
+    """
+    Creates a new bookmark from raw HTML.
+
+    Parameter in JSON body:
+    - **url**: url of new boomark
+    - **html**
+    """
+
+    bookmark = DataObj(url=request.json.get("url"), type="bookmark")
+    bookmark.process_bookmark_url(request.json.get("html"))
+    if bookmark.insert():
+        return jsonify({"status": "success", "id": bookmark.id})
+    else:
+        return jsonify({"status": "failure"}), 400

@@ -89,7 +89,7 @@ class DataObj:
     fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     error: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
 
-    def process_bookmark_url(self):
+    def process_bookmark_url(self, raw_html=None):
         """Process url to get content for bookmark"""
         if self.type not in ("bookmark", "pocket_bookmark") or not validators.url(
             self.url
@@ -107,9 +107,12 @@ class DataObj:
                 return
 
         try:
-            url_request = requests.get(
-                self.url,
-                headers={"User-agent": f"Archivy/v{require('archivy')[0].version}"},
+            page_html = (
+                raw_html
+                or requests.get(
+                    self.url,
+                    headers={"User-agent": f"Archivy/v{require('archivy')[0].version}"},
+                ).text
             )
         except Exception:
             self.error = f"Could not retrieve {self.url}\n"
@@ -117,7 +120,7 @@ class DataObj:
             return
 
         try:
-            document = Document(url_request.text)
+            document = Document(page_html)
             self.title = document.short_title() or self.url
             parsed_html = BeautifulSoup(document.summary(), features="html.parser")
         except Exception:
