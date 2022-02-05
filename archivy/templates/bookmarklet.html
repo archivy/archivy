@@ -7,6 +7,24 @@ Using the bookmarklet allows you to quickly add bookmarks to archivy.
 
 All you need to do is drage the link below to your browser toolbar. Then, when you find an interesting link, just click the button on your toolbar named "Add to archivy".
 
-<h3><a href="javascript:window.location = `{{ request.host_url | safe  }}bookmarks/new?url=${window.location}`;">Add to {{ config.SITE_TITLE }}</a></h3>
+<h3><a href="javascript: (async function() {
+      let res = await fetch('{{ request.host_url | safe  }}/api/raw_bookmark',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          url: window.location.href,
+          html: document.documentElement.outerHTML
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (res.ok) {
+      let json = await res.json();
+      alert(`Document saved at {{ request.host_url | safe }}/dataobj/${json.id}`);
+   };})();">
+	Add to {{ config.SITE_TITLE }}
+</a></h3>
 
 {% endblock %}
