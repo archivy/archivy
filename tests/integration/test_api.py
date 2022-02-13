@@ -5,7 +5,7 @@ import responses
 from flask import Flask
 from flask.testing import FlaskClient
 from tinydb import Query
-from archivy.data import create_dir, get_items, create_dir
+from archivy.data import create_dir, get_items, create_dir, get_item
 from archivy.models import DataObj
 from archivy.helpers import get_db
 

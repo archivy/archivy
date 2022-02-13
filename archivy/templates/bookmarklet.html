@@ -7,6 +7,18 @@ Using the bookmarklet allows you to quickly add bookmarks to archivy.
 
 All you need to do is drage the link below to your browser toolbar. Then, when you find an interesting link, just click the button on your toolbar named "Add to archivy".
 
-<h3><a href="javascript:window.location = `{{ request.host_url | safe  }}bookmarks/new?url=${window.location}`;">Add to {{ config.SITE_TITLE }}</a></h3>
+<h3><a href="javascript: (async function() {
+  document.body.insertAdjacentHTML('beforeend', `
+    <form style='display: none' method='post' target='_blank' id='archivy_bookmarklet' action='{{ request.host_url | safe }}/save_from_bookmarklet'>
+      <input type='hidden' name='url'>
+      <input type='text' name='html'>
+    </form>
+  `);
+  const form = document.getElementById('archivy_bookmarklet');
+  form.querySelector('input[name=url]').value = window.location.href;
+  form.querySelector('input[name=html]').value = document.documentElement.outerHTML;
+  form.submit();})();">
+	Add to {{ config.SITE_TITLE }}
+</a></h3>
 
 {% endblock %}

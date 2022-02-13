@@ -18,7 +18,7 @@ from tinydb import Query
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from archivy.models import DataObj, User
-from archivy import data, app, forms
+from archivy import data, app, forms, csrf
 from archivy.helpers import get_db, write_config
 from archivy.tags import get_all_tags
 from archivy.search import search, search_frontmatter_tags
@@ -396,3 +396,24 @@ def config():
     return render_template(
         "config.html", conf=form, default=default, title="Edit Config"
     )
+
+
+@csrf.exempt  # exempt from CSRF to be able to submit info directly from bookmarklet
+@app.route("/save_from_bookmarklet", methods=["POST"])
+def save_raw_url():
+    """
+    Used in the bookmarklet - Saves a URL by taking its raw HTML.
+
+    POST parameters:
+    - html
+    - url
+    """
+    html = request.form.get("html")
+    if not html:
+        return "No HTML provided", 400
+    bookmark = DataObj(url=request.form.get("url"), type="bookmark")
+    bookmark.process_bookmark_url(html)
+    if bookmark.insert():
+        return redirect(f"/dataobj/{bookmark.id}")
+    else:
+        return "Could not save bookmark", 500
