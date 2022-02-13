@@ -398,3 +398,18 @@ def test_getting_matches_for_specific_tag(test_app, client, bookmark_fixture):
     assert resp.status_code == 200
     assert bookmark_fixture.title in str(resp.data)
     assert str(bookmark_fixture.id) in str(resp.data)
+
+
+def test_bookmarklet_upload(test_app, client):
+    title = "bookmarklet bookmark"
+    resp = client.post(
+        "/save_from_bookmarklet",
+        data={
+            "url": "https://example.com",
+            "html": f"<html><title>{title}</title><html>",
+        },
+        follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    assert title in str(resp.data)
+    assert "/dataobj/" in request.path
