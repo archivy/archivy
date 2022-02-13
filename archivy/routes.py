@@ -401,6 +401,13 @@ def config():
 @csrf.exempt  # exempt from CSRF to be able to submit info directly from bookmarklet
 @app.route("/save_from_bookmarklet", methods=["POST"])
 def save_raw_url():
+    """
+    Used in the bookmarklet - Saves a URL by taking its raw HTML.
+
+    POST parameters:
+    - html
+    - url
+    """
     html = request.form.get("html")
     if not html:
         return "No HTML provided", 400
