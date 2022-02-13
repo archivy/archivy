@@ -258,14 +258,3 @@ def test_adding_invalid_tag_name_fails(test_app, client):
         resp = client.put("/api/tags/add_to_index", json={"tag": tag})
         assert b"Must provide valid tag name" in resp.data
         assert resp.status_code == 401
-
-
-def test_uploading_raw_boomark(test_app, client):
-    json = {
-        "url": "https://example.com",
-        "html": "<html><head><title>Example website</title></head><body><h1>Example bookmark uploaded raw</h1></body></html>",
-    }
-    resp = client.post("/api/raw_bookmark", json=json)
-    assert resp.status_code == 200
-    id = resp.json["id"]
-    assert get_item(id)
