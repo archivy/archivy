@@ -5,8 +5,9 @@ import os
 import elasticsearch
 import yaml
 from elasticsearch import Elasticsearch
-from flask import current_app, g
+from flask import current_app, g, request
 from tinydb import TinyDB, Query, operations
+from urllib.parse import urlparse, urljoin
 
 from archivy.config import BaseHooks, Config
 
@@ -230,3 +231,12 @@ def create_plugin_dir(name):
         return True
     except FileExistsError:
         return False
+
+
+def is_safe_redirect_url(target):
+    host_url = urlparse(request.host_url)
+    redirect_url = urlparse(urljoin(request.host_url, target))
+    return (
+        redirect_url.scheme in ("http", "https")
+        and host_url.netloc == redirect_url.netloc
+    )

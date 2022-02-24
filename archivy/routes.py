@@ -19,7 +19,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from archivy.models import DataObj, User
 from archivy import data, app, forms, csrf
-from archivy.helpers import get_db, write_config
+from archivy.helpers import get_db, write_config, is_safe_redirect_url
 from archivy.tags import get_all_tags
 from archivy.search import search, search_frontmatter_tags
 from archivy.config import Config
@@ -264,7 +264,10 @@ def login():
             flash("Login successful!", "success")
 
             next_url = request.args.get("next")
-            return redirect(next_url or "/")
+            if next_url and is_safe_redirect_url(next_url):
+                return redirect(next_url)
+            else:
+                return redirect("/")
 
         flash("Invalid credentials", "error")
         return redirect("/login")
