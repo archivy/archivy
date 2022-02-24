@@ -8,11 +8,15 @@ on:
       - 'archivy/**'
       - 'tests/**'
       - '.github/workflows/codecov.yml'
+      - 'requirements.txt'
+      - 'requirements-tests.txt'
   pull_request:
     paths:
       - 'archivy/**'
       - 'tests/**'
       - '.github/workflows/codecov.yml'
+      - 'requirements.txt'
+      - 'requirements-tests.txt'
 
 jobs:
   run:
