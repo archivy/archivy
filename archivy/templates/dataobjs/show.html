@@ -521,6 +521,7 @@
         /* Add screenreader save button handler */
         let srSaveBtn = document.getElementById("sr-savebutton");
         srSaveBtn.onclick = screenReaderSave;
+        {{ js_ext | safe }}
       })  // window.addEventListener("load")
 
 
