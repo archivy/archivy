@@ -138,7 +138,9 @@ def create(contents, title, path=""):
     max_filename_length = 255
     if len(filename + ".md") > max_filename_length:
         filename = filename[0 : max_filename_length - 3]
-    path_to_md_file = data_dir / path.strip("/") / f"{filename}.md"
+    if not is_relative_to(data_dir / path, data_dir):
+        path = ""
+    path_to_md_file = data_dir / path / f"{filename}.md"
     with open(path_to_md_file, "w", encoding="utf-8") as file:
         file.write(contents)
 
