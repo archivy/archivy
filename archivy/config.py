@@ -26,7 +26,7 @@ class Config(object):
             "use_custom_css": False,
             "custom_css_file": "",
         }
-
+        self.DATAOBJ_JS_EXTENSION = ""
         self.EDITOR_CONF = {
             "settings": {
                 "html": False,

@@ -166,6 +166,13 @@ def show_dataobj(dataobj_id):
     titles = list(
         map(get_title_id_pairs, data.get_items(structured=False, load_content=False))
     )
+    js_ext = ""
+    if app.config["DATAOBJ_JS_EXTENSION"]:
+        js_ext = (
+            (Path(app.config["USER_DIR"]) / app.config["DATAOBJ_JS_EXTENSION"])
+            .open("r")
+            .read()
+        )
 
     if not dataobj:
         flash("Data could not be found!", "error")
@@ -213,6 +220,7 @@ def show_dataobj(dataobj_id):
         tag_list=tag_list,
         embedded_tags=embedded_tags,
         titles=titles,
+        js_ext=js_ext,
     )
 
 
