@@ -239,37 +239,7 @@
               title: "Save note contents",
               className: "fa fa-save",
               action: (editor) => {
-                fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
-                  method: "PUT",
-                  body: JSON.stringify({
-                    "content": editor.value()
-                  }),
-                  headers: {
-                    "content-type": "application/json"
-                  }
-                })
-                statusBtn.classList.add("fa-check-circle");
-                statusBtn.classList.remove("fa-times");
-                savedContent = editor.value();
-                // update dataobj tags
-                let post_tags = document.querySelector(".embedded-tags");
-                let matches = [...savedContent.matchAll("(?:^|\\n| )#(?:[a-zA-Z0-9_-]+)\\w")];
-                let all_tags = []
-                for (i=0; i < matches.length; i++) {
-                  all_tags.push(matches[i][0].trim())
-                }
-                post_tags.innerHTML = ""
-                let uniq_tags = [...new Set(all_tags)];
-                for (i=0; i < uniq_tags.length; i++) {
-                  let tag_text = uniq_tags[i].replace("#", "");
-                  let tag_link = document.createElement("a");
-                  tag_link.href = `/tags/${tag_text}`;
-                  let new_tag = document.createElement("span")
-                  new_tag.classList.add("post-tag")
-                  new_tag.textContent = tag_text;
-                  tag_link.appendChild(new_tag)
-                  post_tags.appendChild(tag_link)
-                }
+                saveDoc()
               }, // action
             }, // save-button
             {
@@ -351,6 +321,39 @@
           response = fetch(`${SCRIPT_ROOT}/tags/add_to_index`, payload);
         }
 
+        function saveDoc() {
+          fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              "content": editor.value()
+            }),
+            headers: {
+              "content-type": "application/json"
+            }
+          })
+          statusBtn.classList.add("fa-check-circle");
+          statusBtn.classList.remove("fa-times");
+          savedContent = editor.value();
+          // update dataobj tags
+          let post_tags = document.querySelector(".embedded-tags");
+          let matches = [...savedContent.matchAll("(?:^|\\n| )#(?:[a-zA-Z0-9_-]+)\\w")];
+          let all_tags = []
+          for (i=0; i < matches.length; i++) {
+            all_tags.push(matches[i][0].trim())
+          }
+          post_tags.innerHTML = ""
+          let uniq_tags = [...new Set(all_tags)];
+          for (i=0; i < uniq_tags.length; i++) {
+            let tag_text = uniq_tags[i].replace("#", "");
+            let tag_link = document.createElement("a");
+            tag_link.href = `/tags/${tag_text}`;
+            let new_tag = document.createElement("span")
+            new_tag.classList.add("post-tag")
+            new_tag.textContent = tag_text;
+            tag_link.appendChild(new_tag)
+            post_tags.appendChild(tag_link)
+          }
+        }
 
         // When toggling the tooltips we want to position it right first.
         // Otherwise, clear the input and hide it.
