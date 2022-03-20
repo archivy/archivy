@@ -322,9 +322,9 @@
         }
 
         async function saveDoc() {
-	  let req;
-	  try {
-	    req = await fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
+          let req;
+          try {
+            req = await fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
               method: "PUT",
               body: JSON.stringify({
                 "content": editor.value()
