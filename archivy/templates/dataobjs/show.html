@@ -321,16 +321,24 @@
           response = fetch(`${SCRIPT_ROOT}/tags/add_to_index`, payload);
         }
 
-        function saveDoc() {
-          fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
-            method: "PUT",
-            body: JSON.stringify({
-              "content": editor.value()
-            }),
-            headers: {
-              "content-type": "application/json"
-            }
-          })
+        async function saveDoc() {
+	  let req;
+	  try {
+	    req = await fetch(`${SCRIPT_ROOT}/dataobjs/{{dataobj['id']}}`, {
+              method: "PUT",
+              body: JSON.stringify({
+                "content": editor.value()
+              }),
+              headers: {
+                "content-type": "application/json"
+              }
+            })
+          }
+          catch(e) {
+            alert("Could not connect to Archivy, ensure instance is running.")
+            return;
+          }
+          if (!req.ok) { alert("Error saving document."); }
           statusBtn.classList.add("fa-check-circle");
           statusBtn.classList.remove("fa-times");
           savedContent = editor.value();
