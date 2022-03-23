@@ -131,6 +131,7 @@ EDITOR_CONF:
     breaks: true
     typographer: false
   plugins: ...
+  toolbar_icons: ["bold", "italic", "link", "upload-image", "heading", "code", "strikethrough", "quote", "table"] # see https://github.com/Ionaru/easy-markdown-editor#toolbar-icons for more options
 ```
 
 Archivy uses several markdown plugins to enhance its functionality:

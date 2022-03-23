@@ -186,15 +186,9 @@
           imageAccept: "image/png, image/jpeg, image/gif",
           imageMaxSize: "100000000",
           toolbar: [
-            "bold",
-            "italic",
-            "link",
-            "upload-image",
-            "heading",
-            "code",
-            "strikethrough",
-            "quote",
-            "table",
+            {% for icon in icons %}
+              "{{ icon }}",
+            {% endfor %}
             {
               name: "LaTeX",
               className: "fa fa-math",

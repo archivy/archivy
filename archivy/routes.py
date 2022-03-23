@@ -221,6 +221,7 @@ def show_dataobj(dataobj_id):
         embedded_tags=embedded_tags,
         titles=titles,
         js_ext=js_ext,
+        icons=app.config["EDITOR_CONF"]["toolbar_icons"],
     )
 
 
