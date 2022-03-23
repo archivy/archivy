@@ -42,7 +42,17 @@ class Config(object):
                 "markdownItTocDoneRight": {},
             },
             "spellcheck": False,
-            "toolbar_icons": ["bold", "italic", "link", "upload-image", "heading", "code", "strikethrough", "quote", "table"] # https://github.com/Ionaru/easy-markdown-editor#toolbar-icons
+            "toolbar_icons": [
+                "bold",
+                "italic",
+                "link",
+                "upload-image",
+                "heading",
+                "code",
+                "strikethrough",
+                "quote",
+                "table",
+            ],  # https://github.com/Ionaru/easy-markdown-editor#toolbar-icons
         }
 
         self.SEARCH_CONF = {
