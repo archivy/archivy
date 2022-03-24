@@ -1,23 +1,18 @@
 ![logo](docs/img/logo.png)
 
-
-**We just launched v1.6.0!! Lots of UI improvements and new features, including embedding tags directly inside content, ie: `I love #archivy#`. More details [here](https://github.com/archivy/archivy/releases/tag/v1.6.0).**
-
 # Archivy
 
-Archivy is a self-hostable knowledge repository that allows you to preserve content in your own personal, searchable and extensible wiki.
+Archivy is a self-hostable knowledge repository that allows you to learn and retain information in your own personal and extensible wiki.
 
 Features:
 
-- If you add bookmarks, their web-pages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/).
-- Bidirectional links between notes, and embedded tags.
-- Authentication for hosting your instance publicly
-- Plugin system to publish and write extensions to archivy
-- [Git integration](https://github.com/archivy/archivy-git)
+- If you add bookmarks, their web-pages contents' will be saved to ensure that you will **always** have access to it, following the idea of [digital preservation](https://jeffhuang.com/designed_to_last/). Archivy is also easily integrated with other services and your online accounts.
+- Knowledge base organization with bidirectional links between notes, and embedded tags.
 - Everything is a file! For ease of access and editing, all the content is stored in extended markdown files with yaml front matter. This format supports footnotes, LaTeX math rendering, syntax highlighting and more. 
+- Extensible plugin system and API for power users to take control of their knowledge process
+- [syncing options](https://github.com/archivy/archivy-git)
 - Powerful and advanced search. 
 - Image upload
-- Backend API for flexibility and user enhancements.
 
 
 [demo video](https://www.uzpg.me/assets/images/archivy.mov)
@@ -55,3 +50,5 @@ Archivy is dedicated to building **open and quality knowledge base software** th
 To get news and updates on Archivy and its development, you can [watch the archivy repository](https://github.com/archivy/archivy) or follow [@uzpg_ on Twitter](https://twitter.com/uzpg_).
 
 You can interact with us through the [issue board](https://github.com/archivy/archivy/issues) and the more casual [discord server](https://discord.gg/uQsqyxB).
+
+Note: If you're interested in the applications of AI to knowledge management, we're also working on this with [Espial](https://github.com/Uzay-G/espial).
