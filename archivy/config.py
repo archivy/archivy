@@ -28,6 +28,7 @@ class Config(object):
         }
         self.DATAOBJ_JS_EXTENSION = ""
         self.EDITOR_CONF = {
+            "autosave": True,
             "settings": {
                 "html": False,
                 "xhtmlOut": False,
