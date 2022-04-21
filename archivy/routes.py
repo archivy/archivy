@@ -69,7 +69,7 @@ def index():
         new_folder_form=forms.NewFolderForm(),
         delete_form=forms.DeleteFolderForm(),
         rename_form=forms.RenameDirectoryForm(),
-        view_only=0
+        view_only=0,
     )
 
 
