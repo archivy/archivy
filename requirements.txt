@@ -8,6 +8,7 @@
 # archivy/routes.py: 7
 Flask == 2.0.0
 werkzeug == 2.0.3
+jinja2 == 3.0.0
 
 # archivy/forms.py: 2
 Flask_WTF == 0.14.3
@@ -58,3 +59,4 @@ click_plugins
 html2text
 flask_compress
 readability-lxml
+
