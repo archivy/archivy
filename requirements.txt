@@ -7,6 +7,7 @@
 # archivy/models.py: 13
 # archivy/routes.py: 7
 Flask == 2.0.0
+werkzeug == 2.0.3
 
 # archivy/forms.py: 2
 Flask_WTF == 0.14.3
