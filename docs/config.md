@@ -120,10 +120,14 @@ specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-
 
 
 ### Editor configuration
+
+To enable auto save in the editor, set `EDITOR_CONF -> autosave` to True. 
+
 Archivy uses the [markdown-it](https://github.com/markdown-it/markdown-it) parser for its editor. This parser can be configured to change the output according to your needs. The default values of `EDITOR_CONF` are given below. Refer to the [markdown-it docs](https://github.com/markdown-it/markdown-it#init-with-presets-and-options) for a full list of possible options.
 
 ```yaml
 EDITOR_CONF:
+  autosave: False
   settings:
     linkify: true
     html: false
