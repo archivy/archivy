@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+
+{% set search_enabled = config['SEARCH_CONF']['enabled'] %}
 {% block content %}
   <form id="tag_tooltip" class="hidden">
     <input list="tags" id="tag_tooltip_input" class="floating_input" required />
@@ -186,7 +188,7 @@
           imageAccept: "image/png, image/jpeg, image/gif",
           imageMaxSize: "100000000",
           toolbar: [
-            {% for icon in icons %}
+            {% for icon in config['EDITOR_CONF']['toolbar_icons'] %}
               "{{ icon }}",
             {% endfor %}
             {
@@ -237,19 +239,19 @@
               }, // action
             }, // save-button
             {
-              name: "status",
-              className: "fa fa-check-circle status"
-            },
-            {
               name: "doc",
               className: "fa fa-question-circle",
               action: "https://archivy.github.io/editing",
               title: "Editing Guide"
-            }
+            },
+            {
+              name: "status",
+              className: "fa fa-check-circle status"
+            },
           ], // toolbar
           shortcuts: {
             "save": "Ctrl-S"
-          },
+          }
         });  // EasyMDE
 
         editor.value(content)
@@ -260,9 +262,11 @@
         {% endif %}
 
         let statusBtn = document.querySelector(".status .fa");
+        statusBtn.style.color = "green";
         editor.codemirror.on("change", function() {
           statusBtn.classList.remove("fa-check-circle");
           statusBtn.classList.add("fa-times")
+          statusBtn.style.color = "red";
         })
         oldContent = document.getElementById("content"), editorDiv = document.querySelector(".EasyMDEContainer");
         editorDiv.classList.add("hidden");
@@ -315,6 +319,7 @@
           response = fetch(`${SCRIPT_ROOT}/tags/add_to_index`, payload);
         }
 
+        let timeoutId;
         async function saveDoc() {
           let req;
           try {
@@ -335,6 +340,7 @@
           if (!req.ok) { alert("Error saving document."); }
           statusBtn.classList.add("fa-check-circle");
           statusBtn.classList.remove("fa-times");
+          statusBtn.style.color = "green";
           savedContent = editor.value();
           // update dataobj tags
           let post_tags = document.querySelector(".embedded-tags");
@@ -389,6 +395,13 @@
         //   Check what the last character is. Is it a `#`?
         //   Then get rid of the `#` and put it into the tag tooltip and show that.
         editor.codemirror.on("change", function(ed, change) {
+          // auto save functionality
+          {% if config["EDITOR_CONF"]['autosave'] %}
+            if (!timeoutId)
+            {
+              timeoutId = setTimeout(() => {saveDoc(); timeoutId = null;}, 2500);
+            }
+          {% endif %}
           let line = ed.doc.getCursor().line, // Cursor line
           ch = ed.doc.getCursor().ch;
           let currLine = ed.doc.getLine(line);

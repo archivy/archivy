@@ -35,7 +35,7 @@ def pass_defaults():
     # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
     if SEP == "\\":
         SEP += "\\"
-    return dict(dataobjs=dataobjs, SEP=SEP, version=version)
+    return dict(dataobjs=dataobjs, SEP=SEP, version=version, config=app.config)
 
 
 @app.before_request
@@ -70,7 +70,6 @@ def index():
         delete_form=forms.DeleteFolderForm(),
         rename_form=forms.RenameDirectoryForm(),
         view_only=0,
-        search_engine=app.config["SEARCH_CONF"]["engine"],
     )
 
 

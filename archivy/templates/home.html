@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% set search_enabled = config['SEARCH_CONF']['enabled'] %}
 {% if search_enabled %}
     <input type="text" id="searchBar" placeholder="Search">
     <ul id="searchHits"></ul>

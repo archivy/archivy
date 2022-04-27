@@ -1,3 +1,5 @@
+Note: to enable auto save in the editor, see [this](https://archivy.github.io/config/#editor-configuration).
+
 ## Format
 
 Archivy files are in the [markdown](https://daringfireball.net/projects/markdown/basics) format following the [commonmark spec](https://spec.commonmark.org/).
