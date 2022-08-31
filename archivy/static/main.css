@@ -313,6 +313,19 @@ form {
 }
 
 
+.folder-tags {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.folder-tags span {
+    background: var(--light-yellow);
+    padding: 6px 7px;
+    margin-right: 6px;
+    margin-bottom: 3px;
+    display: inline-block;
+}
+
 /*Partly inspired by Primer -> https://github.com/primer/css*/
 .Header {
     display: flex;
