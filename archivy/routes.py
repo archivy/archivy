@@ -56,6 +56,11 @@ def index():
     path = request.args.get("path", "").lstrip("/")
     try:
         files = data.get_items(path=path)
+
+        tag_cloud = set()
+        for f in files.child_files:
+            for tag in f.get("tags", []):
+                tag_cloud.add(tag)
     except FileNotFoundError:
         flash("Directory does not exist.", "error")
         return redirect("/")
@@ -70,6 +75,7 @@ def index():
         delete_form=forms.DeleteFolderForm(),
         rename_form=forms.RenameDirectoryForm(),
         view_only=0,
+        tag_cloud=tag_cloud,
     )
 
 
