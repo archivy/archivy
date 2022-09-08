@@ -1,4 +1,4 @@
 mkdocs-material
-mkdocstrings
+mkdocstrings[python-legacy]
 mkdocs==1.2.3
 pymdown-extensions
