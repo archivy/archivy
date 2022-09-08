@@ -57,11 +57,10 @@ def index():
     try:
         files = data.get_items(path=path)
 
-        tag_cloud = []
+        tag_cloud = set()
         for f in files.child_files:
-            for tag in f["tags"]:
-                if tag not in tag_cloud:
-                    tag_cloud.append(tag)
+            for tag in f.get("tags", []):
+                tag_cloud.add(tag)
     except FileNotFoundError:
         flash("Directory does not exist.", "error")
         return redirect("/")
