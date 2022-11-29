@@ -1,8 +1,9 @@
 import platform
 import subprocess
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
+from datetime import datetime
 
 import frontmatter
 from flask import current_app
@@ -241,6 +242,7 @@ def update_item_md(dataobj_id, new_content):
 
     filename = get_by_id(dataobj_id)
     dataobj = frontmatter.load(filename)
+    dataobj["modified_at"] = datetime.now().strftime("%x %H:%M")
     dataobj.content = new_content
     md = frontmatter.dumps(dataobj)
     with open(filename, "w", encoding="utf-8") as f:
@@ -275,6 +277,7 @@ def update_item_frontmatter(dataobj_id, new_frontmatter):
     dataobj = frontmatter.load(filename)
     for key in list(new_frontmatter):
         dataobj[key] = new_frontmatter[key]
+    dataobj["modified_at"] = datetime.now().strftime("%x %H:%M")
     md = frontmatter.dumps(dataobj)
     with open(filename, "w", encoding="utf-8") as f:
         f.write(md)
