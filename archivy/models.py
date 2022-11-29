@@ -259,15 +259,19 @@ class DataObj:
         for pair in ["id", "title", "path", "tags"]:
             try:
                 dataobj[pair] = data[pair]
-                
+
             except KeyError:
                 # files sometimes get moved temporarily by applications while you edit
                 # this can create bugs where the data is not loaded correctly
                 # this handles that scenario as validation will simply fail and the event will
                 # be ignored
                 break
-        dataobj["date"] = datetime.strptime(data.get("date", "01/01/70").replace('-', '/'), "%x")
-        dataobj["modified_at"] = datetime.strptime(data.get("modified_at", "01/01/1970 00:00"), "%x %H:%M")
+        dataobj["date"] = datetime.strptime(
+            data.get("date", "01/01/70").replace("-", "/"), "%x"
+        )
+        dataobj["modified_at"] = datetime.strptime(
+            data.get("modified_at", "01/01/1970 00:00"), "%x %H:%M"
+        )
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
 

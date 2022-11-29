@@ -58,7 +58,12 @@ def index():
     try:
         files = data.get_items(path=path)
         process_modified = lambda x: datetime.strptime(x.get("modified_at"), "%x %H:%M")
-        recent_notes = list(filter(lambda x: "modified_at" in x, data.get_items(path=path, structured=False)))
+        recent_notes = list(
+            filter(
+                lambda x: "modified_at" in x,
+                data.get_items(path=path, structured=False),
+            )
+        )
         most_recent = sorted(recent_notes, key=process_modified, reverse=True)[:5]
         tag_cloud = set()
         for f in files.child_files:
