@@ -9,12 +9,6 @@
 
 <div id="files">
 
-	<h3>Recently modified</h3>
-	<ul>
-		{% for d in most_recent %}
-			<li><a href="/dataobj/{{ d['id'] }}">{{ d['title'] }}</a></li>
-		{% endfor %}
-	<ul>
     {% if not view_only %}
         <div class="d-flex" id="main-links">
             <div style="width: 100%;" class="d-flex">
@@ -53,6 +47,13 @@
             </div>
         </div>
     {% endif %}
+
+	<h3>Recently modified</h3>
+	<ul>
+		{% for d in most_recent %}
+			<li style="display: flex; justify-content: space-between"><a href="/dataobj/{{ d['id'] }}">{{ d['title'] }}</a><p style="color: #696969; margin: 0">Modified at {{ d['modified_at'] }}</p></li>
+		{% endfor %}
+	<ul>
     <ul>
         
         <div class="folder-tags">
