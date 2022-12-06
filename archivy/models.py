@@ -85,6 +85,9 @@ class DataObj:
     date: Optional[datetime] = attrib(
         validator=optional(instance_of(datetime)), default=None
     )
+    modified_at: Optional[datetime] = attrib(
+        validator=optional(instance_of(datetime)), default=None
+    )
     path: str = attrib(validator=instance_of(str), default="")
     fullpath: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
     error: Optional[str] = attrib(validator=optional(instance_of(str)), default=None)
@@ -211,6 +214,7 @@ class DataObj:
                 "type": self.type,
                 "title": str(self.title),
                 "date": self.date.strftime("%x").replace("/", "-"),
+                "modified_at": self.date.strftime("%x %H:%M"),
                 "tags": self.tags,
                 "id": self.id,
                 "path": self.path,
@@ -255,13 +259,19 @@ class DataObj:
         for pair in ["id", "title", "path", "tags"]:
             try:
                 dataobj[pair] = data[pair]
+
             except KeyError:
                 # files sometimes get moved temporarily by applications while you edit
                 # this can create bugs where the data is not loaded correctly
                 # this handles that scenario as validation will simply fail and the event will
                 # be ignored
                 break
-
+        dataobj["date"] = datetime.strptime(
+            data.get("date", "01/01/70").replace("-", "/"), "%x"
+        )
+        dataobj["modified_at"] = datetime.strptime(
+            data.get("modified_at", "01/01/1970 00:00"), "%x %H:%M"
+        )
         dataobj["type"] = "processed-dataobj"
         return cls(**dataobj)
 
