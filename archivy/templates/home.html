@@ -4,6 +4,7 @@
 {% set search_enabled = config['SEARCH_CONF']['enabled'] %}
 {% if search_enabled %}
     <input type="text" id="searchBar" placeholder="Search">
+    <input type="checkbox" checked id="include_bookmarks">Include bookmarks
     <ul id="searchHits"></ul>
 {% endif %}
 
@@ -127,7 +128,7 @@
       let query = input.value;
       if (input.value !== "")
       {
-        let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${encodeURIComponent(input.value)}`, {
+        let searchQuery = await fetch(`${SCRIPT_ROOT}/search?query=${encodeURIComponent(input.value)}&include_bookmarks=${document.getElementById('include_bookmarks').checked}`, {
           "method": "GET"
         });
         if (searchQuery.ok && query == input.value) {  

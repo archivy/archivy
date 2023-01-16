@@ -122,7 +122,7 @@ def update_dataobj(dataobj_id):
 
     - **content**: markdown text of new dataobj.
     """
-    if request.json.get("content"):
+    if "content" in request.json:
         try:
             data.update_item_md(dataobj_id, request.json.get("content"))
             return Response(status=200)
@@ -226,7 +226,7 @@ def search_endpoint():
     if not current_app.config["SEARCH_CONF"]["enabled"]:
         return Response("Search is disabled", status=401)
     query = request.args.get("query")
-    search_results = search(query)
+    search_results = search(query, bookmarks=request.args.get("include_bookmarks"))
     return jsonify(search_results)
 
 
