@@ -9,6 +9,12 @@
 
 <div id="files">
 
+	<h3>Recently modified</h3>
+	<ul>
+		{% for d in most_recent %}
+			<li><a href="/dataobj/{{ d['id'] }}">{{ d['title'] }}</a></li>
+		{% endfor %}
+	<ul>
     {% if not view_only %}
         <div class="d-flex" id="main-links">
             <div style="width: 100%;" class="d-flex">

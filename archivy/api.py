@@ -123,11 +123,8 @@ def update_dataobj(dataobj_id):
     - **content**: markdown text of new dataobj.
     """
     if request.json.get("content"):
-        try:
-            data.update_item_md(dataobj_id, request.json.get("content"))
-            return Response(status=200)
-        except BaseException:
-            return Response(status=404)
+        data.update_item_md(dataobj_id, request.json.get("content"))
+        return Response(status=200)
     return Response("Must provide content parameter", status=401)
 
 
