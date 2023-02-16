@@ -7,7 +7,7 @@
 # archivy/models.py: 13
 # archivy/routes.py: 7
 Flask == 2.0.0
-werkzeug == 2.0.3
+werkzeug == 2.2.3
 jinja2 == 3.0.0
 
 # archivy/forms.py: 2
