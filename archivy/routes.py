@@ -3,7 +3,6 @@ from os.path import sep
 from pkg_resources import require
 from shutil import which
 from datetime import datetime
-import time
 
 import frontmatter
 from flask import (
@@ -55,7 +54,6 @@ def check_perms():
 @app.route("/")
 @app.route("/index")
 def index():
-    a = time.time()
     path = request.args.get("path", "").lstrip("/")
     try:
         files = data.get_items(path=path)
@@ -74,7 +72,6 @@ def index():
     except FileNotFoundError:
         flash("Directory does not exist.", "error")
         return redirect("/")
-    print(time.time() - a)
     return render_template(
         "home.html",
         title=path or "root",
