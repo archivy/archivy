@@ -6,12 +6,12 @@
 # archivy/extensions.py: 6
 # archivy/models.py: 13
 # archivy/routes.py: 7
-Flask == 2.0.0
+Flask == 2.1.3
 werkzeug == 2.0.3
 jinja2 == 3.0.0
 
 # archivy/forms.py: 2
-Flask_WTF == 0.14.3
+Flask_WTF == 1.1.1
 
 # archivy/forms.py: 4
 WTForms == 2.3.1

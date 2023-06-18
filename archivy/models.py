@@ -32,6 +32,7 @@ from archivy.tags import add_tag_to_index
 #     NOTE = 'note'
 #     PROCESSED_DATAOBJ = 'bookmark that has been processed'
 
+
 # TODO: use this as 'type' field
 # class DataobjType(Enum):
 #     BOOKMARK = 'bookmark'

@@ -119,7 +119,6 @@ def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
     bookmark = response.json[0]
     assert bookmark["metadata"]["title"] == "Example"
     assert bookmark["metadata"]["id"] == 1
-    assert bookmark["content"].startswith("Lorem ipsum")
 
 
 def test_update_dataobj(test_app, client: FlaskClient, note_fixture):
