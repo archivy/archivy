@@ -98,7 +98,6 @@ def test_get_bookmarks_with_empty_db(test_app, client: FlaskClient):
 
 
 def test_get_dataobjs(test_app, client: FlaskClient, bookmark_fixture):
-
     note_dict = {
         "type": "note",
         "title": "Nested Test Note",
