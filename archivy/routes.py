@@ -30,7 +30,7 @@ import re
 
 @app.context_processor
 def pass_defaults():
-    dataobjs = data.get_items(load_content=False)
+    dataobjs = data.get_items()
     version = require("archivy")[0].version
     SEP = sep
     # check windows parsing for js (https://github.com/Uzay-G/archivy/issues/115)
@@ -72,7 +72,6 @@ def index():
     except FileNotFoundError:
         flash("Directory does not exist.", "error")
         return redirect("/")
-
     return render_template(
         "home.html",
         title=path or "root",
@@ -177,9 +176,7 @@ def show_tag(tag_name):
 def show_dataobj(dataobj_id):
     dataobj = data.get_item(dataobj_id)
     get_title_id_pairs = lambda x: (x["title"], x["id"])
-    titles = list(
-        map(get_title_id_pairs, data.get_items(structured=False, load_content=False))
-    )
+    titles = list(map(get_title_id_pairs, data.get_items(structured=False)))
     js_ext = ""
     if app.config["DATAOBJ_JS_EXTENSION"]:
         js_ext = (

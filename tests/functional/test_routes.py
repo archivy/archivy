@@ -1,13 +1,11 @@
 import os
-import re
 
 from flask.testing import FlaskClient
 from flask import request
 from flask_login import current_user
 from responses import RequestsMock, GET
-from werkzeug.security import generate_password_hash
 
-from archivy.helpers import get_max_id, get_db
+from archivy.helpers import get_max_id
 from archivy.data import get_dirs, create_dir, get_items, get_item
 
 
@@ -129,7 +127,6 @@ def test_creating_bookmark_without_passing_path_saves_to_default_dir(
 
 
 def test_create_note(test_app, client: FlaskClient):
-
     note_data = {
         "title": "Testing the create route",
         "tags": "testing,note",
@@ -158,7 +155,7 @@ def test_logging_in(test_app, client: FlaskClient):
         follow_redirects=True,
     )
     assert resp.status_code == 200
-    assert request.path == "/"
+    assert resp.request.path == "/"
     assert current_user
 
 
@@ -169,7 +166,7 @@ def test_logging_in_with_invalid_creds(test_app, client: FlaskClient):
         follow_redirects=True,
     )
     assert resp.status_code == 200
-    assert request.path == "/login"
+    assert resp.request.path == "/login"
     assert b"Invalid credentials" in resp.data
 
 
@@ -184,7 +181,7 @@ def test_edit_user(test_app, client: FlaskClient):
         follow_redirects=True,
     )
 
-    assert request.path == "/"
+    assert resp.request.path == "/"
 
     client.delete("/logout")
 
@@ -194,7 +191,7 @@ def test_edit_user(test_app, client: FlaskClient):
         follow_redirects=True,
     )
     assert resp.status_code == 200
-    assert request.path == "/"
+    assert resp.request.path == "/"
     # check information has updated.
 
 
@@ -204,7 +201,7 @@ def test_logging_out(test_app, client: FlaskClient):
     client.delete("/logout")
 
     resp = client.get("/", follow_redirects=True)
-    assert request.path == "/login"
+    assert resp.request.path == "/login"
 
 
 def test_create_dir(test_app, client: FlaskClient):
@@ -217,7 +214,7 @@ def test_create_dir(test_app, client: FlaskClient):
     )
 
     assert resp.status_code == 200
-    assert request.args.get("path") == "testing"
+    assert resp.request.args.get("path") == "testing"
     assert "testing" in get_dirs()
     assert b"Folder successfully created" in resp.data
 
@@ -228,7 +225,7 @@ def test_creating_without_dirname_fails(test_app, client: FlaskClient):
     )
 
     assert resp.status_code == 200
-    assert request.path == "/"
+    assert resp.request.path == "/"
     assert b"Could not create folder." in resp.data
 
 
@@ -275,7 +272,6 @@ def test_backlinks_are_saved(
 
 
 def test_bookmark_with_long_title_gets_truncated(test_app, client, mocked_responses):
-
     long_title = "a" * 300
     # check that our mock title is indeed longer than the limit
     # and would cause an error, without our truncating
@@ -305,7 +301,6 @@ def test_move_data(test_app, note_fixture, client):
 
 
 def test_invalid_inputs_fail_move_data(test_app, note_fixture, client):
-
     resp = client.post("/dataobj/move/1", follow_redirects=True)
     assert b"No path specified." in resp.data
 
@@ -412,4 +407,4 @@ def test_bookmarklet_upload(test_app, client):
     )
     assert resp.status_code == 200
     assert title in str(resp.data)
-    assert "/dataobj/" in request.path
+    assert "/dataobj/" in resp.request.path

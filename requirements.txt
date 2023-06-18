@@ -6,12 +6,12 @@
 # archivy/extensions.py: 6
 # archivy/models.py: 13
 # archivy/routes.py: 7
-Flask == 2.0.0
-werkzeug == 2.0.3
-jinja2 == 3.0.0
+Flask == 2.3.2
+werkzeug == 2.3.3
+jinja2 == 3.1.2
 
 # archivy/forms.py: 2
-Flask_WTF == 0.14.3
+Flask_WTF == 1.1.1
 
 # archivy/forms.py: 4
 WTForms == 2.3.1
@@ -53,7 +53,7 @@ validators == 0.15.0
 # archivy/__init__.py: 9
 # archivy/models.py: 13
 # archivy/routes.py: 10
-flask-login == 0.5.0
+flask-login == 0.6.2
 
 click_plugins
 html2text

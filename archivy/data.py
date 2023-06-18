@@ -47,14 +47,26 @@ def get_by_id(dataobj_id):
     return results[0] if results else None
 
 
-def build_dir_tree(path, query_dir, load_content=True):
+def load_frontmatter(filepath):
+    count = 0
+    file = open(filepath, "r")
+    data = ""
+    line = "_"
+    while count != 2 and line:
+        line = file.readline()
+        if line in ["---\n", "---"]:
+            count += 1
+        data += line
+    data = frontmatter.loads(data)
+    return data
+
+
+def build_dir_tree(path, query_dir):
     """
     Builds a structured tree of directories and data objects.
 
     - **path**: name of the directory relative to the root directory.
     - **query_dir**: absolute path of the directory we're building the tree of.
-    - **load_content**: internal option to not save post contents in memory
-        if they're not going to be accessed.
     """
     datacont = Directory(path or "root")
     for filepath in query_dir.rglob("*"):
@@ -75,16 +87,12 @@ def build_dir_tree(path, query_dir, load_content=True):
                 current_dir.child_dirs[last_seg] = Directory(last_seg)
             current_dir = current_dir.child_dirs[last_seg]
         elif last_seg.endswith(".md"):
-            data = frontmatter.load(filepath)
-            if not load_content:
-                data.content = ""
+            data = load_frontmatter(filepath)
             current_dir.child_files.append(data)
     return datacont
 
 
-def get_items(
-    collections=[], path="", structured=True, json_format=False, load_content=True
-):
+def get_items(collections=[], path="", structured=True, json_format=False):
     """
     Gets all dataobjs.
 
@@ -107,9 +115,7 @@ def get_items(
     else:
         datacont = []
         for filepath in query_dir.rglob("*.md"):
-            data = frontmatter.load(filepath)
-            if not load_content:
-                data.content = ""
+            data = load_frontmatter(filepath)
             data["fullpath"] = str(filepath.parent.relative_to(query_dir))
             if len(collections) == 0 or any(
                 [collection == data["type"] for collection in collections]

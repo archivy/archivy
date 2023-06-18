@@ -158,7 +158,6 @@ class RequestToCommandArgs:
         commands_field_infos = sorted(commands_field_infos)
 
         for fi in commands_field_infos:
-
             # must be called mostly for saving and preparing file output.
             fi.before_script_execute()
 
@@ -336,7 +335,6 @@ class FieldFileInfo(FieldInfo):
             file.save(filename)
 
     def __str__(self):
-
         res = [super().__str__()]
         res.append(f"file_path: {self.file_path}")
         return ", ".join(res)
