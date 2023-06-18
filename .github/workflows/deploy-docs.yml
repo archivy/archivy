@@ -13,10 +13,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           path: main
-      - name: Set up Python 3.7 and Pandoc
+      - name: Set up Python 3.9 and Pandoc
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.9
       - name: Install doc deps
         run: >-
           python -m pip install -r main/docs/requirements.txt
