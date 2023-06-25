@@ -1,10 +1,10 @@
 from pathlib import Path
 from os import environ
-from pkg_resources import iter_entry_points
+from pkg_resources import iter_entry_points, require
 
 import click
 from click_plugins import with_plugins
-from flask.cli import FlaskGroup, load_dotenv, shell_command
+from flask.cli import FlaskGroup, load_dotenv, shell_command, get_version
 
 from archivy import app
 from archivy.config import Config
@@ -18,8 +18,48 @@ def create_app():
     return app
 
 
+# function that shows Archivy version before Flask version
+def get_archivy_version(ctx, param, value):
+    version = require("archivy")[0].version
+    print("Archivy %s" % version)
+    get_version(ctx, param, value)
+
+
+version_option = click.Option(
+    ["--version"],
+    help="Show the Archivy version",
+    expose_value=False,
+    callback=get_archivy_version,
+    is_flag=True,
+    is_eager=True,
+)
+
+
+# subclass FlaskGroup class to show the archivy version
+class ArchivyGroup(FlaskGroup):
+
+    def __init__(
+        self,
+        add_default_commands=True,
+        create_app=None,
+        add_version_option=True,
+        load_dotenv=True,
+        set_debug_flag=True,
+        **extra
+    ):
+        extra["params"].append(version_option)
+        super().__init__(
+            self,
+            create_app=create_app,
+            add_version_option=False,
+            load_dotenv=load_dotenv,
+            set_debug_flag=set_debug_flag,
+            **extra
+        )
+
+
 @with_plugins(iter_entry_points("archivy.plugins"))
-@click.group(cls=FlaskGroup, create_app=create_app)
+@click.group(cls=ArchivyGroup, create_app=create_app)
 def cli():
     pass
 
