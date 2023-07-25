@@ -47,7 +47,9 @@ def get_by_id(dataobj_id):
     return results[0] if results else None
 
 
-def load_frontmatter(filepath):
+def load_frontmatter(filepath, load_content=False):
+    if load_content:
+        return frontmatter.load(filepath.open("r"))
     count = 0
     file = open(filepath, "r")
     data = ""
@@ -61,7 +63,7 @@ def load_frontmatter(filepath):
     return data
 
 
-def build_dir_tree(path, query_dir):
+def build_dir_tree(path, query_dir, load_content=False):
     """
     Builds a structured tree of directories and data objects.
 
@@ -87,12 +89,14 @@ def build_dir_tree(path, query_dir):
                 current_dir.child_dirs[last_seg] = Directory(last_seg)
             current_dir = current_dir.child_dirs[last_seg]
         elif last_seg.endswith(".md"):
-            data = load_frontmatter(filepath)
+            data = load_frontmatter(filepath, load_content=load_content)
             current_dir.child_files.append(data)
     return datacont
 
 
-def get_items(collections=[], path="", structured=True, json_format=False):
+def get_items(
+    collections=[], path="", structured=True, json_format=False, load_content=False
+):
     """
     Gets all dataobjs.
 
@@ -111,11 +115,11 @@ def get_items(collections=[], path="", structured=True, json_format=False):
     if not is_relative_to(query_dir, data_dir) or not query_dir.exists():
         raise FileNotFoundError
     if structured:
-        return build_dir_tree(path, query_dir)
+        return build_dir_tree(path, query_dir, load_content=load_content)
     else:
         datacont = []
         for filepath in query_dir.rglob("*.md"):
-            data = load_frontmatter(filepath)
+            data = load_frontmatter(filepath, load_content=load_content)
             data["fullpath"] = str(filepath.parent.relative_to(query_dir))
             if len(collections) == 0 or any(
                 [collection == data["type"] for collection in collections]
