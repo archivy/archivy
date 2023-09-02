@@ -7,7 +7,7 @@ from click_plugins import with_plugins
 from flask.cli import FlaskGroup, load_dotenv, shell_command
 
 from archivy import app
-from archivy.config import Config
+from archivy.config import Config, VERSION
 from archivy.click_web import create_click_web_app
 from archivy.data import open_file, format_file, unformat_file
 from archivy.helpers import load_config, write_config, create_plugin_dir
@@ -36,6 +36,18 @@ def init(ctx):
         )
     except FileNotFoundError:
         pass
+
+    # ask if to remove old users
+    try:
+        users_db = (Path(app.config['INTERNAL_DIR']) / 'db.json').resolve(strict=True)
+        remove_old_users = click.confirm("Found an existing user database. Do you want "
+                                         "to remove them?")
+        if remove_old_users:
+            users_db.unlink()
+    except FileNotFoundError:
+        pass
+    # remove the old configuration, and add version to it
+    write_config({"version": VERSION})
 
     config = Config()
 
